@@ -4,15 +4,15 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    TextInput,
+    View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { PinInput } from '../../components/PinInput';
@@ -65,6 +65,22 @@ export default function StaffRegisterScreen() {
       setPinKey(prev => prev + 1);
     } else {
       if (pin === staffPin) {
+        // Validate PIN strength (basic check)
+        if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+          setPinError(true);
+          setIsFirstPin(true);
+          setStaffPin('');
+          setConfirmPin('');
+          setPinKey(prev => prev + 1);
+          Toast.show({
+            type: 'error',
+            text1: 'Invalid PIN',
+            text2: 'PIN must be exactly 4 digits',
+            visibilityTime: 3000,
+          });
+          return;
+        }
+
         try {
           const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
           const adminId = await AsyncStorage.getItem('auth_user_id');

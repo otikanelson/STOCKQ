@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     Modal,
     Pressable,
@@ -17,8 +17,7 @@ import { useTheme } from '../context/ThemeContext';
 
 export default function ProfileScreen() {
   const { theme, isDark } = useTheme();
-
-    const router = useRouter();
+  const router = useRouter();
   const { user, role, logout } = useAuth();
 
   const [showPinModal, setShowPinModal] = useState(false);
@@ -27,25 +26,6 @@ export default function ProfileScreen() {
   const [oldPin, setOldPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
-  const [isImpersonating, setIsImpersonating] = useState(false);
-  const [isViewOnly, setIsViewOnly] = useState(false);
-  const [adminName, setAdminName] = useState('');
-
-  // Check if admin is impersonating on mount
-  useEffect(() => {
-    const checkImpersonation = async () => {
-      const impersonationActive = await AsyncStorage.getItem('impersonation_active');
-      const impersonationAdminName = await AsyncStorage.getItem('impersonation_admin_name');
-      const viewOnlyMode = await AsyncStorage.getItem('impersonation_view_only');
-      
-      if (impersonationActive === 'true') {
-        setIsImpersonating(true);
-        setIsViewOnly(viewOnlyMode === 'true');
-        setAdminName(impersonationAdminName || 'Admin');
-      }
-    };
-    checkImpersonation();
-  }, []);
 
   const handleDeleteAccount = async () => {
     try {
@@ -176,64 +156,7 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     await logout();
-    router.replace('/auth/setup' as any);
-  };
-
-  const handleBackToAdmin = async () => {
-    try {
-      // Restore admin session
-      const adminId = await AsyncStorage.getItem('impersonation_admin_id');
-      const adminName = await AsyncStorage.getItem('impersonation_admin_name');
-      const adminStoreId = await AsyncStorage.getItem('impersonation_admin_store_id');
-      const adminStoreName = await AsyncStorage.getItem('impersonation_admin_store_name');
-      const adminToken = await AsyncStorage.getItem('impersonation_admin_token');
-
-      if (!adminId || !adminToken) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Could not restore admin session',
-        });
-        return;
-      }
-
-      // Restore admin session
-      await AsyncStorage.multiSet([
-        ['auth_session_token', adminToken],
-        ['auth_user_role', 'admin'],
-        ['auth_user_id', adminId],
-        ['auth_user_name', adminName || 'Admin'],
-        ['auth_store_id', adminStoreId || ''],
-        ['auth_store_name', adminStoreName || ''],
-      ]);
-
-      // Clear impersonation flags
-      await AsyncStorage.multiRemove([
-        'impersonation_active',
-        'impersonation_view_only',
-        'impersonation_admin_id',
-        'impersonation_admin_name',
-        'impersonation_admin_store_id',
-        'impersonation_admin_store_name',
-        'impersonation_admin_token',
-      ]);
-
-      Toast.show({
-        type: 'success',
-        text1: 'Returned to Admin',
-        text2: `Welcome back, ${adminName}`,
-      });
-
-      // Navigate back to admin dashboard
-      router.replace('/admin/stats' as any);
-    } catch (error) {
-      console.error('Error returning to admin:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Could not return to admin session',
-      });
-    }
+    router.replace('/auth/login' as any);
   };
 
   const getRoleDisplay = () => {
@@ -289,49 +212,13 @@ export default function ProfileScreen() {
           <Text style={[styles.userId, { color: theme.subtext }]}>ID: {user?.id || 'N/A'}</Text>
         </View>
 
-        {/* Back to Admin Button (shown when impersonating) */}
-        {isImpersonating && (
-          <>
-            {isViewOnly && (
-              <View style={[styles.viewOnlyBanner, { backgroundColor: '#FF9500', borderColor: '#FF9500' }]}>
-                <Ionicons name="eye-outline" size={22} color="#FFF" />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.viewOnlyTitle}>VIEW-ONLY MODE</Text>
-                  <Text style={styles.viewOnlyText}>You cannot perform any actions in this view</Text>
-                </View>
-              </View>
-            )}
-            <Pressable
-              style={[styles.backToAdminBtn, { backgroundColor: theme.primary, borderColor: theme.primary }]}
-              onPress={handleBackToAdmin}
-            >
-              <Ionicons name="arrow-back-circle" size={22} color="#FFF" />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.backToAdminText}>Return to Admin Account</Text>
-                <Text style={styles.backToAdminSubtext}>Currently viewing as {user?.name}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#FFF" />
-            </Pressable>
-          </>
-        )}
-
         {/* Account Settings */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.primary }]}>ACCOUNT SETTINGS</Text>
 
           <Pressable
             style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}
-            onPress={() => {
-              if (user?.isViewOnly) {
-                Toast.show({
-                  type: 'info',
-                  text1: 'View-Only Mode',
-                  text2: 'You cannot change PIN in view-only mode',
-                });
-                return;
-              }
-              setShowPinModal(true);
-            }}
+            onPress={() => setShowPinModal(true)}
           >
             <View style={[styles.iconBox, { backgroundColor: theme.primary + '15' }]}>
               <Ionicons name="key-outline" size={22} color={theme.primary} />
@@ -340,11 +227,7 @@ export default function ProfileScreen() {
               <Text style={[styles.settingLabel, { color: theme.text }]}>Change PIN</Text>
               <Text style={[styles.settingDesc, { color: theme.subtext }]}>Update your 4-digit access code</Text>
             </View>
-            {user?.isViewOnly ? (
-              <Ionicons name="lock-closed" size={20} color={theme.subtext} />
-            ) : (
-              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-            )}
+            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
           </Pressable>
 
           {role === 'admin' && (
@@ -380,14 +263,36 @@ export default function ProfileScreen() {
               </>
             ) : (
               <>
-                <PermissionItem icon="checkmark-circle" label="View inventory" granted theme={theme} />
-                <PermissionItem icon="checkmark-circle" label="Add products" granted theme={theme} />
-                <PermissionItem icon="checkmark-circle" label="Edit products" granted theme={theme} />
-                <PermissionItem icon="checkmark-circle" label="Process sales" granted theme={theme} />
-                <PermissionItem icon="checkmark-circle" label="Scan barcodes" granted theme={theme} />
-                <PermissionItem icon="close-circle" label="Delete products" granted={false} theme={theme} />
-                <PermissionItem icon="close-circle" label="Admin settings" granted={false} theme={theme} />
-                <PermissionItem icon="close-circle" label="Manage staff" granted={false} theme={theme} />
+                <PermissionItem 
+                  icon={user?.permissions?.viewProducts ? "checkmark-circle" : "close-circle"} 
+                  label="View Products" 
+                  granted={user?.permissions?.viewProducts ?? true} 
+                  theme={theme} 
+                />
+                <PermissionItem 
+                  icon={user?.permissions?.scanProducts ? "checkmark-circle" : "close-circle"} 
+                  label="Scan Products" 
+                  granted={user?.permissions?.scanProducts ?? true} 
+                  theme={theme} 
+                />
+                <PermissionItem 
+                  icon={user?.permissions?.registerProducts ? "checkmark-circle" : "close-circle"} 
+                  label="Register Products" 
+                  granted={user?.permissions?.registerProducts ?? true} 
+                  theme={theme} 
+                />
+                <PermissionItem 
+                  icon={user?.permissions?.addProducts ? "checkmark-circle" : "close-circle"} 
+                  label="Add Inventory" 
+                  granted={user?.permissions?.addProducts ?? true} 
+                  theme={theme} 
+                />
+                <PermissionItem 
+                  icon={user?.permissions?.processSales ? "checkmark-circle" : "close-circle"} 
+                  label="Process Sales" 
+                  granted={user?.permissions?.processSales ?? true} 
+                  theme={theme} 
+                />
               </>
             )}
           </View>
@@ -400,7 +305,7 @@ export default function ProfileScreen() {
         </Pressable>
 
         {/* Delete Account Button */}
-        {role === 'staff' && !isImpersonating && (
+        {role === 'staff' && (
           <Pressable 
             style={[styles.deleteBtn, { borderColor: '#FF3B30', backgroundColor: '#FF3B30' + '10' }]} 
             onPress={() => setShowDeleteModal(true)}
@@ -589,47 +494,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     marginBottom: 30,
-  },
-  viewOnlyBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 18,
-    borderRadius: 20,
-    borderWidth: 2,
-    marginBottom: 16,
-    gap: 12,
-  },
-  viewOnlyTitle: {
-    color: '#FFF',
-    fontSize: 14,
-    fontWeight: '900',
-    letterSpacing: 1,
-    marginBottom: 2,
-  },
-  viewOnlyText: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  backToAdminBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 18,
-    borderRadius: 20,
-    borderWidth: 2,
-    marginBottom: 30,
-    gap: 12,
-  },
-  backToAdminText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  backToAdminSubtext: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 2,
   },
   avatarContainer: {
     width: 100,

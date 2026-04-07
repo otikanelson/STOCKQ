@@ -108,7 +108,8 @@ exports.login = async (req, res) => {
         name: user.name,
         role: user.role,
         storeId: user.storeId,
-        storeName: user.storeName
+        storeName: user.storeName,
+        permissions: user.permissions || {}
       },
       sessionToken
     };
@@ -130,7 +131,6 @@ exports.login = async (req, res) => {
     });
   }
 };
-
 // Create admin user (first-time setup)
 exports.setupAdmin = async (req, res) => {
   try {
@@ -288,7 +288,6 @@ exports.setupAdmin = async (req, res) => {
     });
   }
 };
-
 // Create staff user
 exports.createStaff = async (req, res) => {
   try {
@@ -296,7 +295,7 @@ exports.createStaff = async (req, res) => {
     console.log('Request body:', JSON.stringify(req.body, null, 2));
     console.log('Request user:', req.user);
     
-    const { name, pin } = req.body;
+    const { name, pin, permissions } = req.body;
 
     // Validate admin role
     if (!req.user || req.user.role !== 'admin') {
@@ -306,7 +305,7 @@ exports.createStaff = async (req, res) => {
       });
     }
 
-    console.log('Extracted data:', { name, pin: pin ? '****' : 'missing' });
+    console.log('Extracted data:', { name, pin: pin ? '****' : 'missing', permissions });
 
     if (!name || !pin) {
       console.log('❌ Validation failed: Missing name or PIN');
@@ -343,14 +342,319 @@ exports.createStaff = async (req, res) => {
 
     console.log('✅ PIN is available, creating new staff user...');
 
-    // Create staff user with admin's store information
+    // Create staff user with admin's store information and permissions
     const staff = new User({
       name,
       loginPin: pin,
       role: 'staff',
       storeId: req.user.storeId,
       storeName: req.user.storeName,
-      createdBy: req.user.id
+      createdBy: req.user.id,
+      permissions: permissions || {
+        viewProducts: true,      // Always true, compulsory
+        scanProducts: true,
+        registerProducts: true,
+        addProducts: true,
+        processSales: true,
+      }
+    });
+
+    console.log('Staff object created (before save):', {
+      name: staff.name,
+      role: staff.role,
+      storeId: staff.storeId,
+      storeName: staff.storeName,
+      permissions: staff.permissions
+    });
+
+    const savedStaff = await staff.save();
+    
+    console.log('✅ Staff saved successfully!');
+    console.log('Saved staff ID:', savedStaff._id);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        user: {
+          id: savedStaff._id,
+          name: savedStaff.name,
+          role: savedStaff.role,
+          storeId: savedStaff.storeId,
+          storeName: savedStaff.storeName,
+          createdBy: savedStaff.createdBy,
+          permissions: savedStaff.permissions
+        }
+      }
+    });
+  } catch (error) {
+    console.error('❌ CREATE STAFF ERROR:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to create staff user'
+    });
+  }
+};
+// Check if setup is complete
+exports.checkSetup = async (req, res) => {
+  try {
+    const admin = await User.findOne({ role: 'admin' });
+
+    res.json({
+      success: true,
+      data: {
+        setupComplete: !!admin
+      }
+    });
+  } catch (error) {
+    console.error('Check setup error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to check setup status'
+    });
+  }
+};
+
+// Verify admin PIN for a specific store (used by staff to access admin pages)
+exports.verifyAdminPin = async (req, res) => {
+  try {
+    const { pin, storeId } = req.body;
+
+    if (!pin || !storeId) {
+      return res.status(400).json({
+        success: false,
+        error: 'PIN and store ID are required'
+      });
+    }
+
+    // Find admin user for this store
+    const admin = await User.findOne({ 
+      role: 'admin', 
+      storeId: storeId,
+      isActive: true 
+    });
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        error: 'Admin not found for this store'
+      });
+    }
+
+    // Verify Security PIN (not Login PIN)
+    if (admin.securityPin === pin) {
+      res.json({
+        success: true,
+        message: 'Admin Security PIN verified'
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        error: 'Incorrect admin Security PIN'
+      });
+    }
+  } catch (error) {
+    console.error('Verify admin PIN error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to verify admin PIN'
+    });
+  }
+};
+
+// Verify admin Security PIN for sensitive operations (used by staff for product registration/deletion)
+exports.verifyAdminSecurityPin = async (req, res) => {
+  try {
+    const { pin, storeId } = req.body;
+
+    if (!pin || !storeId) {
+      return res.status(400).json({
+        success: false,
+        error: 'PIN and store ID are required'
+      });
+    }
+
+    // Find admin user for this store
+    const admin = await User.findOne({ 
+      role: 'admin', 
+      storeId: storeId,
+      isActive: true 
+    });
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        error: 'Admin not found for this store'
+      });
+    }
+
+    // Verify Security PIN
+    if (admin.securityPin === pin) {
+      res.json({
+        success: true,
+        message: 'Admin Security PIN verified'
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        error: 'Incorrect Admin Security PIN'
+      });
+    }
+  } catch (error) {
+    console.error('Verify admin Security PIN error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to verify admin Security PIN'
+    });
+  }
+};
+
+// Get admin info by store ID (used by staff to display admin name when accessing admin dashboard)
+exports.getAdminInfo = async (req, res) => {
+  try {
+    const { storeId } = req.params;
+
+    if (!storeId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Store ID is required'
+      });
+    }
+
+    // Find admin user for this store
+    const admin = await User.findOne({ 
+      role: 'admin', 
+      storeId: storeId,
+      isActive: true 
+    }).select('name storeId storeName');
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        error: 'Admin not found for this store'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        name: admin.name,
+        storeId: admin.storeId,
+        storeName: admin.storeName
+      }
+    });
+  } catch (error) {
+    console.error('Get admin info error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get admin info'
+    });
+  }
+};
+
+// Check if admin has security PIN set (used by staff to check before registering products)
+exports.checkAdminSecurityPin = async (req, res) => {
+  try {
+    const { storeId } = req.params;
+
+    if (!storeId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Store ID is required'
+      });
+    }
+
+    // Find admin user for this store
+    const admin = await User.findOne({ 
+      role: 'admin', 
+      storeId: storeId,
+      isActive: true 
+    });
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        error: 'Admin not found for this store'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        hasSecurityPin: !!(admin.securityPin && admin.securityPin.length === 4),
+        securityPin: admin.securityPin // Return PIN so staff can cache it
+      }
+    });
+  } catch (error) {
+    console.error('Check admin security PIN error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to check security PIN'
+    });
+  }
+};
+// Join existing store (staff registration with store code)
+exports.joinStore = async (req, res) => {
+  try {
+    console.log('=== JOIN STORE REQUEST RECEIVED ===');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    
+    const { name, pin, storeId } = req.body;
+
+    console.log('Extracted data:', { name, pin: pin ? '****' : 'missing', storeId });
+
+    if (!name || !pin || !storeId) {
+      console.log('❌ Validation failed: Missing name, PIN, or store ID');
+      return res.status(400).json({
+        success: false,
+        error: 'Name, PIN, and store ID are required'
+      });
+    }
+
+    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+      console.log('❌ Validation failed: Invalid PIN format');
+      return res.status(400).json({
+        success: false,
+        error: 'PIN must be exactly 4 digits'
+      });
+    }
+
+    console.log('✅ Validation passed, checking for existing store...');
+
+    // Verify store exists
+    const store = await Store.findById(storeId);
+    if (!store) {
+      console.log('❌ Store not found:', storeId);
+      return res.status(404).json({
+        success: false,
+        error: 'Store not found'
+      });
+    }
+
+    console.log('✅ Store found:', store.name);
+
+    // Check if PIN is already in use in this store
+    const existingUser = await User.findOne({ 
+      loginPin: pin, 
+      storeId: storeId
+    });
+    
+    if (existingUser) {
+      console.log('❌ PIN already in use by user:', existingUser._id);
+      return res.status(400).json({
+        success: false,
+        error: 'This PIN is already in use in this store. Please choose a different PIN.'
+      });
+    }
+
+    console.log('✅ PIN is available, creating new staff user...');
+
+    // Create staff user
+    const staff = new User({
+      name,
+      loginPin: pin,
+      role: 'staff',
+      storeId: store._id,
+      storeName: store.name
     });
 
     console.log('Staff object created (before save):', {
@@ -373,16 +677,15 @@ exports.createStaff = async (req, res) => {
           name: savedStaff.name,
           role: savedStaff.role,
           storeId: savedStaff.storeId,
-          storeName: savedStaff.storeName,
-          createdBy: savedStaff.createdBy
+          storeName: savedStaff.storeName
         }
       }
     });
   } catch (error) {
-    console.error('❌ CREATE STAFF ERROR:', error);
+    console.error('❌ JOIN STORE ERROR:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to create staff user'
+      error: error.message || 'Failed to join store'
     });
   }
 };
@@ -480,6 +783,110 @@ exports.updateStaff = async (req, res) => {
   }
 };
 
+// Get individual staff member by ID (admin only)
+exports.getStaffById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate admin role
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Only admins can view staff details'
+      });
+    }
+
+    // Find staff member
+    const staff = await User.findOne({
+      _id: id,
+      storeId: req.user.storeId,
+      role: 'staff'
+    }).select('-loginPin -__v');
+
+    if (!staff) {
+      return res.status(404).json({
+        success: false,
+        error: 'Staff member not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        _id: staff._id,
+        name: staff.name,
+        role: staff.role,
+        permissions: staff.permissions,
+        isActive: staff.isActive,
+        lastLogin: staff.lastLogin,
+        createdAt: staff.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('Get staff by ID error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get staff details'
+    });
+  }
+};
+
+// Update staff permissions (admin only)
+exports.updateStaffPermissions = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { permissions } = req.body;
+
+    // Validate admin role
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Only admins can update staff permissions'
+      });
+    }
+
+    // Find staff user
+    const staff = await User.findOne({ 
+      _id: id, 
+      role: 'staff',
+      storeId: req.user.storeId 
+    });
+
+    if (!staff) {
+      return res.status(404).json({
+        success: false,
+        error: 'Staff member not found'
+      });
+    }
+
+    // Update permissions
+    staff.permissions = {
+      ...staff.permissions,
+      ...permissions
+    };
+
+    await staff.save();
+
+    console.log('✅ Staff permissions updated:', staff._id);
+
+    res.json({
+      success: true,
+      message: 'Permissions updated successfully',
+      data: {
+        id: staff._id,
+        name: staff.name,
+        permissions: staff.permissions
+      }
+    });
+  } catch (error) {
+    console.error('Update staff permissions error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update permissions'
+    });
+  }
+};
+
 // Delete staff member
 exports.deleteStaff = async (req, res) => {
   try {
@@ -521,6 +928,78 @@ exports.deleteStaff = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to delete staff member'
+    });
+  }
+};
+
+// Get staff activity monitoring data
+exports.getStaffActivity = async (req, res) => {
+  try {
+    // Validate admin role
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Only admins can view staff activity'
+      });
+    }
+
+    const { staffId } = req.params;
+    const { days = 7 } = req.query; // Default to last 7 days
+
+    // Find the staff member
+    const staff = await User.findOne({ 
+      _id: staffId, 
+      role: 'staff',
+      storeId: req.user.storeId 
+    });
+
+    if (!staff) {
+      return res.status(404).json({
+        success: false,
+        error: 'Staff member not found'
+      });
+    }
+
+    // Calculate date range
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - parseInt(days));
+
+    // Get activity data (you can expand this based on your needs)
+    const activityData = {
+      staffInfo: {
+        id: staff._id,
+        name: staff.name,
+        role: staff.role,
+        permissions: staff.permissions,
+        isActive: staff.isActive,
+        lastLogin: staff.lastLogin,
+        createdAt: staff.createdAt
+      },
+      period: {
+        startDate,
+        endDate,
+        days: parseInt(days)
+      },
+      // Add more activity metrics as needed
+      summary: {
+        totalLogins: 0, // You can implement login tracking
+        lastActivity: staff.lastLogin,
+        status: staff.isActive ? 'Active' : 'Inactive'
+      }
+    };
+
+    console.log('✅ Staff activity data retrieved for:', staff.name);
+
+    res.json({
+      success: true,
+      data: activityData
+    });
+  } catch (error) {
+    console.error('❌ Get staff activity error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve staff activity'
     });
   }
 };
@@ -612,278 +1091,6 @@ exports.updateAdminPin = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to update admin PIN'
-    });
-  }
-};
-
-// Check if setup is complete
-exports.checkSetup = async (req, res) => {
-  try {
-    const admin = await User.findOne({ role: 'admin' });
-
-    res.json({
-      success: true,
-      data: {
-        setupComplete: !!admin
-      }
-    });
-  } catch (error) {
-    console.error('Check setup error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to check setup status'
-    });
-  }
-};
-
-// Verify admin PIN for a specific store (used by staff to access admin pages)
-exports.verifyAdminPin = async (req, res) => {
-  try {
-    const { pin, storeId } = req.body;
-
-    if (!pin || !storeId) {
-      return res.status(400).json({
-        success: false,
-        error: 'PIN and store ID are required'
-      });
-    }
-
-    // Find admin user for this store
-    const admin = await User.findOne({ 
-      role: 'admin', 
-      storeId: storeId,
-      isActive: true 
-    });
-
-    if (!admin) {
-      return res.status(404).json({
-        success: false,
-        error: 'Admin not found for this store'
-      });
-    }
-
-    // Verify Security PIN (not Login PIN)
-    if (admin.securityPin === pin) {
-      res.json({
-        success: true,
-        message: 'Admin Security PIN verified'
-      });
-    } else {
-      res.status(401).json({
-        success: false,
-        error: 'Incorrect admin Security PIN'
-      });
-    }
-  } catch (error) {
-    console.error('Verify admin PIN error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to verify admin PIN'
-    });
-  }
-};
-
-
-// Verify admin Security PIN for sensitive operations (used by staff for product registration/deletion)
-exports.verifyAdminSecurityPin = async (req, res) => {
-  try {
-    const { pin, storeId } = req.body;
-
-    if (!pin || !storeId) {
-      return res.status(400).json({
-        success: false,
-        error: 'PIN and store ID are required'
-      });
-    }
-
-    // Find admin user for this store
-    const admin = await User.findOne({ 
-      role: 'admin', 
-      storeId: storeId,
-      isActive: true 
-    });
-
-    if (!admin) {
-      return res.status(404).json({
-        success: false,
-        error: 'Admin not found for this store'
-      });
-    }
-
-    // Verify Security PIN
-    if (admin.securityPin === pin) {
-      res.json({
-        success: true,
-        message: 'Admin Security PIN verified'
-      });
-    } else {
-      res.status(401).json({
-        success: false,
-        error: 'Incorrect Admin Security PIN'
-      });
-    }
-  } catch (error) {
-    console.error('Verify admin Security PIN error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to verify admin Security PIN'
-    });
-  }
-};
-
-// Get admin info by store ID (used by staff to display admin name when accessing admin dashboard)
-exports.getAdminInfo = async (req, res) => {
-  try {
-    const { storeId } = req.params;
-
-    if (!storeId) {
-      return res.status(400).json({
-        success: false,
-        error: 'Store ID is required'
-      });
-    }
-
-    // Find admin user for this store
-    const admin = await User.findOne({ 
-      role: 'admin', 
-      storeId: storeId,
-      isActive: true 
-    }).select('name storeId storeName');
-
-    if (!admin) {
-      return res.status(404).json({
-        success: false,
-        error: 'Admin not found for this store'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        name: admin.name,
-        storeId: admin.storeId,
-        storeName: admin.storeName
-      }
-    });
-  } catch (error) {
-    console.error('Get admin info error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to get admin info'
-    });
-  }
-};
-
-// Admin impersonate staff (login as staff)
-exports.impersonateStaff = async (req, res) => {
-  try {
-    const { staffId } = req.params;
-
-    console.log('🎭 Impersonate staff request:', { adminId: req.user.id, staffId });
-
-    // Validate admin role
-    if (!req.user || req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        error: 'Only admins can impersonate staff members'
-      });
-    }
-
-    // Find the staff member
-    const staff = await User.findOne({ _id: staffId, role: 'staff' });
-
-    if (!staff) {
-      return res.status(404).json({
-        success: false,
-        error: 'Staff member not found'
-      });
-    }
-
-    // Verify staff belongs to admin's store
-    const staffStoreId = staff.storeId ? staff.storeId.toString() : null;
-    const adminStoreId = req.user.storeId ? req.user.storeId.toString() : null;
-    
-    if (staffStoreId !== adminStoreId) {
-      console.log('❌ Store mismatch:', { staffStoreId, adminStoreId });
-      return res.status(403).json({
-        success: false,
-        error: 'Access denied to this store'
-      });
-    }
-
-    // Generate JWT session token for the staff member
-    const sessionToken = jwt.sign(
-      { 
-        userId: staff._id.toString(),
-        role: staff.role,
-        storeId: staff.storeId ? staff.storeId.toString() : null
-      },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
-    );
-
-    console.log('✅ Admin impersonating staff:', staff.name);
-
-    res.json({
-      success: true,
-      data: {
-        user: {
-          id: staff._id,
-          name: staff.name,
-          role: staff.role,
-          storeId: staff.storeId,
-          storeName: staff.storeName
-        },
-        sessionToken
-      }
-    });
-  } catch (error) {
-    console.error('❌ Impersonate staff error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to impersonate staff member'
-    });
-  }
-};
-
-// Check if admin has security PIN set (used by staff to check before registering products)
-exports.checkAdminSecurityPin = async (req, res) => {
-  try {
-    const { storeId } = req.params;
-
-    if (!storeId) {
-      return res.status(400).json({
-        success: false,
-        error: 'Store ID is required'
-      });
-    }
-
-    // Find admin user for this store
-    const admin = await User.findOne({ 
-      role: 'admin', 
-      storeId: storeId,
-      isActive: true 
-    });
-
-    if (!admin) {
-      return res.status(404).json({
-        success: false,
-        error: 'Admin not found for this store'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        hasSecurityPin: !!(admin.securityPin && admin.securityPin.length === 4),
-        securityPin: admin.securityPin // Return PIN so staff can cache it
-      }
-    });
-  } catch (error) {
-    console.error('Check admin security PIN error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to check security PIN'
     });
   }
 };
@@ -990,173 +1197,6 @@ exports.deleteStaffAccount = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to delete account'
-    });
-  }
-};
-
-// Update staff permissions (admin only)
-exports.updateStaffPermissions = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { permissions } = req.body;
-
-    // Validate admin role
-    if (!req.user || req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        error: 'Only admins can update staff permissions'
-      });
-    }
-
-    // Find staff user
-    const staff = await User.findOne({ 
-      _id: id, 
-      role: 'staff',
-      storeId: req.user.storeId 
-    });
-
-    if (!staff) {
-      return res.status(404).json({
-        success: false,
-        error: 'Staff member not found'
-      });
-    }
-
-    // Update permissions
-    staff.permissions = {
-      ...staff.permissions,
-      ...permissions
-    };
-
-    await staff.save();
-
-    console.log('✅ Staff permissions updated:', staff._id);
-
-    res.json({
-      success: true,
-      message: 'Permissions updated successfully',
-      data: {
-        id: staff._id,
-        name: staff.name,
-        permissions: staff.permissions
-      }
-    });
-  } catch (error) {
-    console.error('Update staff permissions error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to update permissions'
-    });
-  }
-};
-
-// Join existing store (staff registration with store code)
-exports.joinStore = async (req, res) => {
-  try {
-    const { name, pin, storeCode, permissions } = req.body;
-
-    console.log('=== JOIN STORE REQUEST RECEIVED ===');
-    console.log('Name:', name);
-    console.log('Store Code:', storeCode);
-
-    // Validate required fields
-    if (!name || !pin || !storeCode) {
-      return res.status(400).json({
-        success: false,
-        error: 'Name, PIN, and store code are required'
-      });
-    }
-
-    // Validate PIN format (4 digits)
-    if (!/^\d{4}$/.test(pin)) {
-      return res.status(400).json({
-        success: false,
-        error: 'PIN must be exactly 4 digits'
-      });
-    }
-
-    // Find store by code
-    const Store = require('../models/Store');
-    const store = await Store.findOne({ storeCode });
-
-    if (!store) {
-      return res.status(404).json({
-        success: false,
-        error: 'Invalid store code'
-      });
-    }
-
-    // Check if staff with same name already exists in this store
-    const existingStaff = await User.findOne({
-      name,
-      role: 'staff',
-      storeId: store._id
-    });
-
-    if (existingStaff) {
-      return res.status(400).json({
-        success: false,
-        error: 'A staff member with this name already exists in this store'
-      });
-    }
-
-    // Create staff user
-    const staff = new User({
-      name,
-      loginPin: pin,
-      role: 'staff',
-      storeId: store._id,
-      permissions: permissions || {
-        viewInventory: true,
-        addProducts: false,
-        editProducts: false,
-        deleteProducts: false,
-        processSales: true,
-        scanBarcodes: true,
-        viewAnalytics: false,
-        exportData: false,
-        manageCategories: false
-      }
-    });
-
-    await staff.save();
-
-    console.log('✅ Staff joined store successfully:', staff._id);
-
-    // Generate JWT token
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign(
-      { 
-        id: staff._id, 
-        role: staff.role,
-        storeId: staff.storeId,
-        isViewOnly: false
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '30d' }
-    );
-
-    res.status(201).json({
-      success: true,
-      message: 'Successfully joined store',
-      data: {
-        token,
-        user: {
-          id: staff._id,
-          name: staff.name,
-          role: staff.role,
-          storeId: staff.storeId,
-          storeName: store.name,
-          permissions: staff.permissions,
-          isViewOnly: false
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Join store error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to join store'
     });
   }
 };

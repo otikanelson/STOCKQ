@@ -14,6 +14,7 @@ import {
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { DisabledButton } from "../../../components/DisabledButton";
 import { HelpTooltip } from "../../../components/HelpTooltip";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAlerts } from "../../../hooks/useAlerts";
@@ -706,7 +707,6 @@ export default function AlertSettingsScreen() {
               onPress={openCreateCategoryModal}
               disabled={!categoryAccess.isAllowed}
               disabledReason={categoryAccess.reason}
-              isViewOnly={categoryAccess.isViewOnly}
               style={[styles.addCategoryBtn, { backgroundColor: theme.primary }]}
               textStyle={{ color: '#FFF' }}
             >

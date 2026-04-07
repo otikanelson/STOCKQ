@@ -7,16 +7,16 @@ import * as Haptics from "expo-haptics";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    Animated,
-    Dimensions,
-    FlatList,
-    Image,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    View
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import AdminSecurityPINWarning from "../../components/AdminSecurityPINWarning";
@@ -533,7 +533,7 @@ export default function AdminScanScreen() {
     return (
       <ErrorBoundary>
         <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
-          <Ionicons name="camera-off" size={64} color={theme.subtext} />
+          <Ionicons name="camera-outline" size={64} color={theme.subtext} />
           <Text style={[styles.permissionText, { color: theme.text, marginTop: 20, textAlign: 'center' }]}>
             Camera failed to initialize
           </Text>

@@ -4,28 +4,26 @@ import { useTheme } from '../context/ThemeContext';
 
 interface DisabledFeatureOverlayProps {
   reason: string;
-  isViewOnly?: boolean;
 }
 
 export const DisabledFeatureOverlay: React.FC<DisabledFeatureOverlayProps> = ({ 
-  reason, 
-  isViewOnly = false 
+  reason
 }) => {
   const { theme } = useTheme();
-  const bgColor = isViewOnly ? '#FF9500' : '#FF3B30';
+  const bgColor = '#FF3B30';
 
   return (
     <View style={[styles.overlay, { backgroundColor: bgColor + 'F5' }]}>
       <View style={styles.content}>
         <View style={[styles.iconCircle, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
           <Ionicons 
-            name={isViewOnly ? 'eye-off' : 'lock-closed'} 
+            name="lock-closed" 
             size={48} 
             color="#FFF" 
           />
         </View>
         <Text style={styles.title}>
-          {isViewOnly ? 'VIEW-ONLY MODE' : 'ACCESS DENIED'}
+          ACCESS DENIED
         </Text>
         <Text style={styles.message}>{reason}</Text>
       </View>

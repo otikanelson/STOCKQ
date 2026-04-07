@@ -17,6 +17,7 @@ import {
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { DisabledButton } from "../../../components/DisabledButton";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAIPredictions } from "../../../hooks/useAIPredictions";
 import { useImageUpload } from "../../../hooks/useImageUpload";
@@ -520,7 +521,6 @@ export default function AdminProductDetails() {
                   onPress={() => setIsEditing(true)}
                   disabled={!editAccess.isAllowed}
                   disabledReason={editAccess.reason}
-                  isViewOnly={editAccess.isViewOnly}
                   style={[styles.headerBtn, { backgroundColor: theme.primary }]}
                 >
                   <Ionicons name="create-outline" size={20} color="#FFF" />
@@ -529,7 +529,6 @@ export default function AdminProductDetails() {
                   onPress={() => setShowDeleteWarning(true)}
                   disabled={!deleteAccess.isAllowed}
                   disabledReason={deleteAccess.reason}
-                  isViewOnly={deleteAccess.isViewOnly}
                   style={[styles.headerBtn, { backgroundColor: "#FF3B30" }]}
                 >
                   <Ionicons name="trash-outline" size={20} color="#FFF" />
@@ -677,7 +676,6 @@ export default function AdminProductDetails() {
               }}
               disabled={!editAccess.isAllowed}
               disabledReason={editAccess.reason}
-              isViewOnly={editAccess.isViewOnly}
               style={styles.statPressable}
             >
               <Text style={[styles.statValue, { color: theme.primary }]}>

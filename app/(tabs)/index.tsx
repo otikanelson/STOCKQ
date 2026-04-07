@@ -19,8 +19,15 @@ import { ProductCard, ProductCardSkeleton } from "../../components/ProductCard";
 import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
 import { useAlerts } from "../../hooks/useAlerts";
+import { useFeatureAccess } from "../../hooks/useFeatureAccess";
 import { useProducts } from "../../hooks/useProducts";
 import { Prediction } from "../../types/ai-predictions";
+
+interface SalesStats {
+  today: number;
+  week: number;
+  totalSales: number;
+}
 
 const RecentlySoldCard = ({ item, isBatchView = false }: { item: any; isBatchView?: boolean }) => {
   const { theme } = useTheme();
@@ -114,12 +121,25 @@ export default function Dashboard() {
   const { products, recentlySold, loading, refresh, inventoryStats } = useProducts();
   const { fetchBatchPredictions } = useAIPredictions({ enableWebSocket: false, autoFetch: false });
   const { summary: alertSummary } = useAlerts();
+  
+  // Check permission for sales access
+  const salesAccess = useFeatureAccess('processSales');
 
   const [activeTab, setActiveTab] = useState<"stocked" | "sold">("stocked");
   const [displayLimit, setDisplayLimit] = useState(6);
   const [viewByProduct, setViewByProduct] = useState(true);
   const [recentlySoldBatches, setRecentlySoldBatches] = useState<any[]>([]);
   const [predictions, setPredictions] = useState<Record<string, Prediction>>({});
+  
+  // Sales section state
+  const [salesExpanded, setSalesExpanded] = useState(false);
+  const [salesStats, setSalesStats] = useState<SalesStats>({
+    today: 0,
+    week: 0,
+    totalSales: 0
+  });
+  const [recentSales, setRecentSales] = useState<any[]>([]);
+  const [loadingSales, setLoadingSales] = useState(false);
 
   useEffect(() => {
     const fetchBatchSales = async () => {
@@ -136,6 +156,50 @@ export default function Dashboard() {
     };
     fetchBatchSales();
   }, [viewByProduct, activeTab]);
+
+  // Fetch sales data for the sales section
+  const fetchSalesData = async () => {
+    if (!salesExpanded) return;
+    
+    setLoadingSales(true);
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/analytics/all-sales?limit=5&days=30`
+      );
+      
+      if (response.data.success) {
+        const salesData = response.data.data?.sales || response.data.data || [];
+        setRecentSales(salesData.slice(0, 5));
+        
+        // Calculate stats
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        const todayRevenue = salesData
+          .filter((s: any) => new Date(s.saleDate) >= todayStart)
+          .reduce((sum: number, s: any) => sum + (s.totalAmount || 0), 0);
+          
+        const weekRevenue = salesData
+          .filter((s: any) => new Date(s.saleDate) >= weekStart)
+          .reduce((sum: number, s: any) => sum + (s.totalAmount || 0), 0);
+        
+        setSalesStats({
+          today: todayRevenue,
+          week: weekRevenue,
+          totalSales: salesData.length
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+    } finally {
+      setLoadingSales(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSalesData();
+  }, [salesExpanded]);
 
   const fefoItems = useMemo(() => {
     return products
@@ -189,6 +253,20 @@ export default function Dashboard() {
       ? products.length
       : viewByProduct ? recentlySold.length : recentlySoldBatches.length;
     if (displayLimit < maxLength) setDisplayLimit(prev => prev + 6);
+  };
+
+  const formatSaleDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffDays = Math.ceil(Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) return "Today";
+      if (diffDays === 2) return "Yesterday";
+      if (diffDays < 7) return `${diffDays - 1}d ago`;
+      return date.toLocaleDateString();
+    } catch { 
+      return "Recently"; 
+    }
   };
 
   return (
@@ -301,6 +379,107 @@ export default function Dashboard() {
                 </Pressable>
               ))}
             </View>
+
+            {/* SALES SECTION - Only show if user has permission */}
+            {salesAccess.isAllowed && (
+              <>
+                <Pressable
+                  onPress={() => setSalesExpanded(!salesExpanded)}
+                  style={[styles.salesHeader, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                >
+                  <View style={styles.salesHeaderContent}>
+                    <View style={styles.salesHeaderLeft}>
+                      <Ionicons name="trending-up" size={20} color={theme.primary} />
+                      <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>
+                        Sales Overview
+                      </Text>
+                    </View>
+                    <Ionicons 
+                      name={salesExpanded ? "chevron-up" : "chevron-down"} 
+                      size={20} 
+                      color={theme.subtext} 
+                    />
+                  </View>
+                </Pressable>
+
+                {salesExpanded && (
+              <View style={[styles.salesContent, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                {loadingSales ? (
+                  <View style={styles.salesLoading}>
+                    <ActivityIndicator size="small" color={theme.primary} />
+                    <Text style={[styles.salesLoadingText, { color: theme.subtext }]}>
+                      Loading sales data...
+                    </Text>
+                  </View>
+                ) : (
+                  <>
+                    {/* Sales Stats */}
+                    <View style={styles.salesStatsRow}>
+                      <View style={[styles.salesStatCard, { backgroundColor: theme.background }]}>
+                        <Text style={[styles.salesStatValue, { color: theme.primary }]}>
+                          ₦{salesStats.today.toLocaleString()}
+                        </Text>
+                        <Text style={[styles.salesStatLabel, { color: theme.subtext }]}>TODAY</Text>
+                      </View>
+                      <View style={[styles.salesStatCard, { backgroundColor: theme.background }]}>
+                        <Text style={[styles.salesStatValue, { color: theme.primary }]}>
+                          ₦{salesStats.week.toLocaleString()}
+                        </Text>
+                        <Text style={[styles.salesStatLabel, { color: theme.subtext }]}>THIS WEEK</Text>
+                      </View>
+                      <View style={[styles.salesStatCard, { backgroundColor: theme.background }]}>
+                        <Text style={[styles.salesStatValue, { color: theme.primary }]}>
+                          {salesStats.totalSales}
+                        </Text>
+                        <Text style={[styles.salesStatLabel, { color: theme.subtext }]}>TOTAL</Text>
+                      </View>
+                    </View>
+
+                    {/* Recent Sales */}
+                    {recentSales.length > 0 ? (
+                      <>
+                        <Text style={[styles.salesSubtitle, { color: theme.text }]}>Recent Sales</Text>
+                        {recentSales.map((sale, index) => (
+                          <View key={sale._id || index} style={[
+                            styles.salesItem, 
+                            { 
+                              borderBottomColor: theme.border,
+                              borderBottomWidth: index < recentSales.length - 1 ? 1 : 0
+                            }
+                          ]}>
+                            <View style={styles.salesItemLeft}>
+                              <Text style={[styles.salesItemName, { color: theme.text }]} numberOfLines={1}>
+                                {sale.productName}
+                              </Text>
+                              <Text style={[styles.salesItemDate, { color: theme.subtext }]}>
+                                {formatSaleDate(sale.saleDate)}
+                              </Text>
+                            </View>
+                            <View style={styles.salesItemRight}>
+                              <Text style={[styles.salesItemAmount, { color: theme.primary }]}>
+                                ₦{(sale.totalAmount || 0).toLocaleString()}
+                              </Text>
+                              <Text style={[styles.salesItemQuantity, { color: theme.subtext }]}>
+                                {sale.quantitySold || 0} units
+                              </Text>
+                            </View>
+                          </View>
+                        ))}
+                      </>
+                    ) : (
+                      <View style={styles.salesEmpty}>
+                        <Ionicons name="receipt-outline" size={32} color={theme.subtext + "40"} />
+                        <Text style={[styles.salesEmptyText, { color: theme.subtext }]}>
+                          No sales recorded yet
+                        </Text>
+                      </View>
+                    )}
+                  </>
+                )}
+              </View>
+            )}
+            </>
+            )}
 
             {/* PRIORITY QUEUE */}
             <View style={styles.sectionHeader}>
@@ -583,4 +762,104 @@ const styles = StyleSheet.create({
   },
   emptyText: { fontSize: 17, fontWeight: '800', marginTop: 14, marginBottom: 8 },
   emptyHint: { fontSize: 14, fontWeight: '500', textAlign: 'center', lineHeight: 20 },
+
+  // Sales Section Styles
+  salesHeader: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginBottom: 2,
+  },
+  salesHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  salesHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  salesContent: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginBottom: 24,
+  },
+  salesLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 20,
+  },
+  salesLoadingText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  salesStatsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  salesStatCard: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  salesStatValue: {
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  salesStatLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  salesSubtitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 12,
+  },
+  salesItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+  },
+  salesItemLeft: {
+    flex: 1,
+  },
+  salesItemName: {
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  salesItemDate: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  salesItemRight: {
+    alignItems: 'flex-end',
+  },
+  salesItemAmount: {
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  salesItemQuantity: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  salesEmpty: {
+    alignItems: 'center',
+    paddingVertical: 30,
+  },
+  salesEmptyText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 8,
+  },
 });

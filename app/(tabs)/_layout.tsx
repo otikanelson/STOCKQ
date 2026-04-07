@@ -72,16 +72,20 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, focused }) => (
               <View style={{
                 backgroundColor: theme.primary,
-                borderRadius: 16,
-                padding: 8,
+                borderRadius: 18,
+                padding: 10,
                 marginBottom: 4,
                 shadowColor: theme.primary,
                 shadowOffset: { width: 4, height: 4 },
                 shadowOpacity: 0.4,
                 shadowRadius: 8,
                 elevation: 6,
+                width: 36,
+                height: 36,
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
-                <Ionicons name="qr-code" size={22} color="#FFF" />
+                <Ionicons name="scan" size={18} color="#FFF" />
               </View>
             ),
             tabBarLabel: () => null,

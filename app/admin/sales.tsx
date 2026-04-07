@@ -61,7 +61,6 @@ export default function AdminSales() {
       <View style={{ flex: 1, backgroundColor: theme.background }}>
         <DisabledFeatureOverlay 
           reason={salesAccess.reason || 'Access denied'} 
-          isViewOnly={salesAccess.isViewOnly}
         />
       </View>
     );

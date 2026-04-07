@@ -24,43 +24,86 @@ export const PinInput: React.FC<PinInputProps> = ({
   const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
-    // Auto-focus on mount
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
-  }, []);
+    // Auto-focus on mount with proper delay
+    const timer = setTimeout(() => {
+      if (inputRef.current && !disabled) {
+        inputRef.current.focus();
+      }
+    }, 150);
+    
+    return () => clearTimeout(timer);
+  }, [disabled]);
 
   useEffect(() => {
     // Check if PIN is complete
     if (pin.every((digit) => digit !== '') && !disabled) {
       const completedPin = pin.join('');
-      console.log('PinInput - PIN complete:', completedPin);
+      // Remove console.log for security
       onComplete(completedPin);
     }
-  }, [pin, disabled]);
+  }, [pin, disabled, onComplete]);
 
   const handleChangeText = (text: string) => {
     if (disabled) return;
 
+    // Only allow numeric input and limit to specified length
     const digits = text.replace(/\D/g, '').split('').slice(0, length);
     const newPin = [...Array(length).fill('')];
+    
     digits.forEach((digit, index) => {
       newPin[index] = digit;
     });
     
     setPin(newPin);
-    setFocusedIndex(Math.min(digits.length, length - 1));
+    
+    // Update focused index to next empty position or last position
+    const nextEmptyIndex = newPin.findIndex(digit => digit === '');
+    setFocusedIndex(nextEmptyIndex === -1 ? length - 1 : nextEmptyIndex);
+  };
+
+  const handleKeyPress = ({ nativeEvent }: any) => {
+    if (disabled) return;
+    
+    // Handle backspace
+    if (nativeEvent.key === 'Backspace') {
+      const newPin = [...pin];
+      const currentIndex = Math.max(0, focusedIndex);
+      
+      if (newPin[currentIndex] !== '') {
+        newPin[currentIndex] = '';
+      } else if (currentIndex > 0) {
+        newPin[currentIndex - 1] = '';
+        setFocusedIndex(currentIndex - 1);
+      }
+      
+      setPin(newPin);
+    }
   };
 
   const handleClear = () => {
     setPin(Array(length).fill(''));
     setFocusedIndex(0);
-    inputRef.current?.focus();
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
     onClear?.();
   };
 
+  const handleDotPress = (index: number) => {
+    if (disabled) return;
+    
+    setFocusedIndex(index);
+    // Ensure the input is focused and keyboard shows
+    if (inputRef.current) {
+      inputRef.current.blur();
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={() => handleDotPress(focusedIndex)}>
       {/* Hidden input for keyboard */}
       <TextInput
         ref={inputRef}
@@ -69,8 +112,18 @@ export const PinInput: React.FC<PinInputProps> = ({
         maxLength={length}
         value={pin.join('')}
         onChangeText={handleChangeText}
+        onKeyPress={handleKeyPress}
         editable={!disabled}
-        autoFocus
+        autoFocus={!disabled}
+        secureTextEntry={true}
+        textContentType="oneTimeCode"
+        autoComplete="sms-otp"
+        importantForAutofill="yes"
+        blurOnSubmit={false}
+        caretHidden={true}
+        contextMenuHidden={true}
+        selectTextOnFocus={false}
+        showSoftInputOnFocus={true}
       />
 
       {/* PIN dots display */}
@@ -90,10 +143,10 @@ export const PinInput: React.FC<PinInputProps> = ({
                 borderWidth: focusedIndex === index ? 2 : 1,
               },
             ]}
-            onPress={() => {
-              setFocusedIndex(index);
-              inputRef.current?.focus();
-            }}
+            onPress={() => handleDotPress(index)}
+            accessible={true}
+            accessibilityLabel={`PIN digit ${index + 1} ${digit !== '' ? 'filled' : 'empty'}`}
+            accessibilityRole="button"
           >
             {digit !== '' && (
               <View
@@ -110,12 +163,18 @@ export const PinInput: React.FC<PinInputProps> = ({
       </View>
 
       {/* Clear button */}
-      {pin.some((digit) => digit !== '') && (
-        <Pressable style={styles.clearButton} onPress={handleClear}>
+      {pin.some((digit) => digit !== '') && !disabled && (
+        <Pressable 
+          style={styles.clearButton} 
+          onPress={handleClear}
+          accessible={true}
+          accessibilityLabel="Clear PIN"
+          accessibilityRole="button"
+        >
           <Ionicons name="backspace-outline" size={24} color={theme.subtext} />
         </Pressable>
       )}
-    </View>
+    </Pressable>
   );
 };
 
@@ -126,9 +185,12 @@ const styles = StyleSheet.create({
   },
   hiddenInput: {
     position: 'absolute',
+    top: 0,
+    left: 0,
     opacity: 0,
-    height: 0,
-    width: 0,
+    height: 1,
+    width: 1,
+    zIndex: -1,
   },
   pinContainer: {
     flexDirection: 'row',

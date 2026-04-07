@@ -5,13 +5,13 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { PinInput } from '../../components/PinInput';
@@ -72,6 +72,21 @@ export default function SetupScreen() {
       } else {
         if (pin === tempPin) {
           setAdminSecurityPin(pin);
+          
+          // Validate that security PIN is different from login PIN
+          if (pin === adminLoginPin) {
+            setPinError(true);
+            setIsFirstPin(true);
+            setTempPin('');
+            setPinKey(prev => prev + 1);
+            Toast.show({
+              type: 'error',
+              text1: 'PIN Validation Error',
+              text2: 'Security PIN must be different from Login PIN',
+              visibilityTime: 3000,
+            });
+            return;
+          }
           
           // Save admin credentials to backend and local storage
           try {
@@ -255,7 +270,7 @@ export default function SetupScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
+    <View style={{ flex: 1, backgroundColor: theme.background, }}>
     <KeyboardAvoidingView 
       style={[styles.container, { backgroundColor: theme.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

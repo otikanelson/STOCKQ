@@ -93,7 +93,7 @@ export default function SettingsScreen() {
       {/* ADMINISTRATION SECTION */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.primary }]}>
-          ADMINISTRATION
+          SETTINGS CATEGORIES
         </Text>
         <SettingRow
           icon="person-circle-outline"
@@ -144,22 +144,6 @@ export default function SettingsScreen() {
           }}
         >
           <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-        </SettingRow>
-      </View>
-
-      {/* DANGER ZONE */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: '#FF3B30' }]}>
-          DANGER ZONE
-        </Text>
-        <SettingRow
-          icon="trash-outline"
-          label="Delete Account"
-          description="Permanently delete your account and data"
-          onPress={() => router.push('/profile?showDeleteModal=true' as any)}
-          style={{ borderBottomWidth: 0 }}
-        >
-          <Ionicons name="chevron-forward" size={20} color="#FF3B30" />
         </SettingRow>
       </View>
 
@@ -227,7 +211,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#888",
     fontSize: 11,
-    marginBottom: 100,
+    marginBottom: 10,
     letterSpacing: 1,
     opacity: 0.5,
   },

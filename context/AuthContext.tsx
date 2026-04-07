@@ -15,17 +15,12 @@ interface User {
   storeName?: string;
   isAuthor?: boolean;
   permissions?: {
-    viewInventory?: boolean;
+    viewProducts?: boolean;
+    scanProducts?: boolean;
+    registerProducts?: boolean;
     addProducts?: boolean;
-    editProducts?: boolean;
-    deleteProducts?: boolean;
     processSales?: boolean;
-    scanBarcodes?: boolean;
-    viewAnalytics?: boolean;
-    exportData?: boolean;
-    manageCategories?: boolean;
   };
-  isViewOnly?: boolean; // Flag for admin impersonation view-only mode
 }
 
 interface AuthContextType {
@@ -59,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Run PIN migration before checking auth
       await migrateAdminPins();
 
-      const [userRole, userId, userName, sessionToken, lastLogin, storeId, storeName] = await AsyncStorage.multiGet([
+      const [userRole, userId, userName, sessionToken, lastLogin, storeId, storeName, userPermissions] = await AsyncStorage.multiGet([
         'auth_user_role',
         'auth_user_id',
         'auth_user_name',
@@ -67,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         'auth_last_login',
         'auth_store_id',
         'auth_store_name',
+        'auth_user_permissions',
       ]);
 
       const roleValue = userRole[1] as UserRole;
@@ -76,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const lastLoginValue = lastLogin[1];
       const storeIdValue = storeId[1];
       const storeNameValue = storeName[1];
+      const permissionsValue = userPermissions[1];
 
       if (roleValue && idValue && tokenValue) {
         // Check if session is still valid (30 minutes)
@@ -84,6 +81,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const elapsed = Date.now() - lastLoginTime;
 
         if (elapsed < sessionTimeout) {
+          // Parse stored permissions if available
+          let storedPermissions = {};
+          if (permissionsValue) {
+            try {
+              storedPermissions = JSON.parse(permissionsValue);
+            } catch {}
+          }
+
           setUser({
             id: idValue,
             name: nameValue || 'User',
@@ -91,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             storeId: storeIdValue || undefined,
             storeName: storeNameValue || undefined,
             isAuthor: roleValue === 'admin' && idValue === 'author',
+            permissions: storedPermissions,
           });
           setRole(roleValue);
           setIsAuthenticated(true);
@@ -148,6 +154,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             storageItems.push(['admin_last_auth', Date.now().toString()]);
           }
 
+          // Persist permissions for staff users
+          if (userData.role === 'staff' && userData.permissions) {
+            storageItems.push(['auth_user_permissions', JSON.stringify(userData.permissions)]);
+          }
+
           // Store auth data including store information
           await AsyncStorage.multiSet(storageItems);
 
@@ -155,7 +166,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             ...userData,
             isAuthor: userData.role === 'admin' && userData.id === 'author',
             permissions: userData.permissions || {},
-            isViewOnly: false,
           });
           setRole(userData.role);
           setIsAuthenticated(true);
@@ -312,10 +322,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         'auth_user_name',
         'auth_store_id',
         'auth_store_name',
+        'auth_user_permissions',
         'admin_last_auth',
-        'admin_session_name',
-        'admin_session_store_id',
-        'admin_session_store_name',
       ]);
 
       setUser(null);
@@ -339,12 +347,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check if user has permission for an action
   const hasPermission = (action: string): boolean => {
-    // If admin is in view-only mode (impersonating), deny all write actions
-    if (user?.isViewOnly) {
-      const readOnlyActions = ['view', 'viewInventory', 'viewAnalytics'];
-      return readOnlyActions.includes(action);
-    }
-
     // Admin has all permissions
     if (role === 'admin') return true;
 

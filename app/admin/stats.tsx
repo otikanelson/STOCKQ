@@ -43,7 +43,6 @@ export default function AdminStats() {
       <View style={{ flex: 1, backgroundColor: theme.background }}>
         <DisabledFeatureOverlay 
           reason={viewAccess.reason || 'Access denied'} 
-          isViewOnly={viewAccess.isViewOnly}
         />
       </View>
     );
@@ -857,8 +856,8 @@ export default function AdminStats() {
               onPress={() => {
                 if (!exportAccess.isAllowed) {
                   Toast.show({
-                    type: exportAccess.isViewOnly ? 'info' : 'error',
-                    text1: exportAccess.isViewOnly ? 'View-Only Mode' : 'Access Denied',
+                    type: 'error',
+                    text1: 'Access Denied',
                     text2: exportAccess.reason,
                     visibilityTime: 3000,
                   });
@@ -879,7 +878,7 @@ export default function AdminStats() {
               {!exportAccess.isAllowed && (
                 <View style={styles.lockBadge}>
                   <Ionicons 
-                    name={exportAccess.isViewOnly ? 'eye-off' : 'lock-closed'} 
+                    name={'lock-closed'} 
                     size={10} 
                     color="#FFF" 
                   />
@@ -895,8 +894,8 @@ export default function AdminStats() {
               onPress={() => {
                 if (!exportAccess.isAllowed) {
                   Toast.show({
-                    type: exportAccess.isViewOnly ? 'info' : 'error',
-                    text1: exportAccess.isViewOnly ? 'View-Only Mode' : 'Access Denied',
+                    type: 'error',
+                    text1: 'Access Denied',
                     text2: exportAccess.reason,
                     visibilityTime: 3000,
                   });
@@ -917,7 +916,7 @@ export default function AdminStats() {
               {!exportAccess.isAllowed && (
                 <View style={styles.lockBadge}>
                   <Ionicons 
-                    name={exportAccess.isViewOnly ? 'eye-off' : 'lock-closed'} 
+                    name={'lock-closed'} 
                     size={10} 
                     color="#FFF" 
                   />

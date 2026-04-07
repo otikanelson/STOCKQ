@@ -16,6 +16,7 @@ import {
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { DisabledButton } from "../../../components/DisabledButton";
 import { useTheme } from "../../../context/ThemeContext";
 import { useFeatureAccess } from "../../../hooks/useFeatureAccess";
 
@@ -372,7 +373,6 @@ export default function DataSettingsScreen() {
                 onPress={performBackup}
                 disabled={!exportAccess.isAllowed}
                 disabledReason={exportAccess.reason}
-                isViewOnly={exportAccess.isViewOnly}
                 style={{ width: '100%' }}
               >
                 <SettingRow
@@ -389,7 +389,6 @@ export default function DataSettingsScreen() {
               onPress={handleExportData}
               disabled={!exportAccess.isAllowed}
               disabledReason={exportAccess.reason}
-              isViewOnly={exportAccess.isViewOnly}
               style={{ width: '100%' }}
             >
               <SettingRow

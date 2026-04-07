@@ -1,12 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    View
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { AIStatusIndicator } from "../../components/AIStatusIndicator";
@@ -20,7 +20,7 @@ export default function AdminSettingsScreen() {
   const router = useRouter();
   const { resetTour, startTour } = useAdminTour();
 
-    const SettingRow = ({ icon, label, description, onPress, children }: any) => {
+  const SettingRow = ({ icon, label, description, onPress, children }: any) => {
     const row = (
       <View style={[styles.settingRow, { borderBottomColor: theme.border }]}>
         <View style={styles.settingMain}>
@@ -56,171 +56,154 @@ export default function AdminSettingsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={{ flex: 1, backgroundColor: theme.background }}>
-      
 
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <View>
-              <Text style={[styles.headerSub, { color: theme.primary }]}>
-                ADMIN_PANEL
-              </Text>
-              <Text style={[styles.headerTitle, { color: theme.text }]}>
-                SETTINGS
-              </Text>
+
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View>
+                <Text style={[styles.headerSub, { color: theme.primary }]}>
+                  ADMIN_PANEL
+                </Text>
+                <Text style={[styles.headerTitle, { color: theme.text }]}>
+                  SETTINGS
+                </Text>
+              </View>
+              <HelpTooltip
+                style={{ marginTop: 20 }}
+                title="Admin Settings"
+                content={[
+                  "Manage all admin settings from one place. Select a category to configure specific settings.",
+                  "Security: Manage PINs, auto-logout, and access controls",
+                  "Alerts & Categories: Add categories and Configure expiry alert levels and category alerts",
+                  "Store: Update business information and details",
+                  "Data: Manage profile, preferences, and data export"
+                ]}
+                icon="help-circle"
+                iconSize={18}
+                iconColor={theme.primary}
+              />
             </View>
-            <HelpTooltip
-              style={{marginTop: 20}}
-              title="Admin Settings"
-              content={[
-                "Manage all admin settings from one place. Select a category to configure specific settings.",
-                "Security: Manage PINs, auto-logout, and access controls",
-                "Alerts & Categories: Add categories and Configure expiry alert levels and category alerts",
-                "Store: Update business information and details",
-                "Data: Manage profile, preferences, and data export"
-              ]}
-              icon="help-circle"
-              iconSize={18}
-              iconColor={theme.primary}
-            />
           </View>
-        </View>
 
-        {/* SETTINGS CATEGORIES */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
-            SETTINGS CATEGORIES
+
+          {/* APPEARANCE SECTION */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+              APPEARANCE
+            </Text>
+            <SettingRow
+              icon="moon-outline"
+              label="Dark Mode"
+              description="Toggle light/dark theme"
+            >
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ true: theme.primary }}
+              />
+            </SettingRow>
+          </View>
+
+          {/* SETTINGS CATEGORIES */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+              SETTINGS CATEGORIES
+            </Text>
+
+            <SettingRow
+              icon="person-circle"
+              label="Profile"
+              description="Personal information and account details"
+              onPress={() => router.push('/admin/settings/profile')}
+            >
+              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+            </SettingRow>
+
+            <SettingRow
+              icon="shield-checkmark"
+              label="Security"
+              description="PIN management and access controls"
+              onPress={() => router.push('/admin/settings/security')}
+            >
+              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+            </SettingRow>
+
+            <SettingRow
+              icon="notifications"
+              label="Alerts & Categories"
+              description="Add categories and Configure expiry alert levels"
+              onPress={() => router.push('/admin/settings/alerts')}
+            >
+              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+            </SettingRow>
+
+            <SettingRow
+              icon="storefront"
+              label="Store"
+              description="Business information and details"
+              onPress={() => router.push('/admin/settings/store')}
+            >
+              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+            </SettingRow>
+
+            <SettingRow
+              icon="cloud-download"
+              label="Data"
+              description="Backup and data export"
+              onPress={() => router.push('/admin/settings/data')}
+            >
+              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+            </SettingRow>
+          </View>
+
+          {/* HELP & SUPPORT SECTION */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+              HELP & SUPPORT
+            </Text>
+
+            {/* AI Status Indicator */}
+            <AIStatusIndicator onPress={() => router.push("/ai-info" as any)} />
+
+            <SettingRow
+              icon="help-circle-outline"
+              label="Restart Admin Tour"
+              description="View admin onboarding tour again"
+              onPress={async () => {
+                try {
+                  resetTour();
+                  Toast.show({
+                    type: 'success',
+                    text1: 'Tour Reset',
+                    text2: 'Go to Admin Dashboard to see the tour again'
+                  });
+                  // Navigate to admin dashboard and start tour
+                  router.push('../admin');
+                  setTimeout(() => {
+                    startTour();
+                  }, 500);
+                } catch (error) {
+                  Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Could not reset tour'
+                  });
+                }
+              }}
+            >
+              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+            </SettingRow>
+          </View>
+
+          <View style={{ height: 10 }} />
+
+          <Text style={styles.versionText}>
+            Build v2.0.5 - Production Environment
           </Text>
-          
-          <SettingRow
-            icon="person-circle"
-            label="Profile"
-            description="Personal information and account details"
-            onPress={() => router.push('/admin/settings/profile')}
-          >
-            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-          </SettingRow>
 
-          <SettingRow
-            icon="shield-checkmark"
-            label="Security"
-            description="PIN management and access controls"
-            onPress={() => router.push('/admin/settings/security')}
-          >
-            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-          </SettingRow>
-          
-          <SettingRow
-            icon="notifications"
-            label="Alerts & Categories"
-            description="Add categories and Configure expiry alert levels"
-            onPress={() => router.push('/admin/settings/alerts')}
-          >
-            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-          </SettingRow>
-          
-          <SettingRow
-            icon="storefront"
-            label="Store"
-            description="Business information and details"
-            onPress={() => router.push('/admin/settings/store')}
-          >
-            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-          </SettingRow>
-          
-          <SettingRow
-            icon="cloud-download"
-            label="Data"
-            description="Backup and data export"
-            onPress={() => router.push('/admin/settings/data')}
-          >
-            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-          </SettingRow>
-        </View>
-
-        {/* APPEARANCE SECTION */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
-            APPEARANCE
-          </Text>
-          <SettingRow
-            icon="moon-outline"
-            label="Dark Mode"
-            description="Toggle light/dark theme"
-          >
-            <Switch
-              value={isDark}
-              onValueChange={toggleTheme}
-              trackColor={{ true: theme.primary }}
-            />
-          </SettingRow>
-        </View>
-
-        {/* HELP & SUPPORT SECTION */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
-            HELP & SUPPORT
-          </Text>
-          
-          {/* AI Status Indicator */}
-          <AIStatusIndicator onPress={() => router.push("/ai-info" as any)} />
-          
-          <SettingRow
-            icon="help-circle-outline"
-            label="Restart Admin Tour"
-            description="View admin onboarding tour again"
-            onPress={async () => {
-              try {
-                resetTour();
-                Toast.show({
-                  type: 'success',
-                  text1: 'Tour Reset',
-                  text2: 'Go to Admin Dashboard to see the tour again'
-                });
-                // Navigate to admin dashboard and start tour
-                router.push('../admin');
-                setTimeout(() => {
-                  startTour();
-                }, 500);
-              } catch (error) {
-                Toast.show({
-                  type: 'error',
-                  text1: 'Error',
-                  text2: 'Could not reset tour'
-                });
-              }
-            }}
-          >
-            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
-          </SettingRow>
-          
-
-        </View>
-
-        {/* DANGER ZONE */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: '#FF3B30' }]}>
-            DANGER ZONE
-          </Text>
-          <SettingRow
-            icon="trash-outline"
-            label="Delete Account"
-            description="Permanently delete your account, store, and all data"
-            onPress={() => router.push('/admin/settings/profile?showDeleteModal=true' as any)}
-            style={{ borderBottomWidth: 0 }}
-          >
-            <Ionicons name="chevron-forward" size={20} color="#FF3B30" />
-          </SettingRow>
-        </View>
-
-        <View style={{ height: 10 }} />
-
-        <Text style={styles.versionText}>
-          Build v2.0.5 - Production Environment
-        </Text>
-
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -261,7 +244,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#888",
     fontSize: 11,
-    marginBottom: 100,
+    marginBottom: 10,
     letterSpacing: 1,
     opacity: 0.5,
   },

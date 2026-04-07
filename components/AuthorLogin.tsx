@@ -28,9 +28,11 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
   const [secretKey, setSecretKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [inputError, setInputError] = useState(false);
 
   const handleLogin = async () => {
     if (!secretKey.trim()) {
+      setInputError(true);
       Toast.show({
         type: 'error',
         text1: 'Secret Key Required',
@@ -39,6 +41,7 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
       return;
     }
 
+    setInputError(false);
     setIsLoading(true);
 
     try {
@@ -86,14 +89,17 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
           
           if (status === 401) {
             errorMessage = serverError || 'Invalid secret key';
+            setInputError(true);
             // Don't log - this is expected for wrong password
           } else if (status === 403) {
             errorMessage = 'Access forbidden';
+            setInputError(true);
           } else if (status >= 500) {
             errorMessage = 'Server error - please try again later';
             console.error('Author login server error:', status);
           } else {
             errorMessage = serverError || 'Login failed';
+            setInputError(true);
           }
         } else if (error.code === 'ECONNABORTED') {
           errorMessage = 'Connection timeout - please check your internet';
@@ -101,9 +107,11 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
           errorMessage = 'Network error - please check your connection';
         } else if (error.message) {
           errorMessage = error.message;
+          setInputError(true);
         }
       } catch (parseError) {
         // Silently handle parsing errors
+        setInputError(true);
       }
       
       Toast.show({
@@ -118,7 +126,16 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
 
   const handleClose = () => {
     setSecretKey('');
+    setInputError(false);
+    setShowPassword(false);
     onClose();
+  };
+
+  const handleTextChange = (text: string) => {
+    setSecretKey(text);
+    if (inputError) {
+      setInputError(false);
+    }
   };
 
   return (
@@ -141,26 +158,37 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
                 styles.input,
                 {
                   color: theme.text,
-                  borderColor: theme.border,
+                  borderColor: inputError ? theme.notification : theme.border,
                   backgroundColor: theme.background,
+                  borderWidth: inputError ? 2 : 2,
                 },
               ]}
               placeholder="Secret Key"
               placeholderTextColor={theme.subtext}
               secureTextEntry={!showPassword}
               value={secretKey}
-              onChangeText={setSecretKey}
+              onChangeText={handleTextChange}
               autoFocus
               editable={!isLoading}
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="password"
+              returnKeyType="done"
+              onSubmitEditing={handleLogin}
+              blurOnSubmit={false}
             />
             <Pressable
               style={styles.eyeIcon}
               onPress={() => setShowPassword(!showPassword)}
+              disabled={isLoading}
+              accessible={true}
+              accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+              accessibilityRole="button"
             >
               <Ionicons
                 name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 size={22}
-                color={theme.subtext}
+                color={inputError ? theme.notification : theme.subtext}
               />
             </Pressable>
           </View>

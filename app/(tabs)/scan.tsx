@@ -1,6 +1,8 @@
 import AdminSecurityPINWarning from "@/components/AdminSecurityPINWarning";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import { useAuth } from "@/context/AuthContext";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -10,34 +12,53 @@ import * as Haptics from "expo-haptics";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    Animated,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { useTheme } from "../../context/ThemeContext";
 import { hasSecurityPIN } from "../../utils/securityPINCheck";
 
+const { height } = Dimensions.get("window");
+
+interface CartItem {
+  _id: string;
+  name: string;
+  barcode: string;
+  imageUrl?: string;
+  totalQuantity: number;
+  quantity: number; // quantity in cart
+}
+
 export default function ScanScreen() {
   console.log('🎬 [SCAN] Component mounting...');
   const router = useRouter();
-  const { initialTab } = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const { initialTab } = params;
   const { theme } = useTheme();
+  const { role } = useAuth();
 
-  // Check feature access for scanning
-  const scanAccess = useFeatureAccess('scanBarcodes');
+  // Check feature access for scanning and other permissions
+  const scanAccess = useFeatureAccess('scanProducts');
+  const registerAccess = useFeatureAccess('registerProducts');
+  const addAccess = useFeatureAccess('addProducts');
+  const salesAccess = useFeatureAccess('processSales');
 
   // Camera permissions
   const [permission, requestPermission] = useCameraPermissions();
   console.log('📷 [SCAN] Camera permission state:', permission?.granted);
 
   // Tab State
-  const [tab, setTab] = useState<"lookup" | "registry">(
+  const [tab, setTab] = useState<"lookup" | "registry" | "sales">(
     (initialTab as any) || "registry"
   );
 
@@ -52,6 +73,14 @@ export default function ScanScreen() {
   const [adminPin, setAdminPin] = useState("");
   const [rapidScanEnabled, setRapidScanEnabled] = useState(false);
 
+  // Permission modal states
+  const [showRegisterPermissionModal, setShowRegisterPermissionModal] = useState(false);
+  const [showAddPermissionModal, setShowAddPermissionModal] = useState(false);
+
+  // Cart State (for sales mode)
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [showCartModal, setShowCartModal] = useState(false);
+
   const [securityPINWarningVisible, setSecurityPINWarningVisible] = useState(false);
   const [checkingSecurityPIN, setCheckingSecurityPIN] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
@@ -59,6 +88,10 @@ export default function ScanScreen() {
 
   // CRITICAL: Key to force camera remount when screen focuses
   const [cameraKey, setCameraKey] = useState(0);
+
+  // Cart Icon Animation
+  const cartBounceAnim = useRef(new Animated.Value(1)).current;
+  const cartShakeAnim = useRef(new Animated.Value(0)).current;
 
   // Audio Players
   const BatchPlayer = useAudioPlayer(require("../../assets/sounds/beep.mp3"));
@@ -153,6 +186,12 @@ export default function ScanScreen() {
         setAdminPin("");
         setTorch(false);
 
+        // Clear cart if clearCart param is set
+        if (params.clearCart === 'true') {
+          console.log('🛒 [SCAN] Clearing cart...');
+          setCart([]);
+        }
+
         // Force camera remount by changing key
         setCameraKey((prev) => {
           const newKey = prev + 1;
@@ -169,7 +208,7 @@ export default function ScanScreen() {
         // Cleanup on unmount
         setTorch(false);
       };
-    }, [])
+    }, [params.clearCart])
   );
 
   // Additional safety: Reset when tab changes
@@ -178,6 +217,47 @@ export default function ScanScreen() {
     setScanned(false);
     setLoading(false);
   }, [tab]);
+
+  // Trigger cart bounce animation
+  const animateCartIcon = () => {
+    // Bounce effect
+    Animated.sequence([
+      Animated.timing(cartBounceAnim, {
+        toValue: 1.3,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cartBounceAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Shake effect
+    Animated.sequence([
+      Animated.timing(cartShakeAnim, {
+        toValue: 10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cartShakeAnim, {
+        toValue: -10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cartShakeAnim, {
+        toValue: 10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cartShakeAnim, {
+        toValue: 0,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     console.log('📸 [SCAN] Barcode scanned:', data);
@@ -262,9 +342,149 @@ export default function ScanScreen() {
         return;
       }
 
+      // SALES MODE: Add to cart
+      if (tab === "sales") {
+        console.log('💰 [SCAN] SALES mode processing...');
+        
+        // Check if user has permission to process sales
+        if (!salesAccess.isAllowed && role !== 'admin') {
+          console.log('❌ [SCAN] No permission to process sales');
+          RegPlayer.play();
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          Toast.show({
+            type: "error",
+            text1: "Permission Denied",
+            text2: "You don't have permission to process sales",
+            visibilityTime: 3000,
+          });
+          setScanned(false);
+          setLoading(false);
+          return;
+        }
+        
+        if (response.data.found) {
+          // First, get the product from local inventory to get accurate stock info
+          try {
+            const localProductResponse = await axios.get(
+              `${process.env.EXPO_PUBLIC_API_URL}/products/barcode/${data}`
+            );
+            
+            if (localProductResponse.data.success && localProductResponse.data.product) {
+              const product = localProductResponse.data.product;
+
+              // Check if product has stock
+              if (product.totalQuantity === 0) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                Toast.show({
+                  type: "error",
+                  text1: "Out of Stock",
+                  text2: `${product.name} is not available`,
+                });
+                setScanned(false);
+                return;
+              }
+
+              // Check if already in cart
+              const existingIndex = cart.findIndex((item) => item._id === product._id);
+
+              if (existingIndex !== -1) {
+                // Already in cart - increment quantity
+                const updatedCart = [...cart];
+                const currentQty = updatedCart[existingIndex].quantity;
+
+                if (currentQty < product.totalQuantity) {
+                  updatedCart[existingIndex].quantity += 1;
+                  setCart(updatedCart);
+                  
+                  BatchPlayer.play();
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  animateCartIcon();
+                  
+                  Toast.show({
+                    type: "success",
+                    text1: "Quantity Updated",
+                    text2: `${product.name} x${updatedCart[existingIndex].quantity}`,
+                  });
+                } else {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                  Toast.show({
+                    type: "info",
+                    text1: "Maximum Quantity",
+                    text2: `Only ${product.totalQuantity} units available`,
+                  });
+                }
+              } else {
+                // Add new item to cart
+                const newItem: CartItem = {
+                  _id: product._id,
+                  name: product.name,
+                  barcode: product.barcode,
+                  imageUrl: product.imageUrl,
+                  totalQuantity: product.totalQuantity,
+                  quantity: 1,
+                };
+
+                setCart([...cart, newItem]);
+                
+                BatchPlayer.play();
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                animateCartIcon();
+                
+                Toast.show({
+                  type: "success",
+                  text1: "Added to Cart",
+                  text2: product.name,
+                });
+              }
+
+              setScanned(false);
+            } else {
+              // Product in registry but not in local stock
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              Toast.show({
+                type: "info",
+                text1: "Not In Stock",
+                text2: `${response.data.productData.name} exists in registry but has no inventory`,
+              });
+              setScanned(false);
+            }
+          } catch (localError) {
+            console.error("Local product lookup error for sales:", localError);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            Toast.show({
+              type: "error",
+              text1: "Not In Stock",
+              text2: "Product exists in registry but has no inventory",
+            });
+            setScanned(false);
+          }
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          Toast.show({
+            type: "error",
+            text1: "Not Found",
+            text2: "Product not in inventory",
+          });
+          setScanned(false);
+        }
+        return;
+      }
+
       // REGISTRY MODE: Register or Add Batch
       if (response.data.found) {
         console.log('✅ [SCAN] REGISTRY mode - product exists, preparing batch add...');
+        
+        // Check if user has permission to add products
+        if (!addAccess.isAllowed && role !== 'admin') {
+          console.log('❌ [SCAN] No permission to add products');
+          RegPlayer.play();
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          setShowAddPermissionModal(true);
+          setScanned(false);
+          setLoading(false);
+          return;
+        }
+        
         // Product exists in registry - add batch
         BatchPlayer.play();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -303,6 +523,18 @@ export default function ScanScreen() {
       } else {
         // Product NOT in registry - need to register
         console.log('⚠️ [SCAN] REGISTRY mode - new product, needs registration...');
+        
+        // Check if user has permission to register products
+        if (!registerAccess.isAllowed && role !== 'admin') {
+          console.log('❌ [SCAN] No permission to register products');
+          RegPlayer.play();
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          setShowRegisterPermissionModal(true);
+          setScanned(false);
+          setLoading(false);
+          return;
+        }
+        
         RegPlayer.play();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         setIsNewProduct(true);
@@ -414,6 +646,57 @@ export default function ScanScreen() {
     setScanned(false);
   };
 
+  // Cart management functions
+  const updateCartQuantity = (productId: string, delta: number) => {
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        if (item._id === productId) {
+          const newQty = Math.max(1, item.quantity + delta);
+          const maxStock = item.totalQuantity || 999; // Fallback if totalQuantity is missing
+          return {
+            ...item,
+            quantity: Math.min(newQty, maxStock),
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart((prevCart) => prevCart.filter((item) => item._id !== productId));
+    Toast.show({
+      type: "info",
+      text1: "Item Removed",
+      text2: "Product removed from cart",
+    });
+  };
+
+  const getTotalItems = () => {
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  };
+
+  const handleCartDone = () => {
+    if (cart.length === 0) {
+      Toast.show({
+        type: "info",
+        text1: "Empty Cart",
+        text2: "Please scan items to add to cart",
+      });
+      return;
+    }
+
+    // Navigate to admin sales page with cart data
+    setShowCartModal(false);
+    router.push({
+      pathname: "/admin/sales",
+      params: {
+        cartData: JSON.stringify(cart),
+        tab: "checkout",
+      },
+    });
+  };
+
   const handleSecurityPINWarningClose = () => {
     setSecurityPINWarningVisible(false);
   };
@@ -456,35 +739,41 @@ export default function ScanScreen() {
     );
   }
 
-  const tabColor = tab === "lookup" ? theme.primary : "#00FF00";
+  const tabColor = tab === "lookup" ? theme.primary : tab === "sales" ? "#00D1FF" : "#00FF00";
 
   console.log('🎨 [SCAN] Rendering scanner - cameraKey:', cameraKey, 'tab:', tab, 'loading:', loading, 'isMounted:', isMounted);
 
-  // Block access if in view-only mode
-  if (isViewOnly) {
+  // If scan permission is denied, show restricted access
+  if (!scanAccess.isAllowed) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <View style={styles.permissionContainer}>
-          <View style={[styles.viewOnlyBlock, { backgroundColor: '#FF9500' + '15', borderColor: '#FF9500' }]}>
-            <Ionicons name="eye-off" size={64} color="#FF9500" />
-            <Text style={[styles.viewOnlyTitle, { color: theme.text }]}>
-              Scanner Disabled
-            </Text>
-            <Text style={[styles.viewOnlyText, { color: theme.subtext }]}>
-              You are in view-only mode. Scanning is not available.
-            </Text>
-            <Pressable
-              style={[styles.goBackBtn, { backgroundColor: theme.primary }]}
-              onPress={() => router.back()}
-            >
-              <Ionicons name="arrow-back" size={20} color="#FFF" />
-              <Text style={styles.goBackText}>Go Back</Text>
-            </Pressable>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={theme.text} />
+          </Pressable>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Scanner</Text>
+          <View style={{ width: 40 }} />
+        </View>
+        
+        <View style={styles.restrictedContainer}>
+          <View style={[styles.restrictedIcon, { backgroundColor: '#FF3B30' + '20' }]}>
+            <Ionicons name="scan-outline" size={48} color="#FF3B30" />
           </View>
+          <Text style={[styles.restrictedTitle, { color: theme.text }]}>
+            Scanner Access Restricted
+          </Text>
+          <Text style={[styles.restrictedMessage, { color: theme.subtext }]}>
+            {scanAccess.reason || 'You do not have permission to access the scanner'}
+          </Text>
+          <Text style={[styles.restrictedNote, { color: theme.subtext }]}>
+            Contact your administrator to enable scanner permissions.
+          </Text>
         </View>
       </View>
     );
   }
+
+
 
   // CRITICAL: Don't render camera until component is fully mounted and permission is granted
   if (!isMounted || !permission?.granted) {
@@ -507,7 +796,7 @@ export default function ScanScreen() {
     return (
       <ErrorBoundary>
         <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
-          <Ionicons name="camera-off" size={64} color={theme.subtext} />
+          <Ionicons name="camera-outline" size={64} color={theme.subtext} />
           <Text style={[styles.permissionText, { color: theme.text, marginTop: 20, textAlign: 'center' }]}>
             Camera failed to initialize
           </Text>
@@ -582,6 +871,30 @@ export default function ScanScreen() {
                 LOOKUP
               </Text>
             </Pressable>
+            
+            {/* Only show sales tab if user has permission */}
+            {(salesAccess.isAllowed || role === 'admin') && (
+              <Pressable
+                onPress={() => {
+                  setTab("sales");
+                  setScanned(false);
+                }}
+                style={[
+                  styles.tab,
+                  tab === "sales" && { backgroundColor: "#00D1FF" },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    tab === "sales" && { color: "#000" },
+                  ]}
+                >
+                  SALES
+                </Text>
+              </Pressable>
+            )}
+            
             <Pressable
               onPress={() => {
                 setTab("registry");
@@ -665,11 +978,35 @@ export default function ScanScreen() {
           <Text style={styles.hintText}>
             {tab === "lookup" ?
               "Scan to find a product"
+            : tab === "sales" ?
+              "Scan items to add to cart"
             : rapidScanEnabled ? 
               "Rapid mode: Instant batch entry"
             : "Scan to Register or Add Batch"}
           </Text>
           <View style={styles.bottomActions}>
+            {tab === "sales" && (
+              <Animated.View
+                style={{
+                  transform: [
+                    { scale: cartBounceAnim },
+                    { translateX: cartShakeAnim },
+                  ],
+                }}
+              >
+                <Pressable
+                  style={[styles.cartButton, { backgroundColor: theme.primary }]}
+                  onPress={() => setShowCartModal(true)}
+                >
+                  <Ionicons name="cart" size={24} color="#FFF" />
+                  {cart.length > 0 && (
+                    <View style={styles.cartBadge}>
+                      <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
+                    </View>
+                  )}
+                </Pressable>
+              </Animated.View>
+            )}
             {tab === "registry" && (
               <Pressable
                 style={styles.manualBtn}
@@ -699,6 +1036,7 @@ export default function ScanScreen() {
               title="Scanner Modes"
               content={[
                 "LOOKUP MODE: Quickly find products already in your inventory. Scan to view product details and stock levels.",
+                "SALES MODE: Process sales transactions. Scan products to add them to the cart, then complete the sale.",
                 "REGISTRY MODE: Add new products or restock existing ones. Scan to register new items or add batches to existing products."
               ]}
               icon="help-circle"
@@ -822,6 +1160,186 @@ export default function ScanScreen() {
         onClose={handleSecurityPINWarningClose}
         onNavigateToSettings={handleNavigateToSettings}
       />
+
+      {/* CART MODAL */}
+      <Modal visible={showCartModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.cartModalContent, { backgroundColor: theme.surface }]}>
+            {/* Modal Header */}
+            <View style={styles.cartModalHeader}>
+              <View>
+                <Text style={[styles.cartModalTitle, { color: theme.text }]}>
+                  Shopping Cart
+                </Text>
+                <Text style={[styles.cartModalSubtitle, { color: theme.subtext }]}>
+                  {cart.length} {cart.length === 1 ? "item" : "items"} • {getTotalItems()} total units
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => setShowCartModal(false)}
+                style={[styles.cartCloseBtn, { backgroundColor: theme.background }]}
+              >
+                <Ionicons name="close" size={24} color={theme.text} />
+              </Pressable>
+            </View>
+
+            {/* Cart Items List */}
+            {cart.length === 0 ? (
+              <View style={styles.emptyCart}>
+                <Ionicons name="cart-outline" size={80} color={theme.subtext + "40"} />
+                <Text style={[styles.emptyCartText, { color: theme.subtext }]}>
+                  Cart is empty
+                </Text>
+                <Text style={[styles.emptyCartHint, { color: theme.subtext }]}>
+                  Scan products to add them
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={cart}
+                keyExtractor={(item: CartItem) => item._id}
+                style={styles.cartList}
+                contentContainerStyle={styles.cartListContent}
+                renderItem={({ item }: { item: CartItem }) => (
+                  <View
+                    style={[
+                      styles.cartItem,
+                      { backgroundColor: theme.background, borderColor: theme.border },
+                    ]}
+                  >
+                    {/* Product Image */}
+                    <View style={[styles.cartItemImage, { backgroundColor: theme.surface }]}>
+                      {item.imageUrl && item.imageUrl !== "cube" ? (
+                        <Image
+                          source={{ uri: item.imageUrl }}
+                          style={styles.cartProductImage}
+                        />
+                      ) : (
+                        <Ionicons name="cube-outline" size={32} color={theme.subtext} />
+                      )}
+                    </View>
+
+                    {/* Product Info */}
+                    <View style={styles.cartItemInfo}>
+                      <Text style={[styles.cartItemName, { color: theme.text }]} numberOfLines={1}>
+                        {item.name}
+                      </Text>
+                      <Text style={[styles.cartItemMeta, { color: theme.subtext }]}>
+                        Stock: {item.totalQuantity} units
+                      </Text>
+                    </View>
+
+                    {/* Quantity Controls */}
+                    <View style={styles.cartQtyControls}>
+                      <Pressable
+                        style={[
+                          styles.cartQtyBtn, 
+                          { 
+                            backgroundColor: theme.surface,
+                            borderWidth: 1,
+                            borderColor: theme.border,
+                          }
+                        ]}
+                        onPress={() => updateCartQuantity(item._id, -1)}
+                      >
+                        <Ionicons name="remove" size={16} color={theme.text} />
+                      </Pressable>
+                      <Text style={[styles.cartQtyText, { color: theme.text }]}>
+                        {item.quantity}
+                      </Text>
+                      <Pressable
+                        style={[
+                          styles.cartQtyBtn, 
+                          { 
+                            backgroundColor: theme.surface,
+                            borderWidth: 1,
+                            borderColor: theme.border,
+                          }
+                        ]}
+                        onPress={() => updateCartQuantity(item._id, 1)}
+                      >
+                        <Ionicons name="add" size={16} color={theme.text} />
+                      </Pressable>
+                    </View>
+
+                    {/* Remove Button */}
+                    <Pressable
+                      style={styles.cartRemoveBtn}
+                      onPress={() => removeFromCart(item._id)}
+                    >
+                      <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+                    </Pressable>
+                  </View>
+                )}
+              />
+            )}
+
+            {/* Done Button */}
+            {cart.length > 0 && (
+              <Pressable
+                style={[styles.cartDoneButton, { backgroundColor: theme.primary }]}
+                onPress={handleCartDone}
+              >
+                <Ionicons name="checkmark-circle" size={24} color="#FFF" />
+                <Text style={styles.cartDoneButtonText}>
+                  Proceed to Checkout ({getTotalItems()} items)
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+      </Modal>
+
+      {/* REGISTER PERMISSION MODAL */}
+      <Modal visible={showRegisterPermissionModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+            <View style={[styles.iconBox, { backgroundColor: '#FF3B30' + '15' }]}>
+              <Ionicons name="lock-closed" size={32} color="#FF3B30" />
+            </View>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>
+              Permission Denied
+            </Text>
+            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+              You do not have permission to register products. Contact your administrator to enable this permission.
+            </Text>
+            <View style={styles.modalActions}>
+              <Pressable
+                style={[styles.modalBtn, { backgroundColor: theme.primary }]}
+                onPress={() => setShowRegisterPermissionModal(false)}
+              >
+                <Text style={{ color: '#FFF', fontWeight: '700' }}>OK</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ADD PERMISSION MODAL */}
+      <Modal visible={showAddPermissionModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+            <View style={[styles.iconBox, { backgroundColor: '#FF3B30' + '15' }]}>
+              <Ionicons name="lock-closed" size={32} color="#FF3B30" />
+            </View>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>
+              Permission Denied
+            </Text>
+            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+              You do not have permission to add inventory. Contact your administrator to enable this permission.
+            </Text>
+            <View style={styles.modalActions}>
+              <Pressable
+                style={[styles.modalBtn, { backgroundColor: theme.primary }]}
+                onPress={() => setShowAddPermissionModal(false)}
+              >
+                <Text style={{ color: '#FFF', fontWeight: '700' }}>OK</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </View>
     </ErrorBoundary>
   );
@@ -1029,6 +1547,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  restrictedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  restrictedIcon: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  restrictedTitle: {
+    fontSize: 20,
+    fontWeight: '900',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  restrictedMessage: {
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  restrictedNote: {
+    fontSize: 13,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
   viewOnlyBlock: {
     padding: 40,
     borderRadius: 24,
@@ -1060,5 +1610,201 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
+  },
+
+  // Cart Button Styles
+  cartButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    position: "relative",
+    marginBottom: 10,
+  },
+  cartBadge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: "#FF3B30",
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#FFF",
+  },
+  cartBadgeText: {
+    color: "#FFF",
+    fontSize: 11,
+    fontWeight: "900",
+  },
+
+  // Cart Modal Styles
+  cartModalContent: {
+    height: height * 0.75,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+  },
+  cartModalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 20,
+  },
+  cartModalTitle: {
+    fontSize: 24,
+    fontWeight: "900",
+  },
+  cartModalSubtitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    marginTop: 4,
+  },
+  cartCloseBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // Empty Cart
+  emptyCart: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyCartText: {
+    fontSize: 18,
+    fontWeight: "800",
+    marginTop: 20,
+  },
+  emptyCartHint: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 8,
+  },
+
+  // Cart List
+  cartList: {
+    flex: 1,
+  },
+  cartListContent: {
+    paddingBottom: 20,
+  },
+  cartItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    borderRadius: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+  },
+  cartItemImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  cartProductImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 12,
+  },
+  cartItemInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  cartItemName: {
+    fontSize: 15,
+    fontWeight: "800",
+    marginBottom: 4,
+  },
+  cartItemMeta: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  cartQtyControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  cartQtyBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cartQtyText: {
+    fontSize: 16,
+    fontWeight: "900",
+    minWidth: 30,
+    textAlign: "center",
+  },
+  cartRemoveBtn: {
+    padding: 8,
+    marginLeft: 8,
+  },
+
+  // Done Button
+  cartDoneButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 16,
+    borderRadius: 16,
+    marginTop: 12,
+  },
+  cartDoneButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "900",
+  },
+
+  // Missing styles for restricted access and modals
+  modalDesc: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginVertical: 15,
+    lineHeight: 20,
+  },
+  iconBox: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '900',
   },
 });

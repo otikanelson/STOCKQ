@@ -46,7 +46,19 @@ export default function AdminLayout() {
         Toast.show({
           type: "error",
           text1: "Access Denied",
-          text2: "Staff cannot access admin dashboard. Ask admin to use impersonation.",
+          text2: "Staff cannot access admin dashboard.",
+          visibilityTime: 4000,
+        });
+        router.replace("/(tabs)");
+        return;
+      }
+
+      // SECURITY: Only allow admin role
+      if (userRole !== 'admin') {
+        Toast.show({
+          type: "error",
+          text1: "Access Denied",
+          text2: "Admin access required.",
           visibilityTime: 4000,
         });
         router.replace("/(tabs)");
@@ -195,57 +207,54 @@ export default function AdminLayout() {
     );
   }
 
-  if (!isAuthenticated && hasPin) {
-    return (
-      <Modal visible={showPinModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
-            <View style={[styles.iconBox, { backgroundColor: theme.primary + "15" }]}>
-              <Ionicons name="shield-checkmark" size={40} color={theme.primary} />
-            </View>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
-              Admin Access Required
-            </Text>
-            <Text style={[styles.modalSubtext, { color: theme.subtext }]}>
-              Enter the admin Security PIN to continue
-            </Text>
-            <TextInput
-              style={[
-                styles.pinInput,
-                { color: theme.text, borderColor: theme.border, backgroundColor: theme.background },
-              ]}
-              secureTextEntry
-              keyboardType="numeric"
-              maxLength={4}
-              value={pin}
-              onChangeText={setPin}
-              placeholder="Admin Security PIN"
-              placeholderTextColor={theme.subtext}
-              autoFocus
-            />
-            <View style={styles.modalActions}>
-              <Pressable
-                style={[styles.modalBtn, { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border }]}
-                onPress={handleCancel}
-              >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.modalBtn, { backgroundColor: theme.primary }]}
-                onPress={handlePinSubmit}
-              >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Verify PIN</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-
   return (
     <AdminTourProvider>
       <View style={{ flex: 1, backgroundColor: theme.background }}>
+        {/* PIN Auth Modal - shown when security PIN is required */}
+        <Modal visible={showPinModal && !isAuthenticated && hasPin} transparent animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+              <View style={[styles.iconBox, { backgroundColor: theme.primary + "15" }]}>
+                <Ionicons name="shield-checkmark" size={40} color={theme.primary} />
+              </View>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                Admin Access Required
+              </Text>
+              <Text style={[styles.modalSubtext, { color: theme.subtext }]}>
+                Enter the admin Security PIN to continue
+              </Text>
+              <TextInput
+                style={[
+                  styles.pinInput,
+                  { color: theme.text, borderColor: theme.border, backgroundColor: theme.background },
+                ]}
+                secureTextEntry
+                keyboardType="numeric"
+                maxLength={4}
+                value={pin}
+                onChangeText={setPin}
+                placeholder="Admin Security PIN"
+                placeholderTextColor={theme.subtext}
+                autoFocus
+              />
+              <View style={styles.modalActions}>
+                <Pressable
+                  style={[styles.modalBtn, { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border }]}
+                  onPress={handleCancel}
+                >
+                  <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.modalBtn, { backgroundColor: theme.primary }]}
+                  onPress={handlePinSubmit}
+                >
+                  <Text style={{ color: "#FFF", fontWeight: "700" }}>Verify PIN</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
         <Tabs
           screenOptions={{
             headerShown: false,
@@ -300,15 +309,28 @@ export default function AdminLayout() {
         <Tabs.Screen
           name="scan"
           options={{
-            title: "Scan",
             tabBarStyle: { display: "none" },
+            title: "Scan",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? "scan" : "scan-outline"}
-                size={22}
-                color={color}
-              />
+              <View style={{
+                backgroundColor: theme.primary,
+                borderRadius: 18,
+                padding: 10,
+                marginBottom: 4,
+                shadowColor: theme.primary,
+                shadowOffset: { width: 4, height: 4 },
+                shadowOpacity: 0.4,
+                shadowRadius: 8,
+                elevation: 6,
+                width: 36,
+                height: 36,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <Ionicons name="scan" size={18} color="#FFF" />
+              </View>
             ),
+            tabBarLabel: () => null,
           }}
         />
 
@@ -383,6 +405,14 @@ export default function AdminLayout() {
         />
         <Tabs.Screen
           name="settings/data"
+          options={{
+            href: null,
+          }}
+        />
+        
+        {/* Staff management pages hidden from Tab Bar */}
+        <Tabs.Screen
+          name="staff/[id]/permissions"
           options={{
             href: null,
           }}

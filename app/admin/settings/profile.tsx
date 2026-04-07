@@ -4,15 +4,14 @@ import axios from 'axios';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    View
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { useAuth } from '../../../context/AuthContext';
@@ -27,20 +26,16 @@ interface StaffMember {
   isActive: boolean;
   createdAt: string;
   permissions?: {
-    viewInventory?: boolean;
-    addProducts?: boolean;
-    editProducts?: boolean;
-    deleteProducts?: boolean;
-    processSales?: boolean;
-    scanBarcodes?: boolean;
-    viewAnalytics?: boolean;
-    exportData?: boolean;
-    manageCategories?: boolean;
+    viewProducts?: boolean;      // Default: true, compulsory
+    scanProducts?: boolean;      // Default: true
+    registerProducts?: boolean;  // Default: true
+    addProducts?: boolean;       // Default: true
+    processSales?: boolean;      // Default: true
   };
 }
 
 export default function AdminProfileScreen() {
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const router = useRouter();
   const { user, role, logout } = useAuth();
 
@@ -59,21 +54,9 @@ export default function AdminProfileScreen() {
   const [staffToDelete, setStaffToDelete] = useState<StaffMember | null>(null);
   const [deletingStaff, setDeletingStaff] = useState(false);
   
-  // Staff edit permissions state
-  const [showEditPermissionsModal, setShowEditPermissionsModal] = useState(false);
-  const [staffToEdit, setStaffToEdit] = useState<StaffMember | null>(null);
-  const [editPermissions, setEditPermissions] = useState({
-    viewInventory: true,
-    addProducts: true,
-    editProducts: true,
-    deleteProducts: false,
-    processSales: true,
-    scanBarcodes: true,
-    viewAnalytics: false,
-    exportData: false,
-    manageCategories: false,
-  });
-  const [savingPermissions, setSavingPermissions] = useState(false);
+  // Staff monitoring state
+  const [showStaffMonitoringModal, setShowStaffMonitoringModal] = useState(false);
+  const [staffToMonitor, setStaffToMonitor] = useState<StaffMember | null>(null);
 
   useEffect(() => {
     if (role === 'admin') {
@@ -110,50 +93,9 @@ export default function AdminProfileScreen() {
     setShowDeleteStaffModal(true);
   };
 
-  const handleEditPermissions = (staff: StaffMember) => {
-    setStaffToEdit(staff);
-    setEditPermissions(staff.permissions || {
-      viewInventory: true,
-      addProducts: true,
-      editProducts: true,
-      deleteProducts: false,
-      processSales: true,
-      scanBarcodes: true,
-      viewAnalytics: false,
-      exportData: false,
-      manageCategories: false,
-    });
-    setShowEditPermissionsModal(true);
-  };
-
-  const toggleEditPermission = (key: keyof typeof editPermissions) => {
-    setEditPermissions(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const savePermissions = async () => {
-    if (!staffToEdit) return;
-
-    setSavingPermissions(true);
-    try {
-      const response = await axios.patch(
-        `${process.env.EXPO_PUBLIC_API_URL}/auth/staff/${staffToEdit._id}/permissions`,
-        { permissions: editPermissions }
-      );
-
-      if (response.data.success) {
-        showSuccessToast("Permissions Updated", `${staffToEdit.name}'s permissions have been updated`);
-        await fetchStaffMembers();
-        setShowEditPermissionsModal(false);
-        setStaffToEdit(null);
-      } else {
-        throw new Error(response.data.error || 'Failed to update permissions');
-      }
-    } catch (error: any) {
-      console.error('Error updating permissions:', error);
-      showErrorToast(error, "Update Failed");
-    } finally {
-      setSavingPermissions(false);
-    }
+  const handleMonitorStaff = (staff: StaffMember) => {
+    setStaffToMonitor(staff);
+    setShowStaffMonitoringModal(true);
   };
 
   const confirmDeleteStaff = async () => {
@@ -181,58 +123,6 @@ export default function AdminProfileScreen() {
       showErrorToast(error, "Delete Failed");
     } finally {
       setDeletingStaff(false);
-    }
-  };
-
-  const handleImpersonateStaff = async (staff: StaffMember) => {
-    try {
-      console.log('🎭 Impersonating staff:', staff.name);
-      
-      // Store admin session before impersonating
-      const adminUserId = await AsyncStorage.getItem('auth_user_id');
-      const adminUserName = await AsyncStorage.getItem('auth_user_name');
-      const adminStoreId = await AsyncStorage.getItem('auth_store_id');
-      const adminStoreName = await AsyncStorage.getItem('auth_store_name');
-      const adminSessionToken = await AsyncStorage.getItem('auth_session_token');
-      
-      const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/auth/staff/${staff._id}/impersonate`
-      );
-
-      if (response.data.success) {
-        const { user: staffUser, sessionToken } = response.data.data;
-        
-        // Store admin session for later restoration
-        await AsyncStorage.multiSet([
-          ['impersonation_active', 'true'],
-          ['impersonation_view_only', 'true'], // SET VIEW-ONLY FLAG
-          ['impersonation_admin_id', adminUserId || ''],
-          ['impersonation_admin_name', adminUserName || ''],
-          ['impersonation_admin_store_id', adminStoreId || ''],
-          ['impersonation_admin_store_name', adminStoreName || ''],
-          ['impersonation_admin_token', adminSessionToken || ''],
-        ]);
-        
-        // Save the new staff session
-        await AsyncStorage.multiSet([
-          ['auth_session_token', sessionToken],
-          ['auth_user_role', staffUser.role],
-          ['auth_user_id', staffUser.id],
-          ['auth_user_name', staffUser.name],
-          ['auth_store_id', staffUser.storeId || ''],
-          ['auth_store_name', staffUser.storeName || ''],
-        ]);
-        
-        showSuccessToast("View-Only Mode", `Now viewing as ${staff.name} (read-only)`);
-        
-        // Navigate to staff dashboard (tabs)
-        router.replace('/(tabs)');
-      } else {
-        throw new Error(response.data.error || 'Failed to impersonate staff');
-      }
-    } catch (error: any) {
-      console.error('Error impersonating staff:', error);
-      showErrorToast(error, "Impersonation Failed");
     }
   };
 
@@ -290,28 +180,6 @@ export default function AdminProfileScreen() {
         text1: 'Update Failed',
         text2: 'Could not update PIN',
       });
-    }
-  };
-
-  const getRoleDisplay = () => {
-    switch (role) {
-      case 'admin':
-        return 'Administrator';
-      case 'staff':
-        return 'Staff Member';
-      default:
-        return 'User';
-    }
-  };
-
-  const getRoleColor = () => {
-    switch (role) {
-      case 'admin':
-        return '#FF3B30';
-      case 'staff':
-        return '#007AFF';
-      default:
-        return theme.primary;
     }
   };
 
@@ -390,17 +258,17 @@ export default function AdminProfileScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={{ flex: 1, backgroundColor: theme.background }}>
-      
+        <View style={{ flex: 1, backgroundColor: theme.background }}>
+        
 
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable onPress={() => router.push('/admin/settings')} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={theme.text} />
-          </Pressable>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>Profile</Text>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Pressable onPress={() => router.push('/admin/settings')} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color={theme.text} />
+            </Pressable>
+            <Text style={[styles.headerTitle, { color: theme.text }]}>Profile</Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -501,20 +369,33 @@ export default function AdminProfileScreen() {
             </View>
           ) : staffMembers.length > 0 ? (
             staffMembers.map((staff) => (
-              <Pressable
-                key={staff._id}
-                onPress={() => handleImpersonateStaff(staff)}
-                style={[styles.staffCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
-              >
-                <View style={[styles.staffAvatar, { backgroundColor: '#007AFF' + '20' }]}>
-                  <Ionicons name="person" size={20} color="#007AFF" />
-                </View>
-                
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.staffName, { color: theme.text }]}>{staff.name}</Text>
-                  <View style={styles.staffMeta}>
-                    <View style={[styles.staffRoleBadge, { backgroundColor: '#007AFF' + '15' }]}>
-                      <Text style={[styles.staffRoleText, { color: '#007AFF' }]}>Staff</Text>
+              <View key={staff._id} style={[styles.staffCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                <View style={styles.staffMainInfo}>
+                  <View style={[styles.staffAvatar, { backgroundColor: '#007AFF' + '20' }]}>
+                    <Ionicons name="person" size={24} color="#007AFF" />
+                  </View>
+                  
+                  <View style={styles.staffDetails}>
+                    <Text style={[styles.staffName, { color: theme.text }]}>{staff.name}</Text>
+                    <View style={styles.staffMetaRow}>
+                      <View style={[styles.staffRoleBadge, { backgroundColor: '#007AFF' + '15' }]}>
+                        <Text style={[styles.staffRoleText, { color: '#007AFF' }]}>Staff Member</Text>
+                      </View>
+                      <View style={[
+                        styles.staffStatusBadge, 
+                        { backgroundColor: staff.isActive ? '#34C759' + '15' : '#FF3B30' + '15' }
+                      ]}>
+                        <View style={[
+                          styles.statusDot, 
+                          { backgroundColor: staff.isActive ? '#34C759' : '#FF3B30' }
+                        ]} />
+                        <Text style={[
+                          styles.staffStatusText, 
+                          { color: staff.isActive ? '#34C759' : '#FF3B30' }
+                        ]}>
+                          {staff.isActive ? 'Active' : 'Inactive'}
+                        </Text>
+                      </View>
                     </View>
                     {staff.lastLogin && (
                       <Text style={[styles.staffLastLogin, { color: theme.subtext }]}>
@@ -522,33 +403,34 @@ export default function AdminProfileScreen() {
                       </Text>
                     )}
                   </View>
-                  <Text style={[styles.tapToLogin, { color: theme.primary }]}>
-                    Tap to login as {staff.name}
-                  </Text>
                 </View>
 
                 <View style={styles.staffActions}>
-                  <View style={[styles.staffStatusDot, { backgroundColor: staff.isActive ? '#34C759' : '#FF3B30' }]} />
                   <Pressable
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      handleEditPermissions(staff);
-                    }}
-                    style={[styles.editStaffBtn, { backgroundColor: theme.primary + '15' }]}
+                    onPress={() => router.push(`/admin/staff/${staff._id}/permissions` as any)}
+                    style={[styles.actionButton, styles.permissionsBtn, { backgroundColor: theme.primary + '15' }]}
                   >
-                    <Ionicons name="settings-outline" size={16} color={theme.primary} />
+                    <Ionicons name="settings-outline" size={18} color={theme.primary} />
+                    <Text style={[styles.actionButtonText, { color: theme.primary }]}>Permissions</Text>
                   </Pressable>
+                  
                   <Pressable
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      handleDeleteStaff(staff);
-                    }}
-                    style={[styles.deleteStaffBtn, { backgroundColor: '#FF3B30' + '15' }]}
+                    onPress={() => handleMonitorStaff(staff)}
+                    style={[styles.actionButton, styles.monitorBtn, { backgroundColor: '#FF9500' + '15' }]}
                   >
-                    <Ionicons name="trash-outline" size={16} color="#FF3B30" />
+                    <Ionicons name="analytics-outline" size={18} color="#FF9500" />
+                    <Text style={[styles.actionButtonText, { color: '#FF9500' }]}>Monitor</Text>
+                  </Pressable>
+                  
+                  <Pressable
+                    onPress={() => handleDeleteStaff(staff)}
+                    style={[styles.actionButton, styles.staffDeleteBtn, { backgroundColor: '#FF3B30' + '15' }]}
+                  >
+                    <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+                    <Text style={[styles.actionButtonText, { color: '#FF3B30' }]}>Delete</Text>
                   </Pressable>
                 </View>
-              </Pressable>
+              </View>
             ))
           ) : (
             <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -575,11 +457,11 @@ export default function AdminProfileScreen() {
 
         {/* Delete Account Button */}
         <Pressable 
-          style={[styles.deleteBtn, { borderColor: '#FF3B30', backgroundColor: '#FF3B30' + '10' }]} 
+          style={[styles.deleteAccountBtn, { borderColor: '#FF3B30', backgroundColor: '#FF3B30' + '10' }]} 
           onPress={() => setShowDeleteModal(true)}
         >
           <Ionicons name="trash-outline" size={22} color="#FF3B30" />
-          <Text style={[styles.deleteText, { color: '#FF3B30' }]}>Delete Account & Store Permanently</Text>
+          <Text style={[styles.deleteAccountText, { color: '#FF3B30' }]}>Delete Account & Store Permanently</Text>
         </Pressable>
 
         <View style={{ height: 50 }} />
@@ -708,91 +590,6 @@ export default function AdminProfileScreen() {
         </View>
       </Modal>
 
-      {/* Edit Permissions Modal */}
-      <Modal visible={showEditPermissionsModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContentLarge, { backgroundColor: theme.surface }]}>
-            <View style={styles.modalHeader}>
-              <View style={[styles.modalIconBox, { backgroundColor: theme.primary + '15' }]}>
-                <Ionicons name="shield-checkmark" size={28} color={theme.primary} />
-              </View>
-              <Text style={[styles.modalTitle, { color: theme.text }]}>
-                Edit Permissions
-              </Text>
-              <Text style={[styles.modalDesc, { color: theme.subtext }]}>
-                Manage what {staffToEdit?.name} can do
-              </Text>
-            </View>
-
-            <ScrollView style={styles.permissionsScroll} showsVerticalScrollIndicator={false}>
-              {[
-                { key: 'viewInventory', label: 'View Inventory', icon: 'eye-outline', description: 'View all products and stock levels' },
-                { key: 'addProducts', label: 'Add Products', icon: 'add-circle-outline', description: 'Add new products and batches' },
-                { key: 'editProducts', label: 'Edit Products', icon: 'create-outline', description: 'Modify product details and prices' },
-                { key: 'deleteProducts', label: 'Delete Products', icon: 'trash-outline', description: 'Remove products from inventory' },
-                { key: 'processSales', label: 'Process Sales', icon: 'cart-outline', description: 'Complete sales transactions' },
-                { key: 'scanBarcodes', label: 'Scan Barcodes', icon: 'scan-outline', description: 'Use barcode scanner' },
-                { key: 'viewAnalytics', label: 'View Analytics', icon: 'analytics-outline', description: 'Access sales reports and insights' },
-                { key: 'exportData', label: 'Export Data', icon: 'download-outline', description: 'Export inventory and sales data' },
-                { key: 'manageCategories', label: 'Manage Categories', icon: 'folder-outline', description: 'Add and edit product categories' },
-              ].map((perm) => (
-                <View
-                  key={perm.key}
-                  style={[
-                    styles.permissionEditRow,
-                    { backgroundColor: theme.background, borderColor: theme.border }
-                  ]}
-                >
-                  <View style={[styles.permIconBox, { backgroundColor: theme.primary + '15' }]}>
-                    <Ionicons name={perm.icon as any} size={18} color={theme.primary} />
-                  </View>
-                  <View style={styles.permTextBox}>
-                    <Text style={[styles.permLabel, { color: theme.text }]}>
-                      {perm.label}
-                    </Text>
-                    <Text style={[styles.permDesc, { color: theme.subtext }]}>
-                      {perm.description}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={editPermissions[perm.key as keyof typeof editPermissions]}
-                    onValueChange={() => toggleEditPermission(perm.key as keyof typeof editPermissions)}
-                    trackColor={{ true: theme.primary, false: theme.border }}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-
-            <View style={styles.modalActions}>
-              <Pressable
-                style={[
-                  styles.modalBtn,
-                  { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border },
-                ]}
-                onPress={() => {
-                  setShowEditPermissionsModal(false);
-                  setStaffToEdit(null);
-                }}
-                disabled={savingPermissions}
-              >
-                <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.modalBtn, { backgroundColor: theme.primary }]}
-                onPress={savePermissions}
-                disabled={savingPermissions}
-              >
-                {savingPermissions ? (
-                  <ActivityIndicator color="#FFF" size="small" />
-                ) : (
-                  <Text style={{ color: '#FFF', fontWeight: '700' }}>Save Changes</Text>
-                )}
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
       {/* Delete Account Modal */}
       <Modal visible={showDeleteModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
@@ -847,6 +644,39 @@ export default function AdminProfileScreen() {
                 <Text style={{ color: '#FFF', fontWeight: '700' }}>Delete Everything</Text>
               </Pressable>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Staff Monitoring Modal - Inline Implementation */}
+      <Modal visible={showStaffMonitoringModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                Staff Monitoring
+              </Text>
+              <Pressable onPress={() => {
+                setShowStaffMonitoringModal(false);
+                setStaffToMonitor(null);
+              }} style={styles.closeButton}>
+                <Ionicons name="close" size={24} color={theme.subtext} />
+              </Pressable>
+            </View>
+            
+            {staffToMonitor && (
+              <View style={styles.staffInfo}>
+                <Text style={[styles.staffName, { color: theme.text }]}>
+                  {staffToMonitor.name}
+                </Text>
+                <Text style={[styles.staffStatus, { color: staffToMonitor.isActive ? '#34C759' : '#FF3B30' }]}>
+                  Status: {staffToMonitor.isActive ? 'Active' : 'Inactive'}
+                </Text>
+                <Text style={[styles.infoText, { color: theme.subtext }]}>
+                  This feature allows you to monitor staff activity without accessing their account directly.
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </Modal>
@@ -1012,73 +842,95 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   staffCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
+    padding: 20,
+    borderRadius: 20,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  staffMainInfo: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 16,
   },
   staffAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+    marginRight: 16,
+  },
+  staffDetails: {
+    flex: 1,
   },
   staffName: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 6,
+    fontSize: 18,
+    fontWeight: '800',
+    marginBottom: 8,
   },
-  staffMeta: {
+  staffMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
+    marginBottom: 6,
   },
   staffRoleBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 8,
   },
   staffRoleText: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 11,
+    fontWeight: '700',
     textTransform: 'uppercase',
   },
-  tapToLogin: {
+  staffStatusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  staffStatusText: {
     fontSize: 11,
     fontWeight: '600',
-    marginTop: 4,
   },
   staffLastLogin: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  staffStatusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    fontSize: 12,
+    fontWeight: '500',
   },
   staffActions: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+    gap: 8,
   },
-  editStaffBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 12,
   },
-  deleteStaffBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+  actionButtonText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  permissionsBtn: {
+    // Specific styles for permissions button if needed
+  },
+  monitorBtn: {
+    // Specific styles for monitor button if needed
+  },
+  staffDeleteBtn: {
+    // Specific styles for staff delete button if needed
   },
   emptyState: {
     padding: 40,
@@ -1113,7 +965,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     fontSize: 14,
   },
-  deleteBtn: {
+  deleteAccountBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1123,7 +975,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginTop: 12,
   },
-  deleteText: {
+  deleteAccountText: {
     fontWeight: '900',
     fontSize: 14,
   },
@@ -1209,7 +1061,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   modalHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 20,
   },
   permissionsScroll: {
@@ -1243,5 +1097,21 @@ const styles = StyleSheet.create({
   permDesc: {
     fontSize: 11,
     lineHeight: 14,
+  },
+  // Staff Monitoring Modal Styles
+  closeButton: {
+    padding: 8,
+  },
+  staffInfo: {
+    paddingVertical: 10,
+  },
+  staffStatus: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 12,
+  },
+  infoText: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

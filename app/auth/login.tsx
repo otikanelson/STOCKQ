@@ -3,13 +3,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from "react-native";
 import { PinInput } from '../../components/PinInput';
 import { useAuth } from '../../context/AuthContext';
@@ -34,7 +34,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     if (isAuthenticated && userRole) {
-      if (userRole === 'admin') router.replace('/admin/stats' as any);
+      if (userRole === 'admin') router.replace('/admin/sales' as any);
       else router.replace('/(tabs)');
     }
   }, [isAuthenticated, userRole]);
@@ -45,7 +45,7 @@ export default function LoginScreen() {
     setPinError(false);
     const success = await login(pin, selectedRole);
     if (success) {
-      if (selectedRole === 'admin') router.replace('/admin/stats' as any);
+      if (selectedRole === 'admin') router.replace('/admin/sales' as any);
       else router.replace('/(tabs)');
     } else {
       setPinError(true);
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 28,
-    paddingTop: 56,
+    paddingTop: 100,
     paddingBottom: 40,
     minHeight: 520,
   },

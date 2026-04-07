@@ -239,7 +239,6 @@ const scheduleCacheRefresh = () => {
     await warmupCache();
   }, 5 * 60 * 1000); // 5 minutes
 };
-
 server.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);

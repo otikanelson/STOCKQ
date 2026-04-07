@@ -7,7 +7,6 @@ interface DisabledButtonProps {
   onPress: () => void;
   disabled: boolean;
   disabledReason?: string;
-  isViewOnly?: boolean;
   children: React.ReactNode;
   style?: any;
   textStyle?: any;
@@ -19,7 +18,6 @@ export const DisabledButton: React.FC<DisabledButtonProps> = ({
   onPress,
   disabled,
   disabledReason,
-  isViewOnly = false,
   children,
   style,
   textStyle,
@@ -31,8 +29,8 @@ export const DisabledButton: React.FC<DisabledButtonProps> = ({
   const handlePress = () => {
     if (disabled && disabledReason) {
       Toast.show({
-        type: isViewOnly ? 'info' : 'error',
-        text1: isViewOnly ? 'View-Only Mode' : 'Access Denied',
+        type: 'error',
+        text1: 'Access Denied',
         text2: disabledReason,
         visibilityTime: 3000,
       });
@@ -54,7 +52,7 @@ export const DisabledButton: React.FC<DisabledButtonProps> = ({
       {disabled && (
         <View style={styles.lockBadge}>
           <Ionicons 
-            name={isViewOnly ? 'eye-off' : 'lock-closed'} 
+            name="lock-closed" 
             size={12} 
             color="#FFF" 
           />

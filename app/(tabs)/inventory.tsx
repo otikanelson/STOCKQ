@@ -1,6 +1,6 @@
-import { DisabledFeatureOverlay } from "@/components/DisabledFeatureOverlay";
 import { HelpTooltip } from "@/components/HelpTooltip";
 import { ProductCard } from "@/components/ProductCard";
+import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Product, useProducts } from "@/hooks/useProducts";
@@ -23,21 +23,12 @@ export default function InventoryScreen() {
   const router = useRouter();
   const { theme, isDark } = useTheme();
   const { products, loading, refresh } = useProducts();
+  const { role } = useAuth();
   
   // Check feature access for viewing inventory
-  const viewAccess = useFeatureAccess('viewInventory');
+  const viewAccess = useFeatureAccess('viewProducts');
   
-  // Show overlay if access is denied
-  if (!viewAccess.isAllowed) {
-    return (
-      <View style={{ flex: 1, backgroundColor: theme.background }}>
-        <DisabledFeatureOverlay 
-          reason={viewAccess.reason || 'Access denied'} 
-          isViewOnly={viewAccess.isViewOnly}
-        />
-      </View>
-    );
-  }
+  // Note: Staff can always view the inventory page, but some features may be disabled based on permissions
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<keyof Product | "risk" | "velocity">("name");

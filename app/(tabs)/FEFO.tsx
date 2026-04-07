@@ -10,8 +10,8 @@ import {
     Text,
     View
 } from "react-native";
-import { DisabledFeatureOverlay } from "../../components/DisabledFeatureOverlay";
 import { HelpTooltip } from "../../components/HelpTooltip";
+import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
 import { useFeatureAccess } from "../../hooks/useFeatureAccess";
@@ -23,21 +23,12 @@ export default function FEFOScreen() {
   const { products, loading, refresh } = useProducts();
   const { fetchBatchPredictions } = useAIPredictions({ enableWebSocket: false, autoFetch: false });
   const router = useRouter();
+  const { role } = useAuth();
   
   // Check feature access
-  const viewAccess = useFeatureAccess('viewInventory');
+  const viewAccess = useFeatureAccess('viewProducts');
   
-  // Show overlay if access is denied
-  if (!viewAccess.isAllowed) {
-    return (
-      <View style={{ flex: 1, backgroundColor: theme.background }}>
-        <DisabledFeatureOverlay 
-          reason={viewAccess.reason || 'Access denied'} 
-          isViewOnly={viewAccess.isViewOnly}
-        />
-      </View>
-    );
-  }
+  // Note: Staff can always view the FEFO page, but some features may be disabled based on permissions
 
   // State to toggle view mode and sort mode
   const [viewByProduct, setViewByProduct] = useState(false);

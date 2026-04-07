@@ -33,12 +33,13 @@ router.get('/check-admin-security-pin/:storeId', authController.checkAdminSecuri
 router.post('/staff', authenticate, tenantFilter, authController.createStaff);
 router.post('/staff/join', authController.joinStore); // Public - staff joining existing store
 router.get('/staff', authenticate, tenantFilter, authController.getStaff);
+router.get('/staff/:id', authenticate, tenantFilter, authController.getStaffById);
 router.put('/staff/:id', authenticate, tenantFilter, authController.updateStaff);
 router.patch('/staff/:id/permissions', authenticate, tenantFilter, authController.updateStaffPermissions);
 router.delete('/staff/:id', authenticate, tenantFilter, authController.deleteStaff);
 
 // Admin impersonate staff
-router.post('/staff/:staffId/impersonate', authenticate, tenantFilter, authController.impersonateStaff);
+router.get('/staff/:staffId/activity', authenticate, tenantFilter, authController.getStaffActivity);
 
 // Update admin PIN
 router.put('/admin/pin', authenticate, authController.updateAdminPin);

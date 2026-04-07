@@ -59,15 +59,11 @@ const userSchema = new mongoose.Schema({
     default: null
   },
   permissions: {
-    viewInventory: { type: Boolean, default: true },
-    addProducts: { type: Boolean, default: true },
-    editProducts: { type: Boolean, default: true },
-    deleteProducts: { type: Boolean, default: false },
-    processSales: { type: Boolean, default: true },
-    scanBarcodes: { type: Boolean, default: true },
-    viewAnalytics: { type: Boolean, default: false },
-    exportData: { type: Boolean, default: false },
-    manageCategories: { type: Boolean, default: false },
+    viewProducts: { type: Boolean, default: true },      // Compulsory, always true
+    scanProducts: { type: Boolean, default: true },      // Access to scanner
+    registerProducts: { type: Boolean, default: true },  // Register new products
+    addProducts: { type: Boolean, default: true },       // Add inventory
+    processSales: { type: Boolean, default: true },      // Process sales
   }
 }, {
   timestamps: true // This automatically adds createdAt and updatedAt

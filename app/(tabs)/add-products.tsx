@@ -1,3 +1,5 @@
+import { useAuth } from "@/context/AuthContext";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -40,6 +42,8 @@ export default function AddProducts() {
 
   // Check feature access
   const featureAccess = useFeatureAccess('addProducts');
+  const registerAccess = useFeatureAccess('registerProducts');
+  const { role } = useAuth();
 
   const [image, setImage] = useState<string | null>(null);
   const [isPerishable, setIsPerishable] = useState(false);
@@ -81,17 +85,8 @@ export default function AddProducts() {
 
   const mode = (params.mode as "registry" | "inventory" | "manual") || "manual";
 
-  // Show overlay if access is denied
-  if (!featureAccess.isAllowed) {
-    return (
-      <View style={{ flex: 1, backgroundColor: theme.background }}>
-        <DisabledFeatureOverlay 
-          reason={featureAccess.reason || 'Access denied'} 
-          isViewOnly={featureAccess.isViewOnly}
-        />
-      </View>
-    );
-  }
+  // Note: Staff can access the add-products page, but form submission is disabled based on permissions
+  // The form will show a disabled state with explanation if user lacks addProducts permission
   
   // Determine if fields should be locked
   // Lock when: 1) explicitly locked via params, OR 2) existingProduct is set (adding batch to registered product)
@@ -701,6 +696,26 @@ export default function AddProducts() {
   };
 
   const handleSave = async () => {
+    // Check permissions before allowing save
+    if (!featureAccess.isAllowed && role !== 'admin') {
+      return Toast.show({
+        type: "error",
+        text1: "Permission Denied",
+        text2: featureAccess.reason || "You don't have permission to add products",
+        visibilityTime: 4000,
+      });
+    }
+
+    // Check register permission for registry mode
+    if (mode === 'registry' && !registerAccess.isAllowed && role !== 'admin') {
+      return Toast.show({
+        type: "error",
+        text1: "Permission Denied",
+        text2: "You don't have permission to register products",
+        visibilityTime: 4000,
+      });
+    }
+
     const validation = validateForm();
     if (!validation.isValid) {
       return Toast.show({
@@ -1057,9 +1072,12 @@ export default function AddProducts() {
                     {
                       backgroundColor: mode === "registry" ? theme.primary : theme.surface,
                       borderColor: mode === "registry" ? theme.primary : theme.border,
+                      opacity: (!registerAccess.isAllowed && role !== 'admin') ? 0.4 : 1,
                     },
                   ]}
+                  disabled={!registerAccess.isAllowed && role !== 'admin'}
                   onPress={() => {
+                    if (!registerAccess.isAllowed && role !== 'admin') return;
                     if (formModified) {
                       setPendingNavAction(() => () => {
                         setFormData(prev => ({ ...prev, mode: "registry" }));
@@ -1097,8 +1115,11 @@ export default function AddProducts() {
                     textAlign: "center",
                     marginTop: 4,
                   }}>
-                    Add to global database only
+                    {(!registerAccess.isAllowed && role !== 'admin') ? 'No permission' : 'Add to global database only'}
                   </Text>
+                  {(!registerAccess.isAllowed && role !== 'admin') && (
+                    <Ionicons name="lock-closed" size={14} color={theme.subtext} style={{ marginTop: 4 }} />
+                  )}
                 </Pressable>
 
                 <Pressable
@@ -1740,17 +1761,27 @@ export default function AddProducts() {
 
           {/* Enhanced Submit Button */}
           <View style={styles.submitSection}>
+            {/* Show permission warning if access is denied */}
+            {!featureAccess.isAllowed && role !== 'admin' && (
+              <View style={[styles.permissionWarning, { backgroundColor: '#FF3B30' + '15', borderColor: '#FF3B30' }]}>
+                <Ionicons name="lock-closed" size={16} color="#FF3B30" />
+                <Text style={[styles.permissionWarningText, { color: '#FF3B30' }]}>
+                  {featureAccess.reason || 'You don\'t have permission to add products'}
+                </Text>
+              </View>
+            )}
+            
             <Pressable
               style={[
                 styles.completeBtn, 
                 { 
-                  backgroundColor: theme.primary,
-                  opacity: (isSubmitting || isUploading) ? 0.6 : 1,
+                  backgroundColor: (!featureAccess.isAllowed && role !== 'admin') ? '#666' : theme.primary,
+                  opacity: (isSubmitting || isUploading || (!featureAccess.isAllowed && role !== 'admin')) ? 0.6 : 1,
                 },
-                (isSubmitting || isUploading) && styles.disabledBtn
+                (isSubmitting || isUploading || (!featureAccess.isAllowed && role !== 'admin')) && styles.disabledBtn
               ]}
               onPress={handleSave}
-              disabled={isSubmitting || isUploading}
+              disabled={isSubmitting || isUploading || (!featureAccess.isAllowed && role !== 'admin')}
             >
               {(isSubmitting || isUploading) ? (
                 <View style={styles.loadingContainer}>
@@ -2544,5 +2575,20 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     padding: 0,
+  },
+  // Permission warning styles
+  permissionWarning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  permissionWarningText: {
+    fontSize: 13,
+    fontWeight: '600',
+    flex: 1,
   },
 });

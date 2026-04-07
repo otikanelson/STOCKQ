@@ -118,7 +118,7 @@ function RootLayoutNav() {
           checkUserRole().then((role) => {
             hasNavigatedRef.current = true;
             if (role === 'admin') {
-              router.replace('/admin/stats' as any);
+              router.replace('/admin/sales' as any);
             } else {
               router.replace('/(tabs)');
             }
