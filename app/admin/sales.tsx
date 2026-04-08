@@ -714,7 +714,7 @@ export default function AdminSales() {
                       </table>
                       
                       <div class="footer">
-                        <p>StockQ Inventory Management System</p>
+                        <p>Insightory Inventory Management System</p>
                         <p>This is an automatically generated report</p>
                       </div>
                     </body>

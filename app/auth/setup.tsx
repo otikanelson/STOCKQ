@@ -292,7 +292,7 @@ export default function SetupScreen() {
             <View style={[styles.logoMark, { backgroundColor: theme.primaryLight }]}>
               <Ionicons name="cube" size={36} color={theme.primary} />
             </View>
-            <Text style={[styles.appName, { color: theme.primary }]}>StockQ</Text>
+            <Text style={[styles.appName, { color: theme.primary }]}>Insightory</Text>
             <Text style={[styles.title, { color: theme.text }]}>
               Welcome
             </Text>

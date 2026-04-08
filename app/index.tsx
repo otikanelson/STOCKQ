@@ -108,7 +108,7 @@ export default function WelcomeScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         {/* Semicircular Header */}
       <View style={[styles.headerCurve, { backgroundColor: theme.header }]}>
-        <Text style={styles.headerTitle}>StockQ</Text>
+        <Text style={styles.headerTitle}>Insightory</Text>
       </View>
 
       {/* Centered Content */}
@@ -116,7 +116,7 @@ export default function WelcomeScreen() {
         <View style={[styles.logoMark, { backgroundColor: theme.primaryLight }]}>
           <Ionicons name="cube" size={48} color={theme.primary} />
         </View>
-        <Text style={[styles.appName, { color: theme.primary }]}>StockQ</Text>
+        <Text style={[styles.appName, { color: theme.primary }]}>Insightory</Text>
         <Text style={[styles.subtitle, { color: theme.subtext }]}>
           Smart tracking for products & expiry dates
         </Text>

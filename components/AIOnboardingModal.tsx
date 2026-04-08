@@ -51,7 +51,7 @@ export const AIOnboardingModal: React.FC<AIOnboardingModalProps> = ({
 
             {/* Subtitle */}
             <Text style={[styles.subtitle, { color: theme.subtext }]}>
-              StockQ uses artificial intelligence to help you make smarter inventory decisions
+              Insightory uses artificial intelligence to help you make smarter inventory decisions
             </Text>
 
             {/* Features */}

@@ -66,7 +66,7 @@ export default function AIInfoScreen() {
             </Text>
           </View>
           <Text style={[styles.sectionText, { color: theme.subtext }]}>
-            StockQ uses artificial intelligence to analyze your sales history and inventory patterns. 
+            Insightory uses artificial intelligence to analyze your sales history and inventory patterns. 
             The system learns from your data to provide accurate forecasts and recommendations.
           </Text>
         </View>

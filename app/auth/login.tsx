@@ -3,13 +3,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from "react-native";
 import { PinInput } from '../../components/PinInput';
 import { useAuth } from '../../context/AuthContext';
@@ -86,7 +86,7 @@ export default function LoginScreen() {
                 <View style={[styles.logoMark, { backgroundColor: theme.primaryLight }]}>
                   <Ionicons name="cube" size={36} color={theme.primary} />
                 </View>
-                <Text style={[styles.appName, { color: theme.primary }]}>StockQ</Text>
+                <Text style={[styles.appName, { color: theme.primary }]}>Insightory</Text>
                 <Text style={[styles.title, { color: theme.text }]}>Welcome back</Text>
                 <Text style={[styles.subtitle, { color: theme.subtext }]}>
                   Choose your role to continue

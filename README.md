@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📦 Stockq
+# 📦 Insightory
 
 ### AI-Powered Inventory Management System
 
@@ -19,9 +19,9 @@
 
 ## 🎯 Overview
 
-Stockq is a cutting-edge mobile inventory management application that combines artificial intelligence with intuitive design to help businesses reduce waste, prevent stockouts, and maximize profitability. Built specifically for retail businesses, grocery stores, pharmacies, and any organization dealing with perishable goods.
+Insightory is a cutting-edge mobile inventory management application that combines artificial intelligence with intuitive design to help businesses reduce waste, prevent stockouts, and maximize profitability. Built specifically for retail businesses, grocery stores, pharmacies, and any organization dealing with perishable goods.
 
-### Why Stockq?
+### Why Insightory?
 
 - 🤖 **AI-Powered Predictions** - Forecast demand 7, 14, and 30 days ahead
 - 📱 **Mobile-First Design** - Manage inventory anywhere, anytime
@@ -301,7 +301,7 @@ Create `backend/.env`:
 
 ```env
 # MongoDB Connection
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/stockq?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/Insightory?retryWrites=true&w=majority
 
 # Server Configuration
 PORT=5000
@@ -442,7 +442,7 @@ Follow the comprehensive `TESTING_MANUAL.md` which includes:
 
 ## 🔐 Security
 
-Stockq implements enterprise-grade security:
+Insightory implements enterprise-grade security:
 
 - 🔒 JWT Authentication - Secure token-based auth  
 - 🔑 Dual PIN System - Login PIN + Security PIN for sensitive operations  
@@ -569,7 +569,7 @@ This project is licensed under the ISC License - see the LICENSE file for detail
 <div align="center">
 
 **Developed by:** Nelson Otika  
-**Project:** Stockq v1.0.0  
+**Project:** Insightory v1.0.0  
 **Repository:** github.com/otikanelson/Inventory-Application  
 
 </div>
@@ -609,6 +609,6 @@ Built with ❤️ for businesses that want to reduce waste and maximize profits
 
 ⬆ Back to Top  
 
-© 2026 Stockq. All rights reserved.
+© 2026 Insightory. All rights reserved.
 
 </div>

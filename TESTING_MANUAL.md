@@ -1,4 +1,4 @@
-# 🧪 Stockq - Comprehensive Testing Manual
+# 🧪 Insightory - Comprehensive Testing Manual
 
 **Version:** 1.0.0  
 **Last Updated:** February 21, 2026  
@@ -30,7 +30,7 @@
 
 ### Purpose
 
-This manual provides comprehensive testing procedures for Stockq to ensure:
+This manual provides comprehensive testing procedures for Insightory to ensure:
 - All features work as expected
 - Data integrity is maintained
 - Security measures are effective

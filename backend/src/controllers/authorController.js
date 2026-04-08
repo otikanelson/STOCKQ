@@ -14,9 +14,11 @@ exports.getAllStores = async (req, res) => {
       });
     }
 
-    const stores = await Store.find({ isActive: true })
+    const stores = await Store.find({ isActive: { $ne: false } })
       .populate('ownerId', 'name')
       .sort({ createdAt: -1 });
+
+    console.log(`📦 Found ${stores.length} stores`);
 
     // Get counts for each store
     const storesWithCounts = await Promise.all(

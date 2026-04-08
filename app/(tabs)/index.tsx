@@ -289,7 +289,7 @@ export default function Dashboard() {
             <View style={styles.header}>
               <View>
                 <Text style={[styles.greet, { color: theme.primary }]}>STAFF DASHBOARD</Text>
-                <Text style={[styles.title, { color: theme.text }]}>StockQ</Text>
+                <Text style={[styles.title, { color: theme.text }]}>Insightory</Text>
               </View>
               <View style={styles.headerRight}>
                 <Pressable

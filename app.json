@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Stockq",
-    "slug": "stockq",
+    "name": "Insightory",
+    "slug": "Insightory",
     "version": "4.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/images/icon.png"
       },
       "package": "com.son_the_nel.Inventory",
-      "versionCode": 2,
+      "versionCode": 4,
       "permissions": [
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE",

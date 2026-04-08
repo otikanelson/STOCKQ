@@ -61,6 +61,13 @@ function RootLayoutNav() {
 
   const checkFirstTimeSetup = async () => {
     try {
+      // One-time cleanup: clear stale author session data if no valid session token exists
+      const sessionToken = await AsyncStorage.getItem('auth_session_token');
+      const isAuthor = await AsyncStorage.getItem('auth_is_author');
+      if (isAuthor === 'true' && !sessionToken) {
+        await AsyncStorage.removeItem('auth_is_author');
+      }
+
       const setupComplete = await AsyncStorage.getItem('admin_first_setup');
       setIsFirstTime(!setupComplete);
     } catch (error) {
@@ -87,10 +94,12 @@ function RootLayoutNav() {
     const isInSetup = segments[1] === 'setup';
     const isInLogin = segments[1] === 'login';
 
-    // Check if user is author
+    // Check if user is author - also verify they have a valid session token
     const checkAuthorStatus = async () => {
       const isAuthor = await AsyncStorage.getItem('auth_is_author');
-      return isAuthor === 'true';
+      const sessionToken = await AsyncStorage.getItem('auth_session_token');
+      // Only treat as author if both flags are set AND there's a valid session
+      return isAuthor === 'true' && !!sessionToken;
     };
 
     // Check user role for navigation
@@ -108,6 +117,11 @@ function RootLayoutNav() {
           router.replace('/author/dashboard' as any);
         }
         return;
+      }
+
+      // If we're in auth group but had stale author flag, clear it
+      if (inAuthGroup) {
+        AsyncStorage.removeItem('auth_is_author').catch(() => {});
       }
 
       // Regular user flow (admin/staff)
