@@ -4,8 +4,8 @@
     "slug": "stockq",
     "version": "4.1.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "backgroundColor": "#000000",
+    "icon": "./assets/images/favicon.png",
+    "backgroundColor": "#0D1B4B",
     "scheme": "inventory",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#000000",
+        "backgroundColor": "#0D1B4B",
         "foregroundImage": "./assets/images/icon.png"
       },
       "package": "com.son_the_nel.Inventory",
@@ -31,7 +31,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/icon.png"
+      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -41,9 +41,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#0D1B4B",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#0D1B4B"
           }
         }
       ],
