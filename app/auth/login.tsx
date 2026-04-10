@@ -1,5 +1,6 @@
 import { AuthorLogin } from '@/components/AuthorLogin';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -83,10 +84,7 @@ export default function LoginScreen() {
           <View style={styles.content}>
             {!selectedRole ? (
               <>
-                <View style={[styles.logoMark, { backgroundColor: theme.primaryLight }]}>
-                  <Image source={require('../../assets/images/favicon.png')} style={{ width: 40, height: 40 }} contentFit="contain" />
-                </View>
-                <Text style={[styles.appName, { color: theme.primary }]}>Insightory</Text>
+                <Image source={require('../../assets/images/Logo.png')} style={[styles.logoMark, { width: 120, height: 120}]} contentFit="contain" />
                 <Text style={[styles.title, { color: theme.text }]}>Welcome back</Text>
                 <Text style={[styles.subtitle, { color: theme.subtext }]}>
                   Choose your role to continue
@@ -212,13 +210,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
-  },
-  appName: {
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 4,
-    textTransform: 'uppercase',
-    marginBottom: 10,
   },
   title: { fontSize: 28, fontWeight: '800', marginBottom: 8, letterSpacing: -0.5 },
   subtitle: { fontSize: 15, marginBottom: 36, textAlign: 'center' },

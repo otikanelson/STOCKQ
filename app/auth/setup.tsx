@@ -2,16 +2,17 @@ import { AuthorLogin } from '@/components/AuthorLogin';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { PinInput } from '../../components/PinInput';
@@ -289,10 +290,7 @@ export default function SetupScreen() {
 
         {step === 'welcome' && (
           <>
-            <View style={[styles.logoMark, { backgroundColor: theme.primaryLight }]}>
-              <Image source={require('../../assets/images/favicon.png')} style={{ width: 40, height: 40 }} contentFit="contain" />
-            </View>
-            <Text style={[styles.appName, { color: theme.primary }]}>Insightory</Text>
+            <Image source={require('../../assets/images/favicon.png')} style={[styles.logoMark, { width: 80, height: 80 }]} contentFit="contain" />
             <Text style={[styles.title, { color: theme.text }]}>
               Welcome
             </Text>
@@ -594,12 +592,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
-  },
-  appName: {
-    fontSize: 32,
-    fontWeight: '900',
-    marginBottom: 8,
-    letterSpacing: 0.5,
   },
   headerCurve: {
     height: 150,

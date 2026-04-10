@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '../components/CustomToast';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { SplashScreenAnimation } from '../components/SplashScreenAnimation';
 import { TourOverlay } from '../components/TourOverlay';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
@@ -184,12 +185,17 @@ function ThemedToast() {
 }
 
 export default function RootLayout() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
           <TourProvider>
             <RootLayoutNav />
+            {showSplash && (
+              <SplashScreenAnimation onFinish={() => setShowSplash(false)} />
+            )}
           </TourProvider>
         </AuthProvider>
       </ThemeProvider>
