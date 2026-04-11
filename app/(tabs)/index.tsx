@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { Href, useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -140,6 +141,16 @@ export default function Dashboard() {
   });
   const [recentSales, setRecentSales] = useState<any[]>([]);
   const [loadingSales, setLoadingSales] = useState(false);
+
+  // Refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+      if (salesExpanded) {
+        fetchSalesData();
+      }
+    }, [refresh, salesExpanded])
+  );
 
   useEffect(() => {
     const fetchBatchSales = async () => {

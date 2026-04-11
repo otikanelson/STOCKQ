@@ -2,10 +2,10 @@ import { useAuth } from "@/context/AuthContext";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     ActivityIndicator,
@@ -455,6 +455,19 @@ export default function AddProducts() {
     setCurrentStep(1);
     setUploadProgress(0);
     setIsUploading(false);
+    
+    // Clear URL params to prevent auto-refilling
+    if (params.barcode || params.name || params.category) {
+      router.setParams({
+        barcode: undefined,
+        name: undefined,
+        category: undefined,
+        imageUrl: undefined,
+        isPerishable: undefined,
+        mode: undefined,
+        locked: undefined,
+      });
+    }
     
     if (showToast) {
       Toast.show({

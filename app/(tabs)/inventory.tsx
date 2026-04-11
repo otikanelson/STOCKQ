@@ -5,8 +5,9 @@ import { useTheme } from "@/context/ThemeContext";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Product, useProducts } from "@/hooks/useProducts";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
-import { Href, useFocusEffect, useRouter } from "expo-router";
+import { Href, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     FlatList,

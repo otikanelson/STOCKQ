@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Tabs, useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import { Tabs, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
     ActivityIndicator,

@@ -6,13 +6,13 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { PinInput } from '../../components/PinInput';
@@ -283,8 +283,10 @@ export default function SetupScreen() {
       {/* Content */}
       <View style={styles.content}>
         {step !== 'welcome' && step !== 'complete' && (
-          <Pressable style={styles.backButton} onPress={handleBack}>
-            <Ionicons name="arrow-back" size={24} color={theme.primary} />
+          <Pressable style={styles.backBtn} onPress={handleBack}>
+            <View style={[styles.backBtnInner, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              <Ionicons name="arrow-back" size={20} color={theme.text} />
+            </View>
           </Pressable>
         )}
 
@@ -615,11 +617,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 30,
   },
-  backButton: {
-    position: 'absolute',
-    top: -100,
-    left: 0,
-    padding: 10,
+  backBtn: {
+    alignSelf: 'flex-start',
+    marginBottom: 32,
+  },
+  backBtnInner: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logo: {
     width: 100,

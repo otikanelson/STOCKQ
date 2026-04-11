@@ -1,25 +1,27 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    Image,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { DisabledButton } from "../../../components/DisabledButton";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAIPredictions } from "../../../hooks/useAIPredictions";
+import { useFeatureAccess } from "../../../hooks/useFeatureAccess";
 import { useImageUpload } from "../../../hooks/useImageUpload";
 import { useProducts } from "../../../hooks/useProducts";
 
@@ -78,6 +80,7 @@ export default function AdminProductDetails() {
   // Check feature access for edit and delete
   const editAccess = useFeatureAccess('editProducts');
   const deleteAccess = useFeatureAccess('deleteProducts');
+  const addAccess = useFeatureAccess('addProducts');
   
   const { getProductById, refresh } = useProducts();
   const { prediction, loading: predictionLoading } = useAIPredictions({ 
@@ -117,6 +120,15 @@ export default function AdminProductDetails() {
   useEffect(() => {
     loadProduct();
   }, [id]);
+
+  // Reload product when screen comes into focus (e.g., after adding a batch)
+  useFocusEffect(
+    useCallback(() => {
+      if (id) {
+        loadProduct();
+      }
+    }, [id])
+  );
 
   // Fetch categories - refresh when screen comes into focus
   useFocusEffect(
@@ -517,6 +529,26 @@ export default function AdminProductDetails() {
           <View style={styles.headerActions}>
             {!isEditing ? (
               <>
+                <DisabledButton
+                  onPress={() => {
+                    // Navigate to add-products page with pre-filled data
+                    router.push({
+                      pathname: "../add-products",
+                      params: {
+                        barcode: product.barcode,
+                        name: product.name,
+                        category: product.category,
+                        imageUrl: product.imageUrl,
+                        isPerishable: product.isPerishable ? 'true' : 'false',
+                      }
+                    });
+                  }}
+                  disabled={!addAccess.isAllowed}
+                  disabledReason={addAccess.reason}
+                  style={[styles.headerBtn, { backgroundColor: "#34C759" }]}
+                >
+                  <Ionicons name="add-circle-outline" size={20} color="#FFF" />
+                </DisabledButton>
                 <DisabledButton
                   onPress={() => setIsEditing(true)}
                   disabled={!editAccess.isAllowed}

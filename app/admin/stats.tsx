@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import * as FileSystem from 'expo-file-system/legacy';
 import { useRouter } from "expo-router";
 import * as Sharing from 'expo-sharing';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Dimensions,
@@ -59,6 +60,13 @@ export default function AdminStats() {
   const summary = dashboardData?.summary;
   const topRisk = summary?.topRiskProducts || [];
   const topSelling = summary?.topSellingProducts || [];
+
+  // Refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   // Fetch category data
   useEffect(() => {

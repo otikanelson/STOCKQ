@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     ActivityIndicator,
     Image,
@@ -28,6 +29,9 @@ export default function ProductDetails() {
   const router = useRouter();
   const { theme, isDark } = useTheme();
 
+  // Check feature access for adding batches
+  const addAccess = useFeatureAccess('addProducts');
+
   const { getProductById } = useProducts();
   const { prediction, loading: predictionLoading } = useAIPredictions({ 
     productId: id as string,
@@ -41,6 +45,15 @@ export default function ProductDetails() {
   useEffect(() => {
     loadProduct();
   }, [id]);
+
+  // Reload product when screen comes into focus (e.g., after adding a batch)
+  useFocusEffect(
+    useCallback(() => {
+      if (id) {
+        loadProduct();
+      }
+    }, [id])
+  );
 
   const loadProduct = async () => {
     setLoading(true);
@@ -170,6 +183,28 @@ export default function ProductDetails() {
               {product.name}
             </Text>
           </View>
+
+          <DisabledButton
+            onPress={() => {
+              // Navigate to add-products page with pre-filled data
+              router.push({
+                pathname: "/(tabs)/add-products",
+                params: {
+                  barcode: product.barcode,
+                  name: product.name,
+                  category: product.category,
+                  imageUrl: product.imageUrl,
+                  isPerishable: product.isPerishable ? 'true' : 'false',
+                }
+              });
+            }}
+            disabled={!addAccess.isAllowed}
+            disabledReason={addAccess.reason}
+            style={[styles.addBatchButton, { backgroundColor: "#34C759" }]}
+          >
+            <Ionicons name="add-circle" size={20} color="#FFF" />
+            <Text style={styles.addBatchText}>Add Batch</Text>
+          </DisabledButton>
         </View>
 
         {/* Wide Product Image */}
@@ -483,6 +518,24 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "900",
     letterSpacing: -0.5,
+  },
+  addBatchButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 22,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  addBatchText: {
+    color: "#FFF",
+    fontSize: 13,
+    fontWeight: "700",
   },
   
   // Wide Image Container

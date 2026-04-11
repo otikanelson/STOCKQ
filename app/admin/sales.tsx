@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useAudioPlayer } from "expo-audio";
 
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,

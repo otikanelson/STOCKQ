@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -35,6 +36,13 @@ export default function FEFOScreen() {
   const [sortByAI, setSortByAI] = useState(false);
   const [predictions, setPredictions] = useState<Record<string, Prediction>>({});
   const [loadingPredictions, setLoadingPredictions] = useState(false);
+
+  // Refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   // Helper function to format time remaining in a readable way
   const formatTimeRemaining = (days: number): string => {

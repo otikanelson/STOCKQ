@@ -5,7 +5,12 @@ export type FeaturePermission =
   | 'scanProducts'
   | 'registerProducts'
   | 'addProducts'
-  | 'processSales';
+  | 'processSales'
+  | 'editProducts'
+  | 'deleteProducts'
+  | 'viewAnalytics'
+  | 'exportData'
+  | 'manageCategories';
 
 interface FeatureAccessResult {
   isAllowed: boolean;
@@ -56,6 +61,11 @@ const getPermissionLabel = (permission: FeaturePermission): string => {
     registerProducts: 'register products',
     addProducts: 'add inventory',
     processSales: 'process sales',
+    editProducts: 'edit products',
+    deleteProducts: 'delete products',
+    viewAnalytics: 'view analytics',
+    exportData: 'export data',
+    manageCategories: 'manage categories',
   };
   return labels[permission];
 };
