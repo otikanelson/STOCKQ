@@ -14,7 +14,10 @@ import {
 import { PredictionCard } from "../../components/PredictionCard";
 import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
+import { useFeatureAccess } from "../../hooks/useFeatureAccess";
 import { useProducts } from "../../hooks/useProducts";
+import { DisabledButton } from "@/components/DisabledButton";
+import { Colors } from "@/constants/Colors";
 
 interface Batch {
   batchNumber: string;
@@ -183,28 +186,6 @@ export default function ProductDetails() {
               {product.name}
             </Text>
           </View>
-
-          <DisabledButton
-            onPress={() => {
-              // Navigate to add-products page with pre-filled data
-              router.push({
-                pathname: "/(tabs)/add-products",
-                params: {
-                  barcode: product.barcode,
-                  name: product.name,
-                  category: product.category,
-                  imageUrl: product.imageUrl,
-                  isPerishable: product.isPerishable ? 'true' : 'false',
-                }
-              });
-            }}
-            disabled={!addAccess.isAllowed}
-            disabledReason={addAccess.reason}
-            style={[styles.addBatchButton, { backgroundColor: "#34C759" }]}
-          >
-            <Ionicons name="add-circle" size={20} color="#FFF" />
-            <Text style={styles.addBatchText}>Add Batch</Text>
-          </DisabledButton>
         </View>
 
         {/* Wide Product Image */}
@@ -459,6 +440,31 @@ export default function ProductDetails() {
           </View>
         )}
       </ScrollView>
+
+      {/* Fixed Add Batch Button at Bottom */}
+      <View style={[styles.bottomButtonContainer, { backgroundColor: theme.background }]}>
+        <DisabledButton
+          onPress={() => {
+            // Navigate to add-products page with pre-filled data
+            router.push({
+              pathname: "/(tabs)/add-products",
+              params: {
+                barcode: product.barcode,
+                name: product.name,
+                category: product.category,
+                imageUrl: product.imageUrl,
+                isPerishable: product.isPerishable ? 'true' : 'false',
+              }
+            });
+          }}
+          disabled={!addAccess.isAllowed}
+          disabledReason={addAccess.reason}
+          style={[styles.fixedAddBatchButton, { backgroundColor: "#5B4FE8" }]}
+        >
+          <Ionicons name="add-circle" size={24} color="#FFF" />
+          <Text style={styles.fixedAddBatchText}>Add New Batch</Text>
+        </DisabledButton>
+      </View>
     </View>
   );
 }
@@ -519,23 +525,41 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: -0.5,
   },
-  addBatchButton: {
+  
+  // Fixed Bottom Button
+  bottomButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
+    paddingBottom: 30,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(150,150,150,0.1)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  fixedAddBatchButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 22,
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 16,
+    borderRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  addBatchText: {
+  fixedAddBatchText: {
     color: "#FFF",
-    fontSize: 13,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
   
   // Wide Image Container
