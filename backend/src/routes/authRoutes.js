@@ -17,6 +17,16 @@ router.post('/login', (req, res, next) => {
   authController.login(req, res, next);
 });
 
+// Debug endpoint - catch GET requests to /login
+router.get('/login', (req, res) => {
+  console.log('⚠️ GET request to /login - should be POST');
+  res.status(405).json({
+    success: false,
+    error: 'Method not allowed. Use POST instead of GET',
+    hint: 'The login endpoint requires a POST request with pin and role in the body'
+  });
+});
+
 // Setup admin (first-time)
 router.post('/setup', authController.setupAdmin);
 
