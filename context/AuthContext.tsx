@@ -130,7 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           pin,
           role: userRole
         }, {
-          timeout: 15000
+          timeout: 30000 // Increased to 30 seconds for Vercel cold starts
         });
 
         if (response.data.success) {
