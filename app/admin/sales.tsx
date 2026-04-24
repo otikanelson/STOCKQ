@@ -3,28 +3,29 @@ import axios from "axios";
 import { useAudioPlayer } from "expo-audio";
 import { ThemedText } from '../../components/ThemedText';
 
+import { useAuth } from "@/context/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    FlatList,
-    Modal,
-    Platform,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    View
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Modal,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { AddProductModal } from "../../components/AddProductModal";
 import { DisabledFeatureOverlay } from "../../components/DisabledFeatureOverlay";
-import { HelpTooltip } from "../../components/HelpTooltip";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeatureAccess } from "../../hooks/useFeatureAccess";
 import { useProducts } from "../../hooks/useProducts";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -52,6 +53,7 @@ export default function AdminSales() {
   const router = useRouter();
   const { products, refresh } = useProducts();
   const { cartData } = useLocalSearchParams();
+  const insets = useSafeAreaInsets();
   
   // Check feature access for processing sales
   const salesAccess = useFeatureAccess('processSales');
@@ -62,7 +64,7 @@ export default function AdminSales() {
   const [showFefoModal, setShowFefoModal] = useState(false);
   const [showProductPicker, setShowProductPicker] = useState(false);
   const [activeTab, setActiveTab] = useState<"checkout" | "history">("checkout");
-  
+  const { user, role, isAuthenticated, loading: authLoading } = useAuth();
   // Sales History State
   const [salesHistory, setSalesHistory] = useState<SaleRecord[]>([]);
   const [revenueStats, setRevenueStats] = useState<RevenueStats>({
@@ -74,6 +76,7 @@ export default function AdminSales() {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [selectedSale, setSelectedSale] = useState<SaleRecord | null>(null);
   const [showSaleDetails, setShowSaleDetails] = useState(false);
+  const firstName = user?.name?.split(" ")[0] ?? "there";
 
   // Audio
   const scanBeep = useAudioPlayer(require("../../assets/sounds/beep.mp3"));
@@ -330,45 +333,21 @@ export default function AdminSales() {
       <View style={{ flex: 1, backgroundColor: theme.background }}>
       
 
-      {/* Technical Header */}
-      <View style={styles.header}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      {/* Blue Header */}
+      <View style={[styles.blueHeader, { backgroundColor: theme.primary, paddingTop: insets.top + 16 }]}>
+        <View style={styles.headerTop}>
           <View>
-            <ThemedText style={[styles.systemLabel, { color: theme.primary }]}>
-              ADMIN//SALES_TERMINAL
-            </ThemedText>
-            <ThemedText style={[styles.title, { color: theme.text }]}>
-              {activeTab === "checkout" ? "TRANSACTIONS" : "SALES_HISTORY"}
-            </ThemedText>
+            <ThemedText style={[styles.headerDesc, { color: theme.primaryLight }]}>SALES_MANAGEMENT</ThemedText>
+            <ThemedText style={styles.headerTitle}>Sales Checkout</ThemedText>
           </View>
-          <HelpTooltip
-            style={{marginTop: 20}}
-            title="Admin Sales"
-            content={[
-              "Checkout Tab: Scan products to add them to the cart, adjust quantities, and complete transactions.",
-              "FEFO Logic: All sales automatically use First-Expired-First-Out logic to deduct from batches closest to expiry, ensuring stock freshness.",
-              "History Tab: View past sales with revenue stats (today, week, month), batch numbers, and transaction details.",
-              "Revenue Stats: Track daily, weekly, and monthly sales performance to monitor business trends."
-            ]}
-            icon="help-circle"
-            iconSize={18}
-            iconColor={theme.primary}
-          />
-        </View>
-
-        <View style={{ flexDirection: 'row', gap: 10, alignItems: "flex-end" }}>
-          <Pressable
-            onPress={() => router.push("/admin/settings")}
-            style={[styles.settingsButton, { backgroundColor: theme.surface, borderColor: theme.primary }]}
-          >
-            <Ionicons name="settings-outline" size={18} color={theme.primary} />
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/admin/scan")}
-            style={[styles.scanButton, { backgroundColor: theme.primary }]}
-          >
-            <Ionicons name="scan" size={18} color="#FFF" />
-          </Pressable>
+          <View style={styles.headerIcons}>
+            <Pressable
+              style={styles.headerIconBtn}
+              onPress={() => router.push("/admin/settings")}
+            >
+              <Ionicons name="settings-outline" size={20} color="#FFF" />
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -423,6 +402,61 @@ export default function AdminSales() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          {/* Welcome Section with Quick Actions */}
+          <View style={styles.welcomeSection}>
+            <View>
+              <ThemedText style={[styles.welcomeTitle, { color: theme.text }]}>
+                Ready to Process Sales, {firstName}?
+              </ThemedText>
+              <ThemedText style={[styles.welcomeSubtitle, { color: theme.subtext }]}>
+                Scan products or add them manually to get started
+              </ThemedText>
+            </View>
+          </View>
+
+          {/* Quick Action Buttons */}
+          <View style={styles.quickActionsContainer}>
+            <Pressable
+              style={[styles.quickActionBtn, { backgroundColor: theme.primary + "15", borderColor: theme.primary }]}
+              onPress={() => router.push("/admin/scan")}
+            >
+              <Ionicons name="scan" size={24} color={theme.primary} />
+              <ThemedText style={[styles.quickActionText, { color: theme.primary }]}>
+                Scan Products
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              style={[styles.quickActionBtn, { backgroundColor: theme.primary + "15", borderColor: theme.primary }]}
+              onPress={() => {
+                if (products.length > 0) {
+                  setShowProductPicker(true);
+                } else {
+                  Toast.show({
+                    type: 'error',
+                    text1: 'No Products',
+                    text2: 'Add products to inventory first'
+                  });
+                }
+              }}
+            >
+              <Ionicons name="add-circle" size={24} color={theme.primary} />
+              <ThemedText style={[styles.quickActionText, { color: theme.primary }]}>
+                Add Manually
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              style={[styles.quickActionBtn, { backgroundColor: theme.primary + "15", borderColor: theme.primary }]}
+              onPress={() => setActiveTab("history")}
+            >
+              <Ionicons name="time" size={24} color={theme.primary} />
+              <ThemedText style={[styles.quickActionText, { color: theme.primary }]}>
+                View History
+              </ThemedText>
+            </Pressable>
+          </View>
+
           {/* Sales Session Panel */}
           <View
             style={[
@@ -955,34 +989,35 @@ export default function AdminSales() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingTop: 60,
+  blueHeader: {
+    paddingTop: 55,
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 16,
+  },
+  headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
-  systemLabel: {
+  headerDesc: {
     fontSize: 10,
-    letterSpacing: 1.5,
-    marginBottom: 4,
+    letterSpacing: 2,
+    fontWeight: "900",
   },
-  title: {
-    fontSize: 23,
-    letterSpacing: -0.5,
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: 500,
+    letterSpacing: -1,
   },
-  scanButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+  headerIcons: {
+    flexDirection: "row",
+    gap: 10,
   },
-  settingsButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.2)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -1011,6 +1046,42 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 130,
+  },
+
+  welcomeSection: {
+    marginBottom: 20,
+    paddingTop: 8,
+  },
+  welcomeTitle: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginBottom: 4,
+    letterSpacing: -0.3,
+  },
+  welcomeSubtitle: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+
+  quickActionsContainer: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 20,
+  },
+  quickActionBtn: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 16,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    gap: 8,
+  },
+  quickActionText: {
+    fontSize: 12,
+    fontWeight: "700",
+    textAlign: "center",
+    letterSpacing: 0.3,
   },
 
   sessionPanel: {

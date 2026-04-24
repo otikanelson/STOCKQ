@@ -18,6 +18,7 @@ import {
   TextInput,
   View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from '../../components/ThemedText';
 
 export default function InventoryScreen() {
@@ -25,6 +26,7 @@ export default function InventoryScreen() {
   const { theme, isDark } = useTheme();
   const { products, loading, refresh } = useProducts();
   const { role } = useAuth();
+  const insets = useSafeAreaInsets();
   
   // Check feature access for viewing inventory
   const viewAccess = useFeatureAccess('viewProducts');
@@ -126,13 +128,16 @@ export default function InventoryScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: theme.primary }}>
       {/* Blue Header */}
-      <View style={[styles.blueHeader, { backgroundColor: theme.primary }]}>
+      <View style={[styles.blueHeader, { backgroundColor: theme.primary, paddingTop: insets.top + 16 }]}>
         <View style={styles.headerTop}>
-          <ThemedText style={styles.headerTitle}>Inventory List</ThemedText>
+          <View>
+            <ThemedText style={[styles.headerDesc, { color: theme.primaryLight }]}>MANAGE_STOCK</ThemedText>
+            <ThemedText style={styles.headerTitle}>Inventory List</ThemedText>
+          </View>
           <View style={styles.headerIcons}>
             <Pressable style={styles.headerIconBtn} onPress={cycleSortField}>
               <Ionicons
-                name={sortField === "risk" ? "alert-circle" : sortField === "velocity" ? "speedometer" : "list"}
+                name={sortField === "risk" ? "alert-circle" : sortField === "velocity" ? "speedometer" : "document"}
                 size={20}
                 color="#FFF"
               />
@@ -153,8 +158,10 @@ export default function InventoryScreen() {
             </Pressable>
           </View>
         </View>
+      </View>
 
-        {/* Search Bar */}
+      {/* Search Bar and Filters */}
+      <View style={[styles.filterSection, { backgroundColor: theme.background }]}>
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={18} color="#999" style={{ marginLeft: 4 }} />
           <TextInput
@@ -264,39 +271,44 @@ export default function InventoryScreen() {
               return <ProductCard item={item} prediction={prediction as any} sortField={sortField as any} />;
             }
 
-            // Card mode — new design
+            // Card mode — horizontal layout
             return (
               <Pressable
                 onPress={() => router.push(`/product/${item._id}` as Href)}
-                style={[styles.productCard, { backgroundColor: theme.surface }]}
+                style={[styles.horizontalCard, { backgroundColor: theme.surface }]}
               >
                 {riskColor && riskScore > 30 && (
                   <View style={[styles.cardRiskDot, { backgroundColor: riskColor }]} />
                 )}
-                <View style={styles.cardNumberBadge}>
-                  <ThemedText style={[styles.cardNumber, { color: theme.subtext }]}>
-                    #{String(index + 1).padStart(2, "0")}
-                  </ThemedText>
-                  <ThemedText style={[styles.cardPrice, { color: theme.text }]}>
-                    {item.genericPrice ? `₦${item.genericPrice}` : ""}
-                  </ThemedText>
-                </View>
-                <View style={[styles.cardImageBox, { backgroundColor: theme.background }]}>
+                
+                {/* Image Section */}
+                <View style={[styles.horizontalImageBox, { backgroundColor: theme.background }]}>
                   {item.imageUrl && item.imageUrl !== "cube" && item.imageUrl !== "" ? (
-                    <Image source={{ uri: item.imageUrl }} style={styles.cardImage} resizeMode="contain" />
+                    <Image source={{ uri: item.imageUrl }} style={styles.horizontalImage} resizeMode="contain" />
                   ) : (
-                    <Ionicons name="cube-outline" size={40} color={theme.subtext + "60"} />
+                    <Ionicons name="cube-outline" size={32} color={theme.subtext + "60"} />
                   )}
                 </View>
-                <ThemedText style={[styles.cardName, { color: theme.text }]} numberOfLines={1}>
-                  {item.name}
-                </ThemedText>
-                <ThemedText style={[styles.cardBarcode, { color: theme.subtext }]} numberOfLines={1}>
-                  Code: {item.barcode || "N/A"}
-                </ThemedText>
-                <ThemedText style={[styles.cardMeta, { color: theme.subtext }]} numberOfLines={1}>
-                  Qty: {item.totalQuantity} units
-                </ThemedText>
+
+                {/* Content Section */}
+                <View style={styles.horizontalContent}>
+                  <ThemedText style={[styles.horizontalName, { color: theme.text }]} numberOfLines={1}>
+                    {item.name}
+                  </ThemedText>
+                  <ThemedText style={[styles.horizontalCategory, { color: theme.subtext }]} numberOfLines={1}>
+                    {item.category || "General"}
+                  </ThemedText>
+                </View>
+
+                {/* Quantity Section */}
+                <View style={styles.horizontalQtyBox}>
+                  <ThemedText style={[styles.horizontalQty, { color: theme.text }]}>
+                    {item.totalQuantity}
+                  </ThemedText>
+                  <ThemedText style={[styles.horizontalQtyLabel, { color: theme.subtext }]}>
+                    QTY
+                  </ThemedText>
+                </View>
               </Pressable>
             );
           }}
@@ -324,19 +336,22 @@ const styles = StyleSheet.create({
   blueHeader: {
     paddingTop: 55,
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingBottom: 10,
   },
   headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
+    alignItems: "flex-start",
+  },
+  headerDesc: {
+    fontSize: 10,
+    letterSpacing: 2,
+    fontWeight: "900",
   },
   headerTitle: {
-    fontSize: 26,
-    fontWeight: "900",
-    color: "#FFF",
-    letterSpacing: -0.5,
+    fontSize: 25,
+    fontWeight: 500,
+    letterSpacing: -1
   },
   headerIcons: {
     flexDirection: "row",
@@ -349,6 +364,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.2)",
     justifyContent: "center",
     alignItems: "center",
+  },
+  filterSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   searchContainer: {
     flexDirection: "row",
@@ -382,21 +401,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(150,150,150,0.1)",
     borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.4)",
+    borderColor: "rgba(150,150,150,0.2)",
   },
   pillActive: {
-    backgroundColor: "#FFF",
-    borderColor: "#FFF",
+    backgroundColor: "#1a6fd4",
+    borderColor: "#1a6fd4",
   },
   pillText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "rgba(255,255,255,0.9)",
+    color: "rgba(100,100,100,0.8)",
   },
   pillTextActive: {
-    color: "#1a6fd4",
+    color: "#FFF",
   },
   listContainer: {
     flex: 1,
@@ -504,5 +523,59 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+
+  // Horizontal card layout
+  horizontalCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 12,
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  horizontalImageBox: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    flexShrink: 0,
+  },
+  horizontalImage: {
+    width: "100%",
+    height: "100%",
+  },
+  horizontalContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  horizontalName: {
+    fontSize: 14,
+    fontWeight: "800",
+    marginBottom: 4,
+  },
+  horizontalCategory: {
+    fontSize: 12,
+  },
+  horizontalQtyBox: {
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 50,
+  },
+  horizontalQty: {
+    fontSize: 18,
+    fontWeight: "900",
+  },
+  horizontalQtyLabel: {
+    fontSize: 10,
+    fontWeight: "700",
+    marginTop: 2,
   },
 });

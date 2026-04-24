@@ -1,3 +1,4 @@
+import { DisabledFeatureOverlay } from "@/components/DisabledFeatureOverlay";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
@@ -6,18 +7,17 @@ import { useRouter } from "expo-router";
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    Platform,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    View
+  ActivityIndicator,
+  Dimensions,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { DisabledFeatureOverlay } from "../../components/DisabledFeatureOverlay";
-import { HelpTooltip } from "../../components/HelpTooltip";
 import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
@@ -29,25 +29,14 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export default function AdminStats() {
   const { theme, isDark } = useTheme();
-
   const router = useRouter();
   const { dashboardData, loading, refresh } = useAnalytics();
   const { quickInsights } = useAIPredictions({ enableWebSocket: true, autoFetch: true });
+  const insets = useSafeAreaInsets();
   
   // Check feature access for viewing analytics
   const viewAccess = useFeatureAccess('viewAnalytics');
   const exportAccess = useFeatureAccess('exportData');
-  
-  // Show overlay if access is denied
-  if (!viewAccess.isAllowed) {
-    return (
-      <View style={{ flex: 1, backgroundColor: theme.background }}>
-        <DisabledFeatureOverlay 
-          reason={viewAccess.reason || 'Access denied'} 
-        />
-      </View>
-    );
-  }
   
   const [selectedPeriod, setSelectedPeriod] = useState<"7" | "30">("30");
   const [selectedTab, setSelectedTab] = useState<"overview" | "products" | "categories" | "accuracy">("overview");
@@ -822,6 +811,17 @@ export default function AdminStats() {
     </>
   );
 
+  // Check feature access for viewing analytics - after all hooks
+  if (!viewAccess.isAllowed) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.background }}>
+        <DisabledFeatureOverlay 
+          reason={viewAccess.reason || 'Access denied'} 
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView
@@ -831,111 +831,59 @@ export default function AdminStats() {
           <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={theme.primary} />
         }
       >
-        {/* Header with Export Buttons */}
-        <View style={styles.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        {/* Blue Header */}
+        <View style={[styles.blueHeader, { backgroundColor: theme.primary, paddingTop: insets.top + 16 }]}>
+          <View style={styles.headerTop}>
             <View>
-              <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
-                AI ANALYTICS
-              </ThemedText>
-              <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
-                Insights
-              </ThemedText>
+              <ThemedText style={[styles.headerDesc, { color: theme.primaryLight }]}>ANALYTICS</ThemedText>
+              <ThemedText style={styles.headerTitle}>Statistics</ThemedText>
             </View>
-            <HelpTooltip
-              style={{marginTop: 20}}
-              title="AI Stats & Insights"
-              content={[
-                "Risk Scores: Numbers from 0-100 showing how likely a product will expire before selling. High (70+) means urgent - product may waste soon. Medium (50-69) needs monitoring. Low (<50) is healthy stock moving well.",
-                "Velocity: How fast products sell, measured in units per day. Example: 5.2 units/day means you sell about 5 units daily. Higher velocity = faster sales.",
-                "Accuracy Metrics: Shows how often AI predictions are correct. 87% overall means AI is right 87 times out of 100. High confidence predictions (when AI is very sure) are 92% accurate.",
-                "Confidence: How sure the AI is about its prediction (0-100%). Predictions above 80% confidence are more reliable. Low confidence means AI needs more sales data to be accurate.",
-                "Export: Download all insights as CSV (spreadsheet) or text report to analyze in Excel or share with management."
-              ]}
-              icon="help-circle"
-              iconSize={18}
-              iconColor={theme.primary}
-            />
-          </View>
-          
-          {/* Export Buttons */}
-          <View style={styles.exportButtons}>
-            <Pressable
-              onPress={() => {
-                if (!exportAccess.isAllowed) {
-                  Toast.show({
-                    type: 'error',
-                    text1: 'Access Denied',
-                    text2: exportAccess.reason,
-                    visibilityTime: 3000,
-                  });
-                  return;
-                }
-                handleExportCSV();
-              }}
-              disabled={exportingCSV || exportingPDF}
-              style={[
-                styles.exportBtn,
-                { 
-                  backgroundColor: theme.surface, 
-                  borderColor: theme.border,
-                  opacity: !exportAccess.isAllowed ? 0.5 : 1
-                },
-              ]}
-            >
-              {!exportAccess.isAllowed && (
-                <View style={styles.lockBadge}>
-                  <Ionicons 
-                    name={'lock-closed'} 
-                    size={10} 
-                    color="#FFF" 
-                  />
-                </View>
-              )}
-              {exportingCSV ? (
-                <ActivityIndicator size="small" color={theme.primary} />
-              ) : (
-                <Ionicons name="document-text-outline" size={16} color={theme.primary} />
-              )}
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                if (!exportAccess.isAllowed) {
-                  Toast.show({
-                    type: 'error',
-                    text1: 'Access Denied',
-                    text2: exportAccess.reason,
-                    visibilityTime: 3000,
-                  });
-                  return;
-                }
-                handleExportPDF();
-              }}
-              disabled={exportingCSV || exportingPDF}
-              style={[
-                styles.exportBtn,
-                { 
-                  backgroundColor: theme.surface, 
-                  borderColor: theme.border,
-                  opacity: !exportAccess.isAllowed ? 0.5 : 1
-                },
-              ]}
-            >
-              {!exportAccess.isAllowed && (
-                <View style={styles.lockBadge}>
-                  <Ionicons 
-                    name={'lock-closed'} 
-                    size={10} 
-                    color="#FFF" 
-                  />
-                </View>
-              )}
-              {exportingPDF ? (
-                <ActivityIndicator size="small" color={theme.primary} />
-              ) : (
-                <Ionicons name="document-outline" size={16} color={theme.primary} />
-              )}
-            </Pressable>
+            <View style={styles.headerIcons}>
+              <Pressable
+                onPress={() => {
+                  if (!exportAccess.isAllowed) {
+                    Toast.show({
+                      type: 'error',
+                      text1: 'Access Denied',
+                      text2: exportAccess.reason,
+                      visibilityTime: 3000,
+                    });
+                    return;
+                  }
+                  handleExportCSV();
+                }}
+                disabled={exportingCSV || exportingPDF}
+                style={styles.headerIconBtn}
+              >
+                {exportingCSV ? (
+                  <ActivityIndicator size="small" color="#FFF" />
+                ) : (
+                  <Ionicons name="document-text-outline" size={20} color="#FFF" />
+                )}
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  if (!exportAccess.isAllowed) {
+                    Toast.show({
+                      type: 'error',
+                      text1: 'Access Denied',
+                      text2: exportAccess.reason,
+                      visibilityTime: 3000,
+                    });
+                    return;
+                  }
+                  handleExportPDF();
+                }}
+                disabled={exportingCSV || exportingPDF}
+                style={styles.headerIconBtn}
+              >
+                {exportingPDF ? (
+                  <ActivityIndicator size="small" color="#FFF" />
+                ) : (
+                  <Ionicons name="download-outline" size={20} color="#FFF" />
+                )}
+              </Pressable>
+            </View>
           </View>
         </View>
 
@@ -1100,46 +1048,44 @@ const getRiskColor = (score: number) => {
 };
 
 const styles = StyleSheet.create({
-  scrollContent: { padding: 20, paddingTop: 60, paddingBottom: 120 },
-  header: {
+  scrollContent: { padding: 0, paddingBottom: 120 },
+  blueHeader: {
+    paddingTop: 55,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 16,
   },
-  headerSub: { fontSize: 10, letterSpacing: 2 },
-  headerTitle: { fontSize: 22, letterSpacing: -1 },
-  exportButtons: {
+  headerDesc: {
+    fontSize: 10,
+    letterSpacing: 2,
+    fontWeight: "900",
+  },
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: 500,
+    letterSpacing: -1
+  },
+  headerIcons: {
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
   },
-  exportBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    borderWidth: 1,
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.2)",
     justifyContent: "center",
     alignItems: "center",
-    position: 'relative',
-  },
-  lockBadge: {
-    position: 'absolute',
-    top: -6,
-    right: -6,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#FF3B30',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-    borderWidth: 2,
-    borderColor: '#FFF',
   },
   periodSelector: {
     flexDirection: "row",
     gap: 10,
-    marginBottom: 16,
+    marginVertical: 16,
+    paddingHorizontal: 20,
   },
   periodBtn: {
     flex: 1,
@@ -1155,6 +1101,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   tab: {
     flex: 1,
@@ -1169,7 +1116,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 10,
     },
-  riskGrid: { flexDirection: "row", gap: 12, marginBottom: 16 },
+  riskGrid: { flexDirection: "row", gap: 12, marginBottom: 16, paddingHorizontal: 20 },
   riskCard: {
     flex: 1,
     padding: 16,
@@ -1183,6 +1130,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     marginBottom: 16,
+    marginHorizontal: 20,
   },
   sectionTitle: {
     fontSize: 10,
@@ -1202,6 +1150,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     marginBottom: 16,
+    marginHorizontal: 20,
   },
   chartContainer: {
     flexDirection: "row",
@@ -1264,7 +1213,7 @@ const styles = StyleSheet.create({
   categoryLabel: {
     fontSize: 9,
     },
-  listSection: { marginBottom: 20 },
+  listSection: { marginBottom: 20, paddingHorizontal: 20 },
   listHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -1301,6 +1250,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     marginBottom: 16,
+    marginHorizontal: 20,
   },
   accuracyRow: {
     flexDirection: "row",
@@ -1330,6 +1280,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     marginBottom: 16,
+    marginHorizontal: 20,
   },
   insightsHeader: {
     flexDirection: "row",

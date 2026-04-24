@@ -653,67 +653,69 @@ export default function AdminScanScreen() {
               : "Scan items to add to cart"}
           </ThemedText>
 
-          {mode === "sales" && (
-            <Animated.View
-              style={{
-                transform: [
-                  { scale: cartBounceAnim },
-                  { translateX: cartShakeAnim },
-                ],
-              }}
-            >
-              <Pressable
-                style={[styles.cartButton, { backgroundColor: theme.primary }]}
-                onPress={() => setShowCartModal(true)}
+          <View style={styles.bottomActions}>
+            {mode === "sales" && (
+              <Animated.View
+                style={{
+                  transform: [
+                    { scale: cartBounceAnim },
+                    { translateX: cartShakeAnim },
+                  ],
+                }}
               >
-                <Ionicons name="cart" size={24} color="#FFF" />
-                {cart.length > 0 && (
-                  <View style={styles.cartBadge}>
-                    <ThemedText style={styles.cartBadgeText}>{getTotalItems()}</ThemedText>
-                  </View>
-                )}
+                <Pressable
+                  style={[styles.cartButton, { backgroundColor: theme.primary }]}
+                  onPress={() => setShowCartModal(true)}
+                >
+                  <Ionicons name="cart" size={24} color="#FFF" />
+                  {cart.length > 0 && (
+                    <View style={styles.cartBadge}>
+                      <ThemedText style={styles.cartBadgeText}>{getTotalItems()}</ThemedText>
+                    </View>
+                  )}
+                </Pressable>
+              </Animated.View>
+            )}
+            
+            {mode === "register" && (
+              <Pressable
+                style={styles.manualBtn}
+                onPress={() => {
+                  // Generate unique barcode for manual entry
+                  const timestamp = Date.now();
+                  const random = Math.floor(Math.random() * 10000);
+                  const generatedBarcode = `MAN-${timestamp}-${random}`;
+                  
+                  // Turn off torch before navigation
+                  setTorch(false);
+                  
+                  router.push({
+                    pathname: "/admin/add-products",
+                    params: {
+                      barcode: generatedBarcode,
+                      mode: "manual",
+                      hasBarcode: "false",
+                      fromAdmin: "true" // Flag to prevent back button bypass
+                    }
+                  });
+                }}
+              >
+                <ThemedText style={styles.manualBtnText}>Manual Entry</ThemedText>
               </Pressable>
-            </Animated.View>
-          )}
-          
-          {mode === "register" && (
-            <Pressable
-              style={styles.manualBtn}
-              onPress={() => {
-                // Generate unique barcode for manual entry
-                const timestamp = Date.now();
-                const random = Math.floor(Math.random() * 10000);
-                const generatedBarcode = `MAN-${timestamp}-${random}`;
-                
-                // Turn off torch before navigation
-                setTorch(false);
-                
-                router.push({
-                  pathname: "/admin/add-products",
-                  params: {
-                    barcode: generatedBarcode,
-                    mode: "manual",
-                    hasBarcode: "false",
-                    fromAdmin: "true" // Flag to prevent back button bypass
-                  }
-                });
-              }}
-            >
-              <ThemedText style={styles.manualBtnText}>Manual Entry</ThemedText>
-            </Pressable>
-          )}
-          
-          <HelpTooltip
-            title="Admin Scanner Modes"
-            content={[
-              "SALES MODE: Process sales transactions. Scan products to add them to the cart, then complete the sale.",
-              "LOOKUP MODE: Quickly find products in your inventory. Scan to view product details and stock levels.",
-              "REGISTER MODE: Add new products or restock existing ones. Scan to register new items or add batches."
-            ]}
-            icon="help-circle"
-            iconSize={24}
-            iconColor="#FFF"
-          />
+            )}
+            
+            <HelpTooltip
+              title="Admin Scanner Modes"
+              content={[
+                "SALES MODE: Process sales transactions. Scan products to add them to the cart, then complete the sale.",
+                "LOOKUP MODE: Quickly find products in your inventory. Scan to view product details and stock levels.",
+                "REGISTER MODE: Add new products or restock existing ones. Scan to register new items or add batches."
+              ]}
+              icon="help-circle"
+              iconSize={24}
+              iconColor="#FFF"
+            />
+          </View>
         </View>
       </BarcodeScanner>
 
@@ -859,7 +861,6 @@ export default function AdminScanScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#000" },
-  
   // Top Bar
   topBar: {
     flexDirection: "row",
@@ -904,6 +905,11 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginBottom: 20,
     textAlign: "center",
+  },
+  bottomActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
   },
   manualBtn: {
     backgroundColor: "#FFF",

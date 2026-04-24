@@ -3,31 +3,26 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Pressable,
-    RefreshControl,
-    StyleSheet,
-    View
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  View
 } from "react-native";
-import { HelpTooltip } from "../../components/HelpTooltip";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from '../../components/ThemedText';
-import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
-import { useFeatureAccess } from "../../hooks/useFeatureAccess";
 import { useProducts } from "../../hooks/useProducts";
 import { Prediction } from "../../types/ai-predictions";
 
 export default function FEFOScreen() {
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const { products, loading, refresh } = useProducts();
   const { fetchBatchPredictions } = useAIPredictions({ enableWebSocket: false, autoFetch: false });
   const router = useRouter();
-  const { role } = useAuth();
-  
-  // Check feature access
-  const viewAccess = useFeatureAccess('viewProducts');
+  const insets = useSafeAreaInsets();
   
   // Note: Staff can always view the FEFO page, but some features may be disabled based on permissions
 
@@ -180,8 +175,103 @@ export default function FEFOScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <View style={{ flex: 1, backgroundColor: theme.background }}>
-      
+      {/* Blue Header */}
+      <View style={[styles.blueHeader, { backgroundColor: theme.primary, paddingTop: insets.top + 16 }]}>
+        <View style={styles.headerTop}>
+          <View>
+            <ThemedText style={[styles.headerDesc, { color: theme.primaryLight }]}>EXPIRY_MANAGEMENT</ThemedText>
+            <ThemedText style={styles.headerTitle}>Priority Queue</ThemedText>
+          </View>
+          <View style={styles.headerIcons}>
+            <Pressable
+              style={styles.headerIconBtn}
+              onPress={() => setSortByAI(!sortByAI)}
+            >
+              <Ionicons
+                name={sortByAI ? 'sparkles' : 'sparkles-outline'}
+                size={20}
+                color="#FFF"
+              />
+            </Pressable>
+            <Pressable
+              style={styles.headerIconBtn}
+              onPress={() => setViewByProduct(!viewByProduct)}
+            >
+              <Ionicons
+                name={viewByProduct ? "copy" : "copy-outline"}
+                size={20}
+                color="#FFF"
+              />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+
+      {/* Filter Section */}
+      <View style={[styles.filterSection, { backgroundColor: theme.background }]}>
+        <View style={styles.controlsRow}>
+          <Pressable
+            onPress={() => setSortByAI(!sortByAI)}
+            style={[
+              styles.filterToggle,
+              {
+                borderColor: sortByAI ? '#FF9500' : theme.primary,
+                backgroundColor: sortByAI ? '#FF9500' : 'transparent',
+              },
+            ]}
+          >
+            <Ionicons
+              name={sortByAI ? 'sparkles' : 'sparkles-outline'}
+              size={10}
+              color={sortByAI ? '#FFF' : theme.primary}
+            />
+            <ThemedText
+              style={[
+                styles.filterToggleText,
+                { color: sortByAI ? '#FFF' : theme.text },
+              ]}
+            >
+              {sortByAI ? 'AI_RISK' : 'EXPIRY'}
+            </ThemedText>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setViewByProduct(!viewByProduct)}
+            style={[
+              styles.filterToggle,
+              {
+                borderColor: theme.primary,
+                backgroundColor:
+                  viewByProduct ? theme.primary : "transparent",
+              },
+            ]}
+          >
+            <Ionicons
+              name={viewByProduct ? "copy" : "copy-outline"}
+              size={10}
+              color={viewByProduct ? "#FFF" : theme.primary}
+            />
+            <ThemedText
+              style={[
+                styles.filterToggleText,
+                { color: viewByProduct ? "#FFF" : theme.text },
+              ]}
+            >
+              {viewByProduct ? "BY_PRODUCT" : "BY_BATCH"}
+            </ThemedText>
+          </Pressable>
+        </View>
+
+        <View style={[styles.statsStrip, { borderColor: theme.border }]}>
+          <ThemedText style={[styles.statsText, { color: theme.subtext }]}>
+            MONITORING{" "}
+            <ThemedText style={{ color: theme.text, }}>
+              {priorityQueue.length}
+            </ThemedText>{" "}
+            {viewByProduct ? "UNIQUE_ITEMS" : "ACTIVE_BATCHES"}
+          </ThemedText>
+        </View>
+      </View>
 
       <FlatList
         data={priorityQueue}
@@ -194,101 +284,6 @@ export default function FEFOScreen() {
           />
         }
         contentContainerStyle={styles.list}
-        ListHeaderComponent={
-          <View style={styles.headerArea}>
-            <ThemedText style={[styles.systemTag, { color: theme.primary }]}>
-              EXPIRY_MANAGEMENT
-            </ThemedText>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-              }}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <ThemedText style={[styles.title, { color: theme.text }]}>
-                  PRIORITY_QUEUE
-                </ThemedText>
-                <HelpTooltip
-                  title="FEFO System"
-                  content={[
-                    "FEFO (First Expired, First Out) helps you prioritize products by expiry date to minimize waste.",
-                    "Risk Scores: Items are color-coded - Red (expired/critical), Orange (high risk), Yellow (warning), Green (stable).",
-                    "View Modes: Switch between BY_BATCH (all batches) or BY_PRODUCT (earliest expiry per product).",
-                    "AI Risk Sorting: Uses machine learning to predict which items are most likely to expire before being sold, considering sales velocity and stock levels."
-                  ]}
-                  icon="help-circle-outline"
-                  iconSize={15}
-                  iconColor={theme.primary}
-                />
-              </View>
-
-            <View style={styles.controlsRow}>
-              <Pressable
-                onPress={() => setSortByAI(!sortByAI)}
-                style={[
-                  styles.filterToggle,
-                  {
-                    borderColor: sortByAI ? '#FF9500' : theme.primary,
-                    backgroundColor: sortByAI ? '#FF9500' : 'transparent',
-                  },
-                ]}
-              >
-                <Ionicons
-                  name={sortByAI ? 'sparkles' : 'sparkles-outline'}
-                  size={10}
-                  color={sortByAI ? '#FFF' : theme.primary}
-                />
-                <ThemedText
-                  style={[
-                    styles.filterToggleText,
-                    { color: sortByAI ? '#FFF' : theme.text },
-                  ]}
-                >
-                  {sortByAI ? 'AI_RISK' : 'EXPIRY'}
-                </ThemedText>
-              </Pressable>
-
-              <Pressable
-                onPress={() => setViewByProduct(!viewByProduct)}
-                style={[
-                  styles.filterToggle,
-                  {
-                    borderColor: theme.primary,
-                    backgroundColor:
-                      viewByProduct ? theme.primary : "transparent",
-                  },
-                ]}
-              >
-                <Ionicons
-                  name={viewByProduct ? "copy" : "copy-outline"}
-                  size={10}
-                  color={viewByProduct ? "#FFF" : theme.primary}
-                />
-                <ThemedText
-                  style={[
-                    styles.filterToggleText,
-                    { color: viewByProduct ? "#FFF" : theme.text },
-                  ]}
-                >
-                  {viewByProduct ? "BY_PRODUCT" : "BY_BATCH"}
-                </ThemedText>
-              </Pressable>
-            </View>
-            </View>
-
-            <View style={[styles.statsStrip, { borderColor: theme.border }]}>
-              <ThemedText style={[styles.statsText, { color: theme.subtext }]}>
-                MONITORING{" "}
-                <ThemedText style={{ color: theme.text, }}>
-                  {priorityQueue.length}
-                </ThemedText>{" "}
-                {viewByProduct ? "UNIQUE_ITEMS" : "ACTIVE_BATCHES"}
-              </ThemedText>
-            </View>
-          </View>
-        }
         renderItem={({ item, index }) => {
           const statusColor = sortByAI ? getRiskColor(item.riskScore) : getStatusColor(item.daysLeft);
 
@@ -405,103 +400,180 @@ export default function FEFOScreen() {
         }
       />
     </View>
-    </View>
   );
 }
 
+
+
+
 const styles = StyleSheet.create({
-  list: { padding: 20, paddingBottom: 110 },
-  headerArea: { marginTop: 40, marginBottom: 25 },
-  navRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 5,
+  blueHeader: {
+    paddingTop: 55,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
   },
-  systemTag: { fontSize: 10, letterSpacing: 2 },
-  title: { fontSize: 22, fontWeight: 500, letterSpacing: -1 },
-  controlsRow: {
+  headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  headerDesc: {
+    fontSize: 10,
+    letterSpacing: 2,
+    fontWeight: "900",
+  },
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: 500,
+    letterSpacing: -1
+  },
+  headerIcons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    justifyContent: "center",
     alignItems: "center",
-    gap: 5,
-    marginLeft: 1,
+  },
+  filterSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  controlsRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
   },
   filterToggle: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 5,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 2,
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1.5,
   },
   filterToggleText: {
-    fontSize: 7,
-    letterSpacing: 1,
-    fontWeight: 500,
+    fontSize: 12,
+    fontWeight: "700",
   },
   statsStrip: {
-    marginTop: 10,
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderStyle: "dashed",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(150,150,150,0.2)",
   },
-  statsText: { fontSize: 11, },
+  statsText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  list: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 120,
+  },
   technicalRow: {
     flexDirection: "row",
+    alignItems: "center",
     borderRadius: 16,
-    borderWidth: 1,
+    padding: 12,
     marginBottom: 12,
-    overflow: "hidden",
-    minHeight: 95,
+    borderWidth: 1,
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  indicator: { width: 6, height: "100%" },
-  mainInfo: { flex: 1, padding: 15, justifyContent: "center" },
+  indicator: {
+    width: 4,
+    height: "100%",
+    borderRadius: 2,
+    minHeight: 80,
+  },
+  mainInfo: {
+    flex: 1,
+  },
   topLine: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 8,
   },
   batchIdContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flex: 1,
   },
-  batchId: { fontSize: 10, fontFamily: "monospace" },
+  batchId: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
   rightInfo: {
     alignItems: "flex-end",
   },
-  daysCounter: { fontSize: 10, },
-  priorityScore: { fontSize: 8, marginTop: 2 },
-  name: { fontSize: 18, marginBottom: 8 },
-  bottomLine: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
-  tag: { flexDirection: "row", alignItems: "center", gap: 4 },
-  tagText: { fontSize: 10, },
-  rankContainer: {
-    width: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderLeftWidth: 1,
-    borderLeftColor: "rgba(150,150,150,0.1)",
+  daysCounter: {
+    fontSize: 14,
+    fontWeight: "900",
   },
-  rankText: { fontSize: 24, },
+  priorityScore: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  name: {
+    fontSize: 14,
+    fontWeight: "800",
+    marginBottom: 8,
+  },
+  bottomLine: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  tag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: "rgba(150,150,150,0.1)",
+  },
+  tagText: {
+    fontSize: 10,
+    fontWeight: "600",
+  },
   riskBadge: {
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginTop: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   riskBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
     color: "#FFF",
-    fontSize: 8,
-    },
-  emptyContainer: { alignItems: "center", marginTop: 100 },
-  emptyText: {
-    marginTop: 15,
+  },
+  rankContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 40,
+  },
+  rankText: {
     fontSize: 16,
-    letterSpacing: 1,
+    fontWeight: "900",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+  },
+  emptyText: {
+    marginTop: 12,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
-

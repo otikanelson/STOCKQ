@@ -2,26 +2,26 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Modal,
-    Platform,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    View
+  Modal,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View
 } from "react-native";
-import { ThemedText } from '../components/ThemedText';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { HelpTooltip } from "../components/HelpTooltip";
-import { useTheme } from "../context/ThemeContext";
-import { useAdminAuth } from "../hooks/useAdminAuth";
-import { Alert, AlertAction, useAlerts } from "../hooks/useAlerts";
+import { HelpTooltip } from "../../components/HelpTooltip";
+import { ThemedText } from '../../components/ThemedText';
+import { useTheme } from "../../context/ThemeContext";
+import { useAdminAuth } from "../../hooks/useAdminAuth";
+import { Alert, AlertAction, useAlerts } from "../../hooks/useAlerts";
 
 export default function Alerts() {
-  const { theme, isDark } = useTheme();
-
-    const router = useRouter();
+  const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { alerts, summary, loading, refresh, acknowledgeAlert } = useAlerts();
   const { validatePin } = useAdminAuth();
 
@@ -175,7 +175,7 @@ export default function Alerts() {
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16 }]}
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -527,7 +527,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollContent: {
     padding: 20,
-    paddingTop: Platform.OS === "ios" ? 60 : 40,
     paddingBottom: 120,
   },
   header: {

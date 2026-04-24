@@ -13,10 +13,11 @@ import {
     TextInput,
     View
 } from "react-native";
-import { ThemedText } from '../../../components/ThemedText';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { DisabledButton } from "../../../components/DisabledButton";
 import { HelpTooltip } from "../../../components/HelpTooltip";
+import { ThemedText } from '../../../components/ThemedText';
 import { useTheme } from "../../../context/ThemeContext";
 import { useAlerts } from "../../../hooks/useAlerts";
 import { useFeatureAccess } from "../../../hooks/useFeatureAccess";
@@ -25,6 +26,7 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export default function AlertSettingsScreen() {
   const { theme, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { settings: alertSettings, updateSettings } = useAlerts();
   
@@ -521,7 +523,7 @@ export default function AlertSettingsScreen() {
         }
       >
         {/* Header with Back Button */}
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <Pressable 
             onPress={() => router.push('/admin/settings')}
             style={[styles.backButton, { backgroundColor: theme.surface }]}
@@ -1071,7 +1073,6 @@ export default function AlertSettingsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
   header: { 
-    marginTop: 70, 
     marginBottom: 30,
     flexDirection: 'row',
     alignItems: 'center',

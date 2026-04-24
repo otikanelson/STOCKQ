@@ -32,6 +32,7 @@ interface StaffMember {
 
 export default function StaffPermissionsScreen() {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { id } = useLocalSearchParams();
   
@@ -207,7 +208,7 @@ export default function StaffPermissionsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Pressable onPress={() => router.back()} style={styles.headerBackButton}>
           <Ionicons name="arrow-back" size={24} color={theme.text} />
         </Pressable>
@@ -380,7 +381,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 60,
     paddingBottom: 20,
   },
   headerBackButton: {

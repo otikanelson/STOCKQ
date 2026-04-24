@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function TabsLayout() {
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
@@ -68,7 +68,6 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="scan"
           options={{
-            tabBarStyle: { display: "none" },
             title: "Scan",
             tabBarIcon: ({ color, focused }) => (
               <View style={{
@@ -122,8 +121,25 @@ export default function TabsLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="alerts"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </View>
   );
 }
-

@@ -6,14 +6,15 @@ import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    Image,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { DisabledButton } from "../../../components/DisabledButton";
@@ -23,6 +24,7 @@ import { useAIPredictions } from "../../../hooks/useAIPredictions";
 import { useFeatureAccess } from "../../../hooks/useFeatureAccess";
 import { useImageUpload } from "../../../hooks/useImageUpload";
 import { useProducts } from "../../../hooks/useProducts";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -75,6 +77,7 @@ export default function AdminProductDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { theme, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
 
   // Check feature access for edit and delete
   const editAccess = useFeatureAccess('editProducts');
@@ -517,7 +520,7 @@ export default function AdminProductDetails() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header with Back Button */}
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <Pressable
             onPress={() => router.push("../inventory")}
             style={[styles.headerBtn, { backgroundColor: theme.surface }]}

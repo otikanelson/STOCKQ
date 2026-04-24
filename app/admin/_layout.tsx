@@ -4,11 +4,12 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Tabs, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Modal,
-    Pressable,
-    StyleSheet,
-    View
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -321,7 +322,6 @@ export default function AdminLayout() {
         <Tabs.Screen
           name="scan"
           options={{
-            tabBarStyle: { display: "none" },
             title: "Scan",
             tabBarIcon: ({ color, focused }) => (
               <View style={{

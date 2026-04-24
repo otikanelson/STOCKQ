@@ -6,20 +6,21 @@ import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    BackHandler,
-    FlatList,
-    Image,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    TextInput,
-    View
+  ActivityIndicator,
+  BackHandler,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  TextInput,
+  View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import AdminSecurityPINWarning from "../../components/AdminSecurityPINWarning";
 import { HelpTooltip } from "../../components/HelpTooltip";
@@ -35,6 +36,7 @@ export default function AddProducts() {
   const navigation: any = useNavigation();
   const params = useLocalSearchParams();
   const { products } = useProducts();
+  const insets = useSafeAreaInsets();
 
   const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/products`;
 
@@ -1001,41 +1003,24 @@ export default function AddProducts() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={styles.container}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.headerRow}>
-            <View style={{ flex: 1, }}>
-              <ThemedText style={[styles.subtitle, { color: theme.primary }]}>
-                {mode === "registry" ? "GLOBAL_REGISTRY_ENTRY" : "ADD_STOCK_TO_INVENTORY"}
-              </ThemedText>
-              <ThemedText style={[styles.title, { color: theme.text }]}>
-                {mode === "registry" ? "REGISTER_PRODUCT" : "ADD_BATCH"}
-              </ThemedText>
-            </View>
-            
-            {/* Action Buttons */}
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              {/* Refresh Button */}
-              {(params.barcode || params.mode) && (
+      {/* Blue Header */}
+      <View style={[styles.blueHeader, { backgroundColor: theme.primary, paddingTop: insets.top + 16 }]}>
+        <View style={styles.headerTop}>
+          <View>
+            <ThemedText style={[styles.headerDesc, { color: theme.primaryLight }]}>ADD_INVENTORY</ThemedText>
+            <ThemedText style={styles.headerTitle}>Add Products</ThemedText>
+          </View>
+          <View style={styles.headerIcons}>
+            {(params.barcode || params.mode) && (
+              <>
                 <Pressable 
-                  style={[styles.refreshBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                  style={styles.headerIconBtn}
                   onPress={handleRefreshPress}
                 >
-                  <Ionicons name="refresh" size={20} color={theme.primary} />
+                  <Ionicons name="refresh" size={20} color="#FFF" />
                 </Pressable>
-              )}
-              
-              {/* Reset to Default Button */}
-              {(params.barcode || params.mode) && (
                 <Pressable 
-                  style={[styles.refreshBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                  style={styles.headerIconBtn}
                   onPress={() => {
                     if (formModified) {
                       setPendingNavAction(() => () => {
@@ -1049,9 +1034,29 @@ export default function AddProducts() {
                     }
                   }}
                 >
-                  <Ionicons name="home-outline" size={20} color={theme.primary} />
+                  <Ionicons name="home-outline" size={20} color="#FFF" />
                 </Pressable>
-              )}
+              </>
+            )}
+          </View>
+        </View>
+      </View>
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.headerRow}>
+            <View style={{ flex: 1, }}>
+            </View>
+            
+            {/* Action Buttons */}
+            <View style={{ flexDirection: 'row', gap: 8 }}>
             </View>
           </View>
 
@@ -2166,7 +2171,39 @@ export default function AddProducts() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 25, paddingTop: 50, paddingBottom: 100 },
+  blueHeader: {
+    paddingTop: 55,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  headerDesc: {
+    fontSize: 10,
+    letterSpacing: 2,
+    fontWeight: "900",
+  },
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: 500,
+    letterSpacing: -1
+  },
+  headerIcons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: { padding: 25, paddingTop: 20, paddingBottom: 100 },
   headerRow: {
     flexDirection: "row",
     alignItems: "flex-start",

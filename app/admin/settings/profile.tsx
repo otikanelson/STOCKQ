@@ -13,8 +13,9 @@ import {
     TextInput,
     View
 } from "react-native";
-import { ThemedText } from '../../../components/ThemedText';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from 'react-native-toast-message';
+import { ThemedText } from '../../../components/ThemedText';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
 import { showErrorToast, showSuccessToast } from '../../../utils/errorHandler';
@@ -39,6 +40,7 @@ export default function AdminProfileScreen() {
   const { theme } = useTheme();
   const router = useRouter();
   const { user, role, logout } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const [showPinModal, setShowPinModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -265,7 +267,7 @@ export default function AdminProfileScreen() {
 
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
           {/* Header */}
-          <View style={styles.header}>
+          <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
             <Pressable onPress={() => router.push('/admin/settings')} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color={theme.text} />
             </Pressable>
@@ -709,7 +711,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 60,
     marginBottom: 30,
   },
   backButton: {

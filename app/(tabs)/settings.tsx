@@ -1,22 +1,24 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    View
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { AIStatusIndicator } from "../components/AIStatusIndicator";
-import { ThemedText } from '../components/ThemedText';
-import { margin } from "../constants/spacing";
-import { useTheme } from "../context/ThemeContext";
-import { useTour } from "../context/TourContext";
+import { AIStatusIndicator } from "../../components/AIStatusIndicator";
+import { ThemedText } from '../../components/ThemedText';
+import { margin } from "../../constants/spacing";
+import { useTheme } from "../../context/ThemeContext";
+import { useTour } from "../../context/TourContext";
 
 export default function SettingsScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
-    const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { resetTour, startTour } = useTour();
 
   const SettingRow = ({ icon, label, children, description, onPress, style }: any) => {
@@ -56,14 +58,11 @@ export default function SettingsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <View style={{ flex: 1, backgroundColor: theme.background }}>
-      
-
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
             SYSTEM_CONFIGURATION
           </ThemedText>
@@ -154,13 +153,13 @@ export default function SettingsScreen() {
         </ThemedText>
       </ScrollView>
     </View>
-    </View>
   );
 }
 
+
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
-  header: { marginTop: 70, marginBottom: margin.section },
+  header: { marginBottom: margin.section },
   headerSub: { fontSize: 11, letterSpacing: 2, opacity: 0.7 },
   headerTitle: { fontSize: 32, letterSpacing: -0.5, marginTop: 4 },
   section: { marginBottom: margin.section },
@@ -214,4 +213,5 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 });
+
 

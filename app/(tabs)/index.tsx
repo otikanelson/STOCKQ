@@ -175,10 +175,40 @@ export default function DashboardScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
+      {/* Blue Header */}
+      <View style={[styles.blueHeader, { backgroundColor: theme.primary, paddingTop: insets.top + 16 }]}>
+        <View style={styles.headerTop}>
+          <View>
+            <ThemedText style={[styles.headerDesc, { color: theme.primaryLight }]}>DASHBOARD</ThemedText>
+            <ThemedText style={styles.headerTitle}>Overview</ThemedText>
+          </View>
+          <View style={styles.headerIcons}>
+            <Pressable
+              onPress={() => router.push("/alerts")}
+              style={styles.headerIconBtn}
+            >
+              <Ionicons name="notifications-outline" size={20} color="#FFF" />
+            </Pressable>
+            <Pressable
+              onPress={() => router.push("/settings")}
+              style={styles.headerIconBtn}
+            >
+              <Ionicons name="settings-outline" size={20} color="#FFF" />
+            </Pressable>
+            <Pressable
+              onPress={() => router.push("/profile")}
+              style={styles.headerIconBtn}
+            >
+              <Ionicons name="person-outline" size={20} color="#FFF" />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
-          { paddingTop: insets.top + 20, paddingBottom: 40 },
+          { paddingTop: 20, paddingBottom: 40 },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -197,22 +227,6 @@ export default function DashboardScreen() {
             <ThemedText style={[styles.name, { color: theme.text }]}>
               {firstName}
             </ThemedText>
-          </View>
-          <View style={styles.headerActions}>
-            <Pressable
-              onPress={() => router.push("/settings")}
-              style={[styles.settingsBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
-            >
-              <Ionicons name="settings-outline" size={20} color={theme.text} />
-            </Pressable>
-            <Pressable
-              onPress={() => router.push("/profile")}
-              style={[styles.avatar, { backgroundColor: theme.primaryLight }]}
-            >
-              <ThemedText style={[styles.avatarLetter, { color: theme.primary }]}>
-                {firstName[0]?.toUpperCase() ?? "U"}
-              </ThemedText>
-            </Pressable>
           </View>
         </View>
 
@@ -432,18 +446,10 @@ export default function DashboardScreen() {
                         </ThemedText>
                       </View>
                     )}
+                <ThemedText style={[styles.aiViewMoreText, { color: theme.primary}]}>View Full AI Reports as Admin</ThemedText>
                   </View>
                 </View>
               )}
-
-              {/* View Full Report Button */}
-              <Pressable
-                style={[styles.aiViewMoreBtn, { backgroundColor: theme.primary }]}
-                onPress={() => router.push("/admin/stats" as Href)}
-              >
-                <ThemedText style={styles.aiViewMoreText}>View Full AI Report</ThemedText>
-                <Ionicons name="arrow-forward" size={16} color="#FFF" />
-              </Pressable>
             </View>
           )}
         </View>
@@ -543,6 +549,38 @@ function AIMetricCard({ label, value, color, icon, theme }: AIMetricCardProps) {
 }
 
 const styles = StyleSheet.create({
+  blueHeader: {
+    paddingTop: 55,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  headerDesc: {
+    fontSize: 10,
+    letterSpacing: 2,
+    fontWeight: "900",
+  },
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: 500,
+    letterSpacing: -1
+  },
+  headerIcons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   scroll: { paddingHorizontal: 20 },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
   greeting: { fontSize: 14, marginBottom: 2 },
@@ -582,8 +620,7 @@ const styles = StyleSheet.create({
   aiRecommendations: { padding: 12, borderRadius: 12, borderWidth: 1 },
   aiRecommendationRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 },
   aiRecommendationText: { fontSize: 13, flex: 1 },
-  aiViewMoreBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, borderRadius: 12, marginVertical: 8, marginHorizontal: 15, },
-  aiViewMoreText: { color: "#FFF", fontSize: 14 },
+  aiViewMoreText: { fontSize: 13, alignItems: 'center' },
 
   // AI Info section styles
   aiInfoSection: { padding: 16, borderRadius: 16, borderWidth: 1 },

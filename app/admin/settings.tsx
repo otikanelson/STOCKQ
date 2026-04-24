@@ -1,12 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    View
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { AIStatusIndicator } from "../../components/AIStatusIndicator";
 import { HelpTooltip } from "../../components/HelpTooltip";
@@ -17,6 +18,7 @@ import { useTheme } from "../../context/ThemeContext";
 
 export default function AdminSettingsScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { resetTour, startTour } = useAdminTour();
 
@@ -59,7 +61,7 @@ export default function AdminSettingsScreen() {
 
 
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-          <View style={styles.header}>
+          <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <View>
                 <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
@@ -210,7 +212,7 @@ export default function AdminSettingsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
-  header: { marginTop: 70, marginBottom: margin.section },
+  header: { marginBottom: margin.section },
   headerSub: { fontSize: 11, letterSpacing: 2, opacity: 0.7 },
   headerTitle: { fontSize: 32, letterSpacing: -0.5, marginTop: 4 },
   section: { marginBottom: margin.section },

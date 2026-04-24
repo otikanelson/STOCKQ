@@ -10,13 +10,15 @@ import {
     TextInput,
     View
 } from "react-native";
-import { ThemedText } from '../../../components/ThemedText';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import { ThemedText } from '../../../components/ThemedText';
 import { useTheme } from "../../../context/ThemeContext";
 
 export default function StoreSettingsScreen() {
   const { theme, isDark } = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   // Store Information State
   const [storeName, setStoreName] = useState("");
@@ -105,7 +107,7 @@ export default function StoreSettingsScreen() {
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header with Back Button */}
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <Pressable 
             onPress={() => router.push('/admin/settings')}
             style={[styles.backButton, { backgroundColor: theme.surface }]}
@@ -269,7 +271,6 @@ export default function StoreSettingsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
   header: { 
-    marginTop: 70, 
     marginBottom: 30,
     flexDirection: 'row',
     alignItems: 'center',

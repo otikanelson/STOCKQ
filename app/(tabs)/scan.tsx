@@ -13,19 +13,19 @@ import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    Animated,
-    Dimensions,
-    FlatList,
-    Image,
-    Modal,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    View
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View
 } from "react-native";
-import { ThemedText } from '../../components/ThemedText';
 import Toast from "react-native-toast-message";
+import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { hasSecurityPIN } from "../../utils/securityPINCheck";
 
@@ -825,114 +825,101 @@ export default function ScanScreen() {
   return (
     <ErrorBoundary>
       <View style={styles.container}>
-      {/* CAMERA VIEW */}
-      <CameraView
-        key={cameraKey}
-        style={StyleSheet.absoluteFillObject}
-        facing="back"
-        enableTorch={torch}
-        onBarcodeScanned={loading ? undefined : handleBarCodeScanned}
-        barcodeScannerSettings={{
-          barcodeTypes: ["ean13", "upc_a", "code128", "qr"],
-        }}
-        onMountError={(error) => {
-          console.error('❌ [SCAN] Camera mount error:', error);
-          setCameraError(true);
-          Toast.show({
-            type: 'error',
-            text1: 'Camera Error',
-            text2: 'Failed to initialize camera. Please try again.',
-            visibilityTime: 5000,
-          });
-        }}
-      />
+        {/* CAMERA VIEW */}
+        <CameraView
+          key={cameraKey}
+          style={StyleSheet.absoluteFillObject}
+          facing="back"
+          enableTorch={torch}
+          onBarcodeScanned={loading ? undefined : handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ["ean13", "upc_a", "code128", "qr"],
+          }}
+          onMountError={(error) => {
+            console.error('❌ [SCAN] Camera mount error:', error);
+            setCameraError(true);
+            Toast.show({
+              type: 'error',
+              text1: 'Camera Error',
+              text2: 'Failed to initialize camera. Please try again.',
+              visibilityTime: 5000,
+            });
+          }}
+        />
 
-      {/* DARK OVERLAY WITH VIEWFINDER */}
-      <View style={styles.overlay}>
-        {/* TOP BAR WITH TABS */}
-        <View style={styles.topBar}>
-          <Pressable onPress={() => router.back()} style={styles.iconCircle}>
-            <Ionicons name="close" size={28} color="#FFF" />
-          </Pressable>
-
-          <View style={styles.tabContainer}>
-            <Pressable
-              onPress={() => {
-                setTab("lookup");
-                setScanned(false);
-              }}
-              style={[
-                styles.tab,
-                tab === "lookup" && { backgroundColor: theme.primary },
-              ]}
-            >
-              <ThemedText
-                style={[styles.tabText, tab === "lookup" && { color: "#000" }]}
-              >
-                LOOKUP
-              </ThemedText>
+        {/* DARK OVERLAY WITH VIEWFINDER */}
+        <View style={styles.overlay}>
+          {/* TOP BAR WITH TABS */}
+          <View style={styles.topBar}>
+            <Pressable onPress={() => router.back()} style={styles.iconCircle}>
+              <Ionicons name="close" size={28} color="#FFF" />
             </Pressable>
-            
-            {/* Only show sales tab if user has permission */}
-            {(salesAccess.isAllowed || role === 'admin') && (
+
+            <View style={styles.tabContainer}>
               <Pressable
                 onPress={() => {
-                  setTab("sales");
+                  setTab("lookup");
                   setScanned(false);
                 }}
                 style={[
                   styles.tab,
-                  tab === "sales" && { backgroundColor: "#00D1FF" },
+                  tab === "lookup" && { backgroundColor: theme.primary },
+                ]}
+              >
+                <ThemedText
+                  style={[styles.tabText, tab === "lookup" && { color: "#000" }]}
+                >
+                  LOOKUP
+                </ThemedText>
+              </Pressable>
+              
+              {/* Only show sales tab if user has permission */}
+              {(salesAccess.isAllowed || role === 'admin') && (
+                <Pressable
+                  onPress={() => {
+                    setTab("sales");
+                    setScanned(false);
+                  }}
+                  style={[
+                    styles.tab,
+                    tab === "sales" && { backgroundColor: "#00D1FF" },
+                  ]}
+                >
+                  <ThemedText
+                    style={[
+                      styles.tabText,
+                      tab === "sales" && { color: "#000" },
+                    ]}
+                  >
+                    SALES
+                  </ThemedText>
+                </Pressable>
+              )}
+              
+              <Pressable
+                onPress={() => {
+                  setTab("registry");
+                  setScanned(false);
+                }}
+                style={[
+                  styles.tab,
+                  tab === "registry" && { backgroundColor: "#00FF00" },
                 ]}
               >
                 <ThemedText
                   style={[
                     styles.tabText,
-                    tab === "sales" && { color: "#000" },
+                    tab === "registry" && { color: "#000" },
                   ]}
                 >
-                  SALES
+                  REGISTRY
                 </ThemedText>
               </Pressable>
-            )}
-            
-            <Pressable
-              onPress={() => {
-                setTab("registry");
-                setScanned(false);
-              }}
-              style={[
-                styles.tab,
-                tab === "registry" && { backgroundColor: "#00FF00" },
-              ]}
-            >
-              <ThemedText
-                style={[
-                  styles.tabText,
-                  tab === "registry" && { color: "#000" },
-                ]}
-              >
-                REGISTRY
-              </ThemedText>
-            </Pressable>
-          </View>
+            </View>
 
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <Pressable
-              onPress={() => setTorch(!torch)}
-              style={[
-                styles.iconCircle,
-                torch && { backgroundColor: "rgba(255,255,255,0.4)" },
-              ]}
-            >
-              <Ionicons
-                name={torch ? "flash" : "flash-off"}
-                size={24}
-                color="#FFF"
-              />
-            </Pressable>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+            </View>
           </View>
-        </View>
 
         {/* VIEWFINDER */}
         <View style={styles.viewfinderContainer}>
@@ -1347,6 +1334,38 @@ export default function ScanScreen() {
 }
 
 const styles = StyleSheet.create({
+  blueHeader: {
+    paddingTop: 55,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  headerDesc: {
+    fontSize: 10,
+    letterSpacing: 2,
+    fontWeight: "900",
+  },
+  headerTitleLarge: {
+    fontSize: 25,
+    fontWeight: 500,
+    letterSpacing: -1
+  },
+  headerIcons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: { flex: 1, backgroundColor: "#000" },
   overlay: {
     flex: 1,

@@ -165,8 +165,8 @@ function RootLayoutNav() {
     <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
-        <Stack.Screen name="alerts" />
-        <Stack.Screen name="settings" />
+        <Stack.Screen name="alerts" options={{ href: null }} />
+        <Stack.Screen name="settings" options={{ href: null }} />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="product/[id]" />
         <Stack.Screen name="auth/login" />
@@ -189,6 +189,11 @@ function ThemedToast() {
 export default function RootLayout() {
   const [showSplash, setShowSplash] = useState(true);
   const fontsLoaded = useFonts();
+
+  // Don't render anything until fonts are loaded
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <ErrorBoundary>
