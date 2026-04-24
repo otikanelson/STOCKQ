@@ -9,11 +9,11 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { useTheme } from '../../../context/ThemeContext';
+import { ThemedText } from '../../../components/ThemedText';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -131,7 +131,7 @@ export default function StoreDetailScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={[styles.loadingText, { color: theme.text }]}>Loading store details...</Text>
+          <ThemedText style={[styles.loadingText, { color: theme.text }]}>Loading store details...</ThemedText>
         </View>
       </View>
     );
@@ -142,12 +142,12 @@ export default function StoreDetailScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.loadingContainer}>
           <Ionicons name="alert-circle-outline" size={64} color={theme.subtext} />
-          <Text style={[styles.loadingText, { color: theme.text }]}>Store not found</Text>
+          <ThemedText style={[styles.loadingText, { color: theme.text }]}>Store not found</ThemedText>
           <Pressable
             style={[styles.backButton, { backgroundColor: theme.primary }]}
             onPress={() => router.back()}
           >
-            <Text style={styles.backButtonText}>Go Back</Text>
+            <ThemedText style={styles.backButtonText}>Go Back</ThemedText>
           </Pressable>
         </View>
       </View>
@@ -169,8 +169,8 @@ export default function StoreDetailScreen() {
             <Ionicons name="arrow-back" size={24} color={theme.primary} />
           </Pressable>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.headerSub, { color: theme.primary }]}>STORE_DETAILS</Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>{details.store.name}</Text>
+            <ThemedText style={[styles.headerSub, { color: theme.primary }]}>STORE_DETAILS</ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>{details.store.name}</ThemedText>
           </View>
         </View>
 
@@ -178,17 +178,17 @@ export default function StoreDetailScreen() {
         <View style={styles.section}>
           <View style={[styles.infoCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.subtext }]}>Store ID:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{details.store._id}</Text>
+              <ThemedText style={[styles.infoLabel, { color: theme.subtext }]}>Store ID:</ThemedText>
+              <ThemedText style={[styles.infoValue, { color: theme.text }]}>{details.store._id}</ThemedText>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.subtext }]}>Created:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>
+              <ThemedText style={[styles.infoLabel, { color: theme.subtext }]}>Created:</ThemedText>
+              <ThemedText style={[styles.infoValue, { color: theme.text }]}>
                 {new Date(details.store.createdAt).toLocaleDateString()}
-              </Text>
+              </ThemedText>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.subtext }]}>Status:</Text>
+              <ThemedText style={[styles.infoLabel, { color: theme.subtext }]}>Status:</ThemedText>
               <View
                 style={[
                   styles.statusBadge,
@@ -197,14 +197,14 @@ export default function StoreDetailScreen() {
                   },
                 ]}
               >
-                <Text
+                <ThemedText
                   style={[
                     styles.statusText,
                     { color: details.store.isActive ? '#34C759' : '#FF3B30' },
                   ]}
                 >
                   {details.store.isActive ? 'Active' : 'Inactive'}
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -212,41 +212,41 @@ export default function StoreDetailScreen() {
 
         {/* Statistics */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>STATISTICS</Text>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>STATISTICS</ThemedText>
           <View style={styles.statsGrid}>
             <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="cube-outline" size={28} color="#AF52DE" />
-              <Text style={[styles.statValue, { color: theme.text }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 {details.statistics.totalProducts}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.subtext }]}>Products</Text>
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Products</ThemedText>
             </View>
             <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="cart-outline" size={28} color="#FF9500" />
-              <Text style={[styles.statValue, { color: theme.text }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 {details.statistics.totalSales}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.subtext }]}>Sales</Text>
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Sales</ThemedText>
             </View>
             <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="cash-outline" size={28} color="#34C759" />
-              <Text style={[styles.statValue, { color: theme.text }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 ${details.statistics.totalRevenue.toFixed(2)}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.subtext }]}>Revenue</Text>
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Revenue</ThemedText>
             </View>
           </View>
         </View>
 
         {/* Admins */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
             ADMINS ({details.admins.length})
-          </Text>
+          </ThemedText>
           {details.admins.length === 0 ? (
             <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="shield-checkmark-outline" size={40} color={theme.subtext} />
-              <Text style={[styles.emptyText, { color: theme.text }]}>No Admins</Text>
+              <ThemedText style={[styles.emptyText, { color: theme.text }]}>No Admins</ThemedText>
             </View>
           ) : (
             <View style={styles.usersList}>
@@ -259,12 +259,12 @@ export default function StoreDetailScreen() {
                     <Ionicons name="shield-checkmark" size={24} color="#FF9500" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.userName, { color: theme.text }]}>{admin.name}</Text>
-                    <Text style={[styles.userRole, { color: theme.subtext }]}>Store Admin</Text>
+                    <ThemedText style={[styles.userName, { color: theme.text }]}>{admin.name}</ThemedText>
+                    <ThemedText style={[styles.userRole, { color: theme.subtext }]}>Store Admin</ThemedText>
                     {admin.lastLogin && (
-                      <Text style={[styles.userLastLogin, { color: theme.subtext }]}>
+                      <ThemedText style={[styles.userLastLogin, { color: theme.subtext }]}>
                         Last login: {new Date(admin.lastLogin).toLocaleDateString()}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                   <View
@@ -275,14 +275,14 @@ export default function StoreDetailScreen() {
                       },
                     ]}
                   >
-                    <Text
+                    <ThemedText
                       style={[
                         styles.statusText,
                         { color: admin.isActive ? '#34C759' : '#FF3B30' },
                       ]}
                     >
                       {admin.isActive ? 'Active' : 'Inactive'}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               ))}
@@ -292,13 +292,13 @@ export default function StoreDetailScreen() {
 
         {/* Staff */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
             STAFF ({details.staff.length})
-          </Text>
+          </ThemedText>
           {details.staff.length === 0 ? (
             <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="people-outline" size={40} color={theme.subtext} />
-              <Text style={[styles.emptyText, { color: theme.text }]}>No Staff</Text>
+              <ThemedText style={[styles.emptyText, { color: theme.text }]}>No Staff</ThemedText>
             </View>
           ) : (
             <View style={styles.usersList}>
@@ -311,12 +311,12 @@ export default function StoreDetailScreen() {
                     <Ionicons name="person" size={24} color="#34C759" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.userName, { color: theme.text }]}>{staff.name}</Text>
-                    <Text style={[styles.userRole, { color: theme.subtext }]}>Staff Member</Text>
+                    <ThemedText style={[styles.userName, { color: theme.text }]}>{staff.name}</ThemedText>
+                    <ThemedText style={[styles.userRole, { color: theme.subtext }]}>Staff Member</ThemedText>
                     {staff.lastLogin && (
-                      <Text style={[styles.userLastLogin, { color: theme.subtext }]}>
+                      <ThemedText style={[styles.userLastLogin, { color: theme.subtext }]}>
                         Last login: {new Date(staff.lastLogin).toLocaleDateString()}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                   <View
@@ -327,14 +327,14 @@ export default function StoreDetailScreen() {
                       },
                     ]}
                   >
-                    <Text
+                    <ThemedText
                       style={[
                         styles.statusText,
                         { color: staff.isActive ? '#34C759' : '#FF3B30' },
                       ]}
                     >
                       {staff.isActive ? 'Active' : 'Inactive'}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               ))}

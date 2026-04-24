@@ -1,6 +1,7 @@
-import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+﻿import React from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { ThemedText } from '../components/ThemedText';
 
 interface LoadingStateProps {
   message?: string;
@@ -22,7 +23,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
     ]}>
       <ActivityIndicator size={size} color={theme.primary} style={styles.spinner} />
       {message && (
-        <Text style={[styles.message, { color: theme.subtext }]}>{message}</Text>
+        <ThemedText style={[styles.message, { color: theme.subtext }]}>{message}</ThemedText>
       )}
     </View>
   );
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
   fullScreen: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   inline: { justifyContent: 'center', alignItems: 'center', padding: 20 },
   spinner: { marginBottom: 12 },
-  message: { fontSize: 14, fontWeight: '600' },
+  message: { fontSize: 14, },
 });
 
 export const SkeletonLoader: React.FC<{ count?: number }> = ({ count = 3 }) => {
@@ -55,3 +56,4 @@ export const SkeletonLoader: React.FC<{ count?: number }> = ({ count = 3 }) => {
     </>
   );
 };
+

@@ -4,15 +4,15 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    ActivityIndicator,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
 import Toast from 'react-native-toast-message';
+import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from '../../context/ThemeContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -139,7 +139,7 @@ export default function AuthorDashboard() {
         
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={[styles.loadingText, { color: theme.text }]}>Loading stores...</Text>
+          <ThemedText style={[styles.loadingText, { color: theme.text }]}>Loading stores...</ThemedText>
         </View>
       </View>
     );
@@ -158,8 +158,8 @@ export default function AuthorDashboard() {
         {/* Header */}
         <View style={styles.header}>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.headerSub, { color: theme.primary }]}>AUTHOR_DASHBOARD</Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>System Overview</Text>
+            <ThemedText style={[styles.headerSub, { color: theme.primary }]}>AUTHOR_DASHBOARD</ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>System Overview</ThemedText>
           </View>
           <Pressable style={[styles.logoutBtn, { backgroundColor: theme.surface }]} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={22} color={theme.primary} />
@@ -172,51 +172,51 @@ export default function AuthorDashboard() {
             <View style={[styles.statIcon, { backgroundColor: '#5856D6' + '20' }]}>
               <Ionicons name="storefront" size={24} color="#5856D6" />
             </View>
-            <Text style={[styles.statValue, { color: theme.text }]}>{stats.totalStores}</Text>
-            <Text style={[styles.statLabel, { color: theme.subtext }]}>Stores</Text>
+            <ThemedText style={[styles.statValue, { color: theme.text }]}>{stats.totalStores}</ThemedText>
+            <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Stores</ThemedText>
           </View>
 
           <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <View style={[styles.statIcon, { backgroundColor: '#FF9500' + '20' }]}>
               <Ionicons name="shield-checkmark" size={24} color="#FF9500" />
             </View>
-            <Text style={[styles.statValue, { color: theme.text }]}>{stats.totalAdmins}</Text>
-            <Text style={[styles.statLabel, { color: theme.subtext }]}>Admins</Text>
+            <ThemedText style={[styles.statValue, { color: theme.text }]}>{stats.totalAdmins}</ThemedText>
+            <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Admins</ThemedText>
           </View>
 
           <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <View style={[styles.statIcon, { backgroundColor: '#34C759' + '20' }]}>
               <Ionicons name="people" size={24} color="#34C759" />
             </View>
-            <Text style={[styles.statValue, { color: theme.text }]}>{stats.totalStaff}</Text>
-            <Text style={[styles.statLabel, { color: theme.subtext }]}>Staff</Text>
+            <ThemedText style={[styles.statValue, { color: theme.text }]}>{stats.totalStaff}</ThemedText>
+            <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Staff</ThemedText>
           </View>
 
           <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <View style={[styles.statIcon, { backgroundColor: '#AF52DE' + '20' }]}>
               <Ionicons name="cube" size={24} color="#AF52DE" />
             </View>
-            <Text style={[styles.statValue, { color: theme.text }]}>{stats.totalProducts}</Text>
-            <Text style={[styles.statLabel, { color: theme.subtext }]}>Products</Text>
+            <ThemedText style={[styles.statValue, { color: theme.text }]}>{stats.totalProducts}</ThemedText>
+            <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Products</ThemedText>
           </View>
         </View>
 
         {/* Stores List */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.primary }]}>ALL STORES</Text>
+            <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>ALL STORES</ThemedText>
             <View style={[styles.countBadge, { backgroundColor: theme.primary + '20' }]}>
-              <Text style={[styles.countBadgeText, { color: theme.primary }]}>{stores.length}</Text>
+              <ThemedText style={[styles.countBadgeText, { color: theme.primary }]}>{stores.length}</ThemedText>
             </View>
           </View>
 
           {stores.length === 0 ? (
             <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="storefront-outline" size={48} color={theme.subtext} />
-              <Text style={[styles.emptyText, { color: theme.text }]}>No Stores Yet</Text>
-              <Text style={[styles.emptyDesc, { color: theme.subtext }]}>
+              <ThemedText style={[styles.emptyText, { color: theme.text }]}>No Stores Yet</ThemedText>
+              <ThemedText style={[styles.emptyDesc, { color: theme.subtext }]}>
                 Stores will appear here when admins create accounts
-              </Text>
+              </ThemedText>
             </View>
           ) : (
             <View style={styles.storesList}>
@@ -234,12 +234,12 @@ export default function AuthorDashboard() {
                       <Ionicons name="storefront" size={28} color={theme.primary} />
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.storeName, { color: theme.text }]} numberOfLines={1}>
+                      <ThemedText style={[styles.storeName, { color: theme.text }]} numberOfLines={1}>
                         {store.name}
-                      </Text>
-                      <Text style={[styles.storeDate, { color: theme.subtext }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.storeDate, { color: theme.subtext }]}>
                         Created {new Date(store.createdAt).toLocaleDateString()}
-                      </Text>
+                      </ThemedText>
                     </View>
                     <View
                       style={[
@@ -249,14 +249,14 @@ export default function AuthorDashboard() {
                         },
                       ]}
                     >
-                      <Text
+                      <ThemedText
                         style={[
                           styles.statusText,
                           { color: store.isActive ? '#34C759' : '#FF3B30' },
                         ]}
                       >
                         {store.isActive ? 'Active' : 'Inactive'}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
 
@@ -267,37 +267,37 @@ export default function AuthorDashboard() {
                       <View style={[styles.statIconSmall, { backgroundColor: '#FF9500' + '15' }]}>
                         <Ionicons name="shield-checkmark" size={14} color="#FF9500" />
                       </View>
-                      <Text style={[styles.storeStatText, { color: theme.text }]}>
+                      <ThemedText style={[styles.storeStatText, { color: theme.text }]}>
                         {store.adminCount || 0}
-                      </Text>
-                      <Text style={[styles.storeStatLabel, { color: theme.subtext }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.storeStatLabel, { color: theme.subtext }]}>
                         admin{(store.adminCount || 0) !== 1 ? 's' : ''}
-                      </Text>
+                      </ThemedText>
                     </View>
                     <View style={styles.storeStat}>
                       <View style={[styles.statIconSmall, { backgroundColor: '#34C759' + '15' }]}>
                         <Ionicons name="people" size={14} color="#34C759" />
                       </View>
-                      <Text style={[styles.storeStatText, { color: theme.text }]}>
+                      <ThemedText style={[styles.storeStatText, { color: theme.text }]}>
                         {store.staffCount || 0}
-                      </Text>
-                      <Text style={[styles.storeStatLabel, { color: theme.subtext }]}>staff</Text>
+                      </ThemedText>
+                      <ThemedText style={[styles.storeStatLabel, { color: theme.subtext }]}>staff</ThemedText>
                     </View>
                     <View style={styles.storeStat}>
                       <View style={[styles.statIconSmall, { backgroundColor: '#AF52DE' + '15' }]}>
                         <Ionicons name="cube" size={14} color="#AF52DE" />
                       </View>
-                      <Text style={[styles.storeStatText, { color: theme.text }]}>
+                      <ThemedText style={[styles.storeStatText, { color: theme.text }]}>
                         {store.productCount || 0}
-                      </Text>
-                      <Text style={[styles.storeStatLabel, { color: theme.subtext }]}>products</Text>
+                      </ThemedText>
+                      <ThemedText style={[styles.storeStatLabel, { color: theme.subtext }]}>products</ThemedText>
                     </View>
                   </View>
 
                   <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
                   <View style={styles.storeFooter}>
-                    <Text style={[styles.viewDetails, { color: theme.primary }]}>View Details</Text>
+                    <ThemedText style={[styles.viewDetails, { color: theme.primary }]}>View Details</ThemedText>
                     <Ionicons name="arrow-forward" size={18} color={theme.primary} />
                   </View>
                 </Pressable>
@@ -328,8 +328,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontWeight: '600',
-  },
+    },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -340,12 +339,10 @@ const styles = StyleSheet.create({
   },
   headerSub: {
     fontSize: 10,
-    fontWeight: '900',
     letterSpacing: 2,
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: '900',
     letterSpacing: -1,
   },
   logoutBtn: {
@@ -379,13 +376,11 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 26,
-    fontWeight: '900',
     marginBottom: 2,
   },
   statLabel: {
     fontSize: 12,
-    fontWeight: '600',
-  },
+    },
   section: {
     paddingHorizontal: 20,
     marginBottom: 30,
@@ -398,7 +393,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: '800',
     letterSpacing: 1.5,
   },
   countBadge: {
@@ -408,8 +402,7 @@ const styles = StyleSheet.create({
   },
   countBadgeText: {
     fontSize: 12,
-    fontWeight: '900',
-  },
+    },
   emptyState: {
     padding: 50,
     borderRadius: 20,
@@ -419,7 +412,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: '800',
     marginTop: 16,
   },
   emptyDesc: {
@@ -451,13 +443,11 @@ const styles = StyleSheet.create({
   },
   storeName: {
     fontSize: 18,
-    fontWeight: '800',
     marginBottom: 4,
   },
   storeDate: {
     fontSize: 12,
-    fontWeight: '600',
-  },
+    },
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -465,8 +455,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 11,
-    fontWeight: '800',
-  },
+    },
   divider: {
     height: 1,
     marginBottom: 16,
@@ -490,12 +479,10 @@ const styles = StyleSheet.create({
   },
   storeStatText: {
     fontSize: 16,
-    fontWeight: '800',
-  },
+    },
   storeStatLabel: {
     fontSize: 12,
-    fontWeight: '600',
-  },
+    },
   storeFooter: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -504,6 +491,6 @@ const styles = StyleSheet.create({
   },
   viewDetails: {
     fontSize: 14,
-    fontWeight: '700',
-  },
+    },
 });
+

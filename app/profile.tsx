@@ -7,11 +7,11 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    Text,
     TextInput,
     View
 } from "react-native";
 import Toast from 'react-native-toast-message';
+import { ThemedText } from '../components/ThemedText';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -192,7 +192,7 @@ export default function ProfileScreen() {
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={theme.text} />
           </Pressable>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>Profile</Text>
+          <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Profile</ThemedText>
           <View style={{ width: 40 }} />
         </View>
 
@@ -202,19 +202,19 @@ export default function ProfileScreen() {
             <Ionicons name="person" size={48} color={getRoleColor()} />
           </View>
 
-          <Text style={[styles.userName, { color: theme.text }]}>{user?.name || 'User'}</Text>
+          <ThemedText style={[styles.userName, { color: theme.text }]}>{user?.name || 'User'}</ThemedText>
 
           <View style={[styles.roleBadge, { backgroundColor: getRoleColor() + '20' }]}>
             <Ionicons name={role === 'admin' ? 'shield-checkmark' : 'person'} size={16} color={getRoleColor()} />
-            <Text style={[styles.roleText, { color: getRoleColor() }]}>{getRoleDisplay()}</Text>
+            <ThemedText style={[styles.roleText, { color: getRoleColor() }]}>{getRoleDisplay()}</ThemedText>
           </View>
 
-          <Text style={[styles.userId, { color: theme.subtext }]}>ID: {user?.id || 'N/A'}</Text>
+          <ThemedText style={[styles.userId, { color: theme.subtext }]}>ID: {user?.id || 'N/A'}</ThemedText>
         </View>
 
         {/* Account Settings */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>ACCOUNT SETTINGS</Text>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>ACCOUNT SETTINGS</ThemedText>
 
           <Pressable
             style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}
@@ -224,8 +224,8 @@ export default function ProfileScreen() {
               <Ionicons name="key-outline" size={22} color={theme.primary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.settingLabel, { color: theme.text }]}>Change PIN</Text>
-              <Text style={[styles.settingDesc, { color: theme.subtext }]}>Update your 4-digit access code</Text>
+              <ThemedText style={[styles.settingLabel, { color: theme.text }]}>Change PIN</ThemedText>
+              <ThemedText style={[styles.settingDesc, { color: theme.subtext }]}>Update your 4-digit access code</ThemedText>
             </View>
             <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
           </Pressable>
@@ -239,8 +239,8 @@ export default function ProfileScreen() {
                 <Ionicons name="settings-outline" size={22} color={theme.primary} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.settingLabel, { color: theme.text }]}>Admin Settings</Text>
-                <Text style={[styles.settingDesc, { color: theme.subtext }]}>Manage system configuration</Text>
+                <ThemedText style={[styles.settingLabel, { color: theme.text }]}>Admin Settings</ThemedText>
+                <ThemedText style={[styles.settingDesc, { color: theme.subtext }]}>Manage system configuration</ThemedText>
               </View>
               <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
             </Pressable>
@@ -249,7 +249,7 @@ export default function ProfileScreen() {
 
         {/* Permissions */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>YOUR PERMISSIONS</Text>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>YOUR PERMISSIONS</ThemedText>
 
           <View style={[styles.permissionsCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             {role === 'admin' ? (
@@ -301,7 +301,7 @@ export default function ProfileScreen() {
         {/* Logout Button */}
         <Pressable style={[styles.logoutBtn, { borderColor: '#FF4444' }]} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={22} color="#FF4444" />
-          <Text style={styles.logoutText}>Logout from Store</Text>
+          <ThemedText style={styles.logoutText}>Logout from Store</ThemedText>
         </Pressable>
 
         {/* Delete Account Button */}
@@ -311,7 +311,7 @@ export default function ProfileScreen() {
             onPress={() => setShowDeleteModal(true)}
           >
             <Ionicons name="trash-outline" size={22} color="#FF3B30" />
-            <Text style={[styles.deleteText, { color: '#FF3B30' }]}>Delete Account Permanently</Text>
+            <ThemedText style={[styles.deleteText, { color: '#FF3B30' }]}>Delete Account Permanently</ThemedText>
           </Pressable>
         )}
 
@@ -326,10 +326,10 @@ export default function ProfileScreen() {
               <Ionicons name="key" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Update PIN</Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Update PIN</ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               Enter your current PIN and choose a new 4-digit code
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[
@@ -386,10 +386,10 @@ export default function ProfileScreen() {
                   setConfirmPin('');
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable style={[styles.modalBtn, { backgroundColor: theme.primary }]} onPress={handleUpdatePin}>
-                <Text style={{ color: '#FFF', fontWeight: '700' }}>Update PIN</Text>
+                <ThemedText style={{ color: '#FFF', }}>Update PIN</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -404,10 +404,10 @@ export default function ProfileScreen() {
               <Ionicons name="warning" size={32} color="#FF3B30" />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Delete Account?</Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Delete Account?</ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               This action cannot be undone. Your account and all associated data will be permanently deleted.
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[
@@ -434,13 +434,13 @@ export default function ProfileScreen() {
                   setDeletePin('');
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable 
                 style={[styles.modalBtn, { backgroundColor: '#FF3B30' }]} 
                 onPress={handleDeleteAccount}
               >
-                <Text style={{ color: '#FFF', fontWeight: '700' }}>Delete Forever</Text>
+                <ThemedText style={{ color: '#FFF', }}>Delete Forever</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -461,7 +461,7 @@ interface PermissionItemProps {
 const PermissionItem: React.FC<PermissionItemProps> = ({ icon, label, granted, theme }) => (
   <View style={styles.permissionItem}>
     <Ionicons name={icon} size={18} color={granted ? '#34C759' : '#FF3B30'} />
-    <Text style={[styles.permissionLabel, { color: granted ? theme.text : theme.subtext }]}>{label}</Text>
+    <ThemedText style={[styles.permissionLabel, { color: granted ? theme.text : theme.subtext }]}>{label}</ThemedText>
   </View>
 );
 
@@ -486,8 +486,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '900',
-  },
+    },
   profileCard: {
     padding: 30,
     borderRadius: 24,
@@ -505,7 +504,6 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 24,
-    fontWeight: '900',
     marginBottom: 10,
   },
   roleBadge: {
@@ -519,19 +517,16 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: 13,
-    fontWeight: '800',
     letterSpacing: 0.5,
   },
   userId: {
     fontSize: 12,
-    fontWeight: '600',
-  },
+    },
   section: {
     marginBottom: 30,
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: '800',
     letterSpacing: 1.5,
     marginBottom: 15,
   },
@@ -553,13 +548,11 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     fontSize: 16,
-    fontWeight: '700',
     marginBottom: 2,
   },
   settingDesc: {
     fontSize: 12,
-    fontWeight: '500',
-  },
+    },
   permissionsCard: {
     padding: 20,
     borderRadius: 16,
@@ -573,8 +566,7 @@ const styles = StyleSheet.create({
   },
   permissionLabel: {
     fontSize: 14,
-    fontWeight: '600',
-  },
+    },
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -587,7 +579,6 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: '#FF4444',
-    fontWeight: '900',
     fontSize: 14,
   },
   deleteBtn: {
@@ -601,7 +592,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   deleteText: {
-    fontWeight: '900',
     fontSize: 14,
   },
   modalOverlay: {
@@ -628,7 +618,6 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 22,
-    fontWeight: '900',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -647,8 +636,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: '600',
-  },
+    },
   modalActions: {
     flexDirection: 'row',
     gap: 12,
@@ -663,3 +651,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+

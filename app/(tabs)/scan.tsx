@@ -21,10 +21,10 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
     TextInput,
     View
 } from "react-native";
+import { ThemedText } from '../../components/ThemedText';
 import Toast from "react-native-toast-message";
 import { useTheme } from "../../context/ThemeContext";
 import { hasSecurityPIN } from "../../utils/securityPINCheck";
@@ -712,9 +712,9 @@ export default function ScanScreen() {
     console.log('⏳ [SCAN] Permission object is null/undefined - waiting...');
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={[styles.permissionText, { color: theme.text }]}>
+        <ThemedText style={[styles.permissionText, { color: theme.text }]}>
           Requesting camera permission...
-        </Text>
+        </ThemedText>
       </View>
     );
   }
@@ -726,14 +726,14 @@ export default function ScanScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.permissionContainer}>
           <Ionicons name="camera-outline" size={64} color={theme.subtext} />
-          <Text style={[styles.permissionText, { color: theme.text }]}>
+          <ThemedText style={[styles.permissionText, { color: theme.text }]}>
             Camera permission required
-          </Text>
+          </ThemedText>
           <Pressable 
             style={[styles.permissionBtn, { backgroundColor: theme.primary }]} 
             onPress={requestPermission}
           >
-            <Text style={styles.permissionBtnText}>Grant Permission</Text>
+            <ThemedText style={styles.permissionBtnText}>Grant Permission</ThemedText>
           </Pressable>
         </View>
       </View>
@@ -752,7 +752,7 @@ export default function ScanScreen() {
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={theme.text} />
           </Pressable>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>Scanner</Text>
+          <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Scanner</ThemedText>
           <View style={{ width: 40 }} />
         </View>
         
@@ -760,15 +760,15 @@ export default function ScanScreen() {
           <View style={[styles.restrictedIcon, { backgroundColor: '#FF3B30' + '20' }]}>
             <Ionicons name="scan-outline" size={48} color="#FF3B30" />
           </View>
-          <Text style={[styles.restrictedTitle, { color: theme.text }]}>
+          <ThemedText style={[styles.restrictedTitle, { color: theme.text }]}>
             Scanner Access Restricted
-          </Text>
-          <Text style={[styles.restrictedMessage, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.restrictedMessage, { color: theme.subtext }]}>
             {scanAccess.reason || 'You do not have permission to access the scanner'}
-          </Text>
-          <Text style={[styles.restrictedNote, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.restrictedNote, { color: theme.subtext }]}>
             Contact your administrator to enable scanner permissions.
-          </Text>
+          </ThemedText>
         </View>
       </View>
     );
@@ -783,9 +783,9 @@ export default function ScanScreen() {
       <ErrorBoundary>
         <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center' }]}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={[styles.permissionText, { color: theme.text, marginTop: 20 }]}>
+          <ThemedText style={[styles.permissionText, { color: theme.text, marginTop: 20 }]}>
             Initializing camera...
-          </Text>
+          </ThemedText>
         </View>
       </ErrorBoundary>
     );
@@ -798,9 +798,9 @@ export default function ScanScreen() {
       <ErrorBoundary>
         <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
           <Ionicons name="camera-outline" size={64} color={theme.subtext} />
-          <Text style={[styles.permissionText, { color: theme.text, marginTop: 20, textAlign: 'center' }]}>
+          <ThemedText style={[styles.permissionText, { color: theme.text, marginTop: 20, textAlign: 'center' }]}>
             Camera failed to initialize
-          </Text>
+          </ThemedText>
           <Pressable
             style={[styles.permissionBtn, { backgroundColor: theme.primary, marginTop: 20 }]}
             onPress={() => {
@@ -809,13 +809,13 @@ export default function ScanScreen() {
               setCameraKey(prev => prev + 1);
             }}
           >
-            <Text style={styles.permissionBtnText}>Retry</Text>
+            <ThemedText style={styles.permissionBtnText}>Retry</ThemedText>
           </Pressable>
           <Pressable
             style={[styles.permissionBtn, { backgroundColor: '#444', marginTop: 10 }]}
             onPress={() => router.back()}
           >
-            <Text style={styles.permissionBtnText}>Go Back</Text>
+            <ThemedText style={styles.permissionBtnText}>Go Back</ThemedText>
           </Pressable>
         </View>
       </ErrorBoundary>
@@ -866,11 +866,11 @@ export default function ScanScreen() {
                 tab === "lookup" && { backgroundColor: theme.primary },
               ]}
             >
-              <Text
+              <ThemedText
                 style={[styles.tabText, tab === "lookup" && { color: "#000" }]}
               >
                 LOOKUP
-              </Text>
+              </ThemedText>
             </Pressable>
             
             {/* Only show sales tab if user has permission */}
@@ -885,14 +885,14 @@ export default function ScanScreen() {
                   tab === "sales" && { backgroundColor: "#00D1FF" },
                 ]}
               >
-                <Text
+                <ThemedText
                   style={[
                     styles.tabText,
                     tab === "sales" && { color: "#000" },
                   ]}
                 >
                   SALES
-                </Text>
+                </ThemedText>
               </Pressable>
             )}
             
@@ -906,14 +906,14 @@ export default function ScanScreen() {
                 tab === "registry" && { backgroundColor: "#00FF00" },
               ]}
             >
-              <Text
+              <ThemedText
                 style={[
                   styles.tabText,
                   tab === "registry" && { color: "#000" },
                 ]}
               >
                 REGISTRY
-              </Text>
+              </ThemedText>
             </Pressable>
           </View>
 
@@ -960,7 +960,7 @@ export default function ScanScreen() {
             <View style={[styles.corner, styles.bottomRight]} />
             {loading && (
               <View style={styles.loadingOverlay}>
-                <Text style={styles.loadingText}>Processing...</Text>
+                <ThemedText style={styles.loadingText}>Processing...</ThemedText>
               </View>
             )}
           </View>
@@ -971,12 +971,12 @@ export default function ScanScreen() {
           {rapidScanEnabled && (
             <View style={[styles.rapidScanBadge, { backgroundColor: '#00FF00' + '20', borderColor: '#00FF00' }]}>
               <Ionicons name="flash" size={16} color="#00FF00" />
-              <Text style={[styles.rapidScanText, { color: '#00FF00' }]}>
+              <ThemedText style={[styles.rapidScanText, { color: '#00FF00' }]}>
                 RAPID SCAN
-              </Text>
+              </ThemedText>
             </View>
           )}
-          <Text style={styles.hintText}>
+          <ThemedText style={styles.hintText}>
             {tab === "lookup" ?
               "Scan to find a product"
             : tab === "sales" ?
@@ -984,7 +984,7 @@ export default function ScanScreen() {
             : rapidScanEnabled ? 
               "Rapid mode: Instant batch entry"
             : "Scan to Register or Add Batch"}
-          </Text>
+          </ThemedText>
           <View style={styles.bottomActions}>
             {tab === "sales" && (
               <Animated.View
@@ -1002,7 +1002,7 @@ export default function ScanScreen() {
                   <Ionicons name="cart" size={24} color="#FFF" />
                   {cart.length > 0 && (
                     <View style={styles.cartBadge}>
-                      <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
+                      <ThemedText style={styles.cartBadgeText}>{getTotalItems()}</ThemedText>
                     </View>
                   )}
                 </Pressable>
@@ -1030,7 +1030,7 @@ export default function ScanScreen() {
                   });
                 }}
               >
-                <Text style={styles.manualBtnText}>Manual Entry</Text>
+                <ThemedText style={styles.manualBtnText}>Manual Entry</ThemedText>
               </Pressable>
             )}
             <HelpTooltip
@@ -1059,10 +1059,10 @@ export default function ScanScreen() {
               size={40}
               color={theme.primary}
             />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               {isNewProduct ? "Unknown Product" : "Product Identified"}
-            </Text>
-            <Text
+            </ThemedText>
+            <ThemedText
               style={{
                 color: theme.subtext,
                 textAlign: "center",
@@ -1072,21 +1072,21 @@ export default function ScanScreen() {
               {isNewProduct ?
                 "Barcode not in registry. Register it now?"
               : `Found: ${pendingData?.name}. Add batch?`}
-            </Text>
+            </ThemedText>
             <View style={styles.modalActions}>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: "#444" }]}
                 onPress={handleModalCancel}
               >
-                <Text style={{ color: "#FFF" }}>Cancel</Text>
+                <ThemedText style={{ color: "#FFF" }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={handleModalProceed}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>
+                <ThemedText style={{ color: "#FFF", }}>
                   Proceed
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1105,10 +1105,10 @@ export default function ScanScreen() {
               color={theme.primary}
               style={{ marginBottom: 10 }}
             />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Admin Authorization
-            </Text>
-            <Text
+            </ThemedText>
+            <ThemedText
               style={{
                 color: theme.subtext,
                 textAlign: "center",
@@ -1116,7 +1116,7 @@ export default function ScanScreen() {
               }}
             >
               Enter admin PIN to register new product
-            </Text>
+            </ThemedText>
             <TextInput
               style={[
                 styles.pinInput,
@@ -1140,15 +1140,15 @@ export default function ScanScreen() {
                 style={[styles.modalBtn, { backgroundColor: "#444" }]}
                 onPress={handlePinCancel}
               >
-                <Text style={{ color: "#FFF" }}>Cancel</Text>
+                <ThemedText style={{ color: "#FFF" }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={handlePinSubmit}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>
+                <ThemedText style={{ color: "#FFF", }}>
                   Confirm
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1169,12 +1169,12 @@ export default function ScanScreen() {
             {/* Modal Header */}
             <View style={styles.cartModalHeader}>
               <View>
-                <Text style={[styles.cartModalTitle, { color: theme.text }]}>
+                <ThemedText style={[styles.cartModalTitle, { color: theme.text }]}>
                   Shopping Cart
-                </Text>
-                <Text style={[styles.cartModalSubtitle, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.cartModalSubtitle, { color: theme.subtext }]}>
                   {cart.length} {cart.length === 1 ? "item" : "items"} • {getTotalItems()} total units
-                </Text>
+                </ThemedText>
               </View>
               <Pressable
                 onPress={() => setShowCartModal(false)}
@@ -1188,12 +1188,12 @@ export default function ScanScreen() {
             {cart.length === 0 ? (
               <View style={styles.emptyCart}>
                 <Ionicons name="cart-outline" size={80} color={theme.subtext + "40"} />
-                <Text style={[styles.emptyCartText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.emptyCartText, { color: theme.subtext }]}>
                   Cart is empty
-                </Text>
-                <Text style={[styles.emptyCartHint, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.emptyCartHint, { color: theme.subtext }]}>
                   Scan products to add them
-                </Text>
+                </ThemedText>
               </View>
             ) : (
               <FlatList
@@ -1222,12 +1222,12 @@ export default function ScanScreen() {
 
                     {/* Product Info */}
                     <View style={styles.cartItemInfo}>
-                      <Text style={[styles.cartItemName, { color: theme.text }]} numberOfLines={1}>
+                      <ThemedText style={[styles.cartItemName, { color: theme.text }]} numberOfLines={1}>
                         {item.name}
-                      </Text>
-                      <Text style={[styles.cartItemMeta, { color: theme.subtext }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.cartItemMeta, { color: theme.subtext }]}>
                         Stock: {item.totalQuantity} units
-                      </Text>
+                      </ThemedText>
                     </View>
 
                     {/* Quantity Controls */}
@@ -1245,9 +1245,9 @@ export default function ScanScreen() {
                       >
                         <Ionicons name="remove" size={16} color={theme.text} />
                       </Pressable>
-                      <Text style={[styles.cartQtyText, { color: theme.text }]}>
+                      <ThemedText style={[styles.cartQtyText, { color: theme.text }]}>
                         {item.quantity}
-                      </Text>
+                      </ThemedText>
                       <Pressable
                         style={[
                           styles.cartQtyBtn, 
@@ -1282,9 +1282,9 @@ export default function ScanScreen() {
                 onPress={handleCartDone}
               >
                 <Ionicons name="checkmark-circle" size={24} color="#FFF" />
-                <Text style={styles.cartDoneButtonText}>
+                <ThemedText style={styles.cartDoneButtonText}>
                   Proceed to Checkout ({getTotalItems()} items)
-                </Text>
+                </ThemedText>
               </Pressable>
             )}
           </View>
@@ -1298,18 +1298,18 @@ export default function ScanScreen() {
             <View style={[styles.iconBox, { backgroundColor: '#FF3B30' + '15' }]}>
               <Ionicons name="lock-closed" size={32} color="#FF3B30" />
             </View>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Permission Denied
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               You do not have permission to register products. Contact your administrator to enable this permission.
-            </Text>
+            </ThemedText>
             <View style={styles.modalActions}>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={() => setShowRegisterPermissionModal(false)}
               >
-                <Text style={{ color: '#FFF', fontWeight: '700' }}>OK</Text>
+                <ThemedText style={{ color: '#FFF', }}>OK</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1323,18 +1323,18 @@ export default function ScanScreen() {
             <View style={[styles.iconBox, { backgroundColor: '#FF3B30' + '15' }]}>
               <Ionicons name="lock-closed" size={32} color="#FF3B30" />
             </View>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Permission Denied
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               You do not have permission to add inventory. Contact your administrator to enable this permission.
-            </Text>
+            </ThemedText>
             <View style={styles.modalActions}>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={() => setShowAddPermissionModal(false)}
               >
-                <Text style={{ color: '#FFF', fontWeight: '700' }}>OK</Text>
+                <ThemedText style={{ color: '#FFF', }}>OK</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1378,8 +1378,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: "rgba(255,255,255,0.5)",
     fontSize: 11,
-    fontWeight: "800",
-  },
+    },
   iconCircle: {
     width: 45,
     height: 45,
@@ -1451,8 +1450,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: "#FFF",
     fontSize: 16,
-    fontWeight: "700",
-  },
+    },
   bottomBar: {
     paddingBottom: 60,
     alignItems: "center",
@@ -1461,7 +1459,6 @@ const styles = StyleSheet.create({
   hintText: {
     color: "#FFF",
     marginBottom: 20,
-    fontWeight: "600",
     textAlign: "center",
   },
   bottomActions: {
@@ -1475,7 +1472,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 30,
   },
-  manualBtnText: { color: "#000", fontWeight: "800", fontSize: 14 },
+  manualBtnText: { color: "#000", fontSize: 14 },
   rapidScanBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -1488,7 +1485,6 @@ const styles = StyleSheet.create({
   },
   rapidScanText: {
     fontSize: 12,
-    fontWeight: "800",
     letterSpacing: 1,
   },
   modalOverlay: {
@@ -1503,7 +1499,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
   },
-  modalTitle: { fontSize: 20, fontWeight: "900", marginBottom: 5 },
+  modalTitle: { fontSize: 20, marginBottom: 5 },
   modalActions: {
     flexDirection: "row",
     gap: 12,
@@ -1523,7 +1519,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     textAlign: "center",
     fontSize: 24,
-    fontWeight: "700",
     marginBottom: 15,
   },
   permissionContainer: {
@@ -1546,8 +1541,7 @@ const styles = StyleSheet.create({
   permissionBtnText: {
     color: "#FFF",
     fontSize: 16,
-    fontWeight: "700",
-  },
+    },
   restrictedContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -1564,13 +1558,11 @@ const styles = StyleSheet.create({
   },
   restrictedTitle: {
     fontSize: 20,
-    fontWeight: '900',
     marginBottom: 12,
     textAlign: 'center',
   },
   restrictedMessage: {
     fontSize: 15,
-    fontWeight: '600',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 16,
@@ -1589,7 +1581,6 @@ const styles = StyleSheet.create({
   },
   viewOnlyTitle: {
     fontSize: 22,
-    fontWeight: '900',
     marginTop: 20,
     marginBottom: 10,
   },
@@ -1610,8 +1601,7 @@ const styles = StyleSheet.create({
   goBackText: {
     color: '#FFF',
     fontSize: 16,
-    fontWeight: '700',
-  },
+    },
 
   // Cart Button Styles
   cartButton: {
@@ -1644,8 +1634,7 @@ const styles = StyleSheet.create({
   cartBadgeText: {
     color: "#FFF",
     fontSize: 11,
-    fontWeight: "900",
-  },
+    },
 
   // Cart Modal Styles
   cartModalContent: {
@@ -1662,11 +1651,9 @@ const styles = StyleSheet.create({
   },
   cartModalTitle: {
     fontSize: 24,
-    fontWeight: "900",
-  },
+    },
   cartModalSubtitle: {
     fontSize: 13,
-    fontWeight: "600",
     marginTop: 4,
   },
   cartCloseBtn: {
@@ -1685,12 +1672,10 @@ const styles = StyleSheet.create({
   },
   emptyCartText: {
     fontSize: 18,
-    fontWeight: "800",
     marginTop: 20,
   },
   emptyCartHint: {
     fontSize: 14,
-    fontWeight: "600",
     marginTop: 8,
   },
 
@@ -1728,13 +1713,11 @@ const styles = StyleSheet.create({
   },
   cartItemName: {
     fontSize: 15,
-    fontWeight: "800",
     marginBottom: 4,
   },
   cartItemMeta: {
     fontSize: 12,
-    fontWeight: "600",
-  },
+    },
   cartQtyControls: {
     flexDirection: "row",
     alignItems: "center",
@@ -1749,7 +1732,6 @@ const styles = StyleSheet.create({
   },
   cartQtyText: {
     fontSize: 16,
-    fontWeight: "900",
     minWidth: 30,
     textAlign: "center",
   },
@@ -1771,8 +1753,7 @@ const styles = StyleSheet.create({
   cartDoneButtonText: {
     color: "#FFF",
     fontSize: 16,
-    fontWeight: "900",
-  },
+    },
 
   // Missing styles for restricted access and modals
   modalDesc: {
@@ -1806,6 +1787,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '900',
-  },
+    },
 });
+

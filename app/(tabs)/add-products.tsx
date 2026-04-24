@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+﻿import { useAuth } from "@/context/AuthContext";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,24 +8,24 @@ import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    BackHandler,
-    FlatList,
-    Image,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    View
+  ActivityIndicator,
+  BackHandler,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  TextInput,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import AdminSecurityPINWarning from "../../components/AdminSecurityPINWarning";
 import { HelpTooltip } from "../../components/HelpTooltip";
+import { ThemedText } from '../../components/ThemedText';
 import { lineHeight, margin, padding, touchTarget } from "../../constants/spacing";
 import { useTheme } from "../../context/ThemeContext";
 import { useProducts } from "../../hooks/useProducts";
@@ -104,14 +104,14 @@ export default function AddProducts() {
   // Check for Admin Security PIN on mount
   useEffect(() => {
     const checkSecurityPIN = async () => {
-      console.log('🔐 Add-Products - Starting security PIN check...');
+      console.log('ðŸ” Add-Products - Starting security PIN check...');
       const hasPIN = await hasSecurityPIN();
-      console.log('🔐 Add-Products - PIN check result:', hasPIN);
+      console.log('ðŸ” Add-Products - PIN check result:', hasPIN);
       if (!hasPIN) {
-        console.log('⚠️ Add-Products - No PIN found, showing warning');
+        console.log('âš ï¸ Add-Products - No PIN found, showing warning');
         setShowSecurityPINWarning(true);
       } else {
-        console.log('✅ Add-Products - PIN found, NOT showing warning');
+        console.log('âœ… Add-Products - PIN found, NOT showing warning');
       }
     };
     checkSecurityPIN();
@@ -237,10 +237,10 @@ export default function AddProducts() {
       // Always reset form when focusing without scan params
       // This ensures clean state when navigating back from scanner or after submission
       if (!params.barcode && !params.mode) {
-        console.log('📝 Add-Products - Resetting form (no params)');
+        console.log('ðŸ“ Add-Products - Resetting form (no params)');
         resetForm();
       } else if (params.barcode) {
-        console.log('📝 Add-Products - Has barcode param, keeping form data');
+        console.log('ðŸ“ Add-Products - Has barcode param, keeping form data');
       }
       return () => {};
     }, [params.barcode, params.mode]),
@@ -1025,12 +1025,12 @@ export default function AddProducts() {
         >
           <View style={styles.headerRow}>
             <View style={{ flex: 1, }}>
-              <Text style={[styles.subtitle, { color: theme.primary }]}>
+              <ThemedText style={[styles.subtitle, { color: theme.primary }]}>
                 {mode === "registry" ? "GLOBAL_REGISTRY_ENTRY" : "ADD_STOCK_TO_INVENTORY"}
-              </Text>
-              <Text style={[styles.title, { color: theme.text }]}>
+              </ThemedText>
+              <ThemedText style={[styles.title, { color: theme.text }]}>
                 {mode === "registry" ? "REGISTER_PRODUCT" : "ADD_BATCH"}
-              </Text>
+              </ThemedText>
             </View>
             
             {/* Action Buttons */}
@@ -1072,7 +1072,7 @@ export default function AddProducts() {
           {!params.barcode && !params.mode && (
             <View style={styles.modeSelection}>
               <View style={styles.sectionHeader}>
-                <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>SELECT MODE</Text>
+                <ThemedText style={[styles.sectionTitle, { marginBottom: 0 }]}>SELECT MODE</ThemedText>
                 <Pressable onPress={() => setShowModeHelp(true)}>
                   <Ionicons name="help-circle-outline" size={20} color={theme.primary} />
                 </Pressable>
@@ -1114,22 +1114,21 @@ export default function AddProducts() {
                     size={24} 
                     color={mode === "registry" ? "#fff" : theme.text} 
                   />
-                  <Text style={{
+                  <ThemedText style={{
                     color: mode === "registry" ? "#fff" : theme.text,
-                    fontWeight: "700",
                     fontSize: 16,
                     marginTop: 8,
                   }}>
                     Register Product
-                  </Text>
-                  <Text style={{
+                  </ThemedText>
+                  <ThemedText style={{
                     color: mode === "registry" ? "#fff" : theme.subtext,
                     fontSize: 12,
                     textAlign: "center",
                     marginTop: 4,
                   }}>
                     {(!registerAccess.isAllowed && role !== 'admin') ? 'No permission' : 'Add to global database only'}
-                  </Text>
+                  </ThemedText>
                   {(!registerAccess.isAllowed && role !== 'admin') && (
                     <Ionicons name="lock-closed" size={14} color={theme.subtext} style={{ marginTop: 4 }} />
                   )}
@@ -1167,22 +1166,21 @@ export default function AddProducts() {
                     size={24} 
                     color={mode === "manual" ? "#fff" : theme.text} 
                   />
-                  <Text style={{
+                  <ThemedText style={{
                     color: mode === "manual" ? "#fff" : theme.text,
-                    fontWeight: "700",
                     fontSize: 16,
                     marginTop: 8,
                   }}>
                     Add to Inventory
-                  </Text>
-                  <Text style={{
+                  </ThemedText>
+                  <ThemedText style={{
                     color: mode === "manual" ? "#fff" : theme.subtext,
                     fontSize: 12,
                     textAlign: "center",
                     marginTop: 4,
                   }}>
                     Register & add stock
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               </View>
             </View>
@@ -1202,24 +1200,24 @@ export default function AddProducts() {
                   ]} 
                 />
               </View>
-              <Text style={[styles.progressText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.progressText, { color: theme.subtext }]}>
                 Step {currentStep} of {totalSteps}
-              </Text>
+              </ThemedText>
             </View>
           )}
 
           {existingProduct && mode === "inventory" && (
             <View style={[styles.infoCard, { backgroundColor: theme.primary + "15", borderColor: theme.primary }]}>
               <Ionicons name="information-circle" size={20} color={theme.primary} />
-              <Text style={[styles.infoText, { color: theme.text }]}>
-                Adding batch to: <Text style={{ fontWeight: "800" }}>{existingProduct.name}</Text>
-              </Text>
+              <ThemedText style={[styles.infoText, { color: theme.text }]}>
+                Adding batch to: <ThemedText style={{ }}>{existingProduct.name}</ThemedText>
+              </ThemedText>
             </View>
           )}
 
           <Pressable style={[styles.scanShortcut, { borderColor: theme.border }]} onPress={handleScannerPress}>
             <Ionicons name="barcode-outline" size={24} color={theme.primary} />
-            <Text style={{ color: theme.text, fontWeight: "700", marginLeft: 10 }}>Smart Scanner</Text>
+            <ThemedText style={{ color: theme.text, marginLeft: 10 }}>Smart Scanner</ThemedText>
           </Pressable>
 
           {/* Manual Batch Addition for Registered Products */}
@@ -1246,23 +1244,23 @@ export default function AddProducts() {
             >
               <Ionicons name="cube-outline" size={24} color={theme.primary} />
               <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={{ color: theme.text, fontWeight: "700", fontSize: 15 }}>
+                <ThemedText style={{ color: theme.text, fontSize: 15 }}>
                   Add Batch to Registered Product
-                </Text>
-                <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>
+                </ThemedText>
+                <ThemedText style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>
                   Select from your product registry
-                </Text>
+                </ThemedText>
               </View>
               <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
             </Pressable>
           )}
 
-          <Text style={styles.sectionTitle}>PRODUCT IDENTITY</Text>
+          <ThemedText style={styles.sectionTitle}>PRODUCT IDENTITY</ThemedText>
 
           {/* Enhanced Barcode Input with Validation */}
           <View style={styles.inputGroup}>
             <View style={styles.labelRow}>
-              <Text style={[styles.label, { color: theme.subtext }]}>BARCODE / ID</Text>
+              <ThemedText style={[styles.label, { color: theme.subtext }]}>BARCODE / ID</ThemedText>
               <Pressable style={{marginTop: 10}} onPress={() => setShowFieldHelp(showFieldHelp === 'barcode' ? null : 'barcode')}>
                 <Ionicons name="help-circle-outline" size={16} color={theme.primary} />
               </Pressable>
@@ -1270,9 +1268,9 @@ export default function AddProducts() {
             
             {showFieldHelp === 'barcode' && (
               <View style={[styles.helpBox, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}>
-                <Text style={[styles.helpText, { color: theme.text }]}>
+                <ThemedText style={[styles.helpText, { color: theme.text }]}>
                   Scan a barcode or generate one automatically. Barcodes help track products uniquely.
-                </Text>
+                </ThemedText>
               </View>
             )}
             
@@ -1303,16 +1301,16 @@ export default function AddProducts() {
                   onChangeText={(t) => handleFieldChange("barcode", t)}
                 />
                 {fieldErrors.barcode && (
-                  <Text style={[styles.errorText, { color: theme.notification }]}>
+                  <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                     {fieldErrors.barcode}
-                  </Text>
+                  </ThemedText>
                 )}
                 {validFields.includes('barcode') && (
                   <View style={styles.successRow}>
                     <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                    <Text style={[styles.successText, { color: '#4CAF50' }]}>
+                    <ThemedText style={[styles.successText, { color: '#4CAF50' }]}>
                       {isScannedProduct ? "Scanned successfully" : "Valid barcode"}
-                    </Text>
+                    </ThemedText>
                   </View>
                 )}
               </View>
@@ -1361,16 +1359,16 @@ export default function AddProducts() {
                 ) : (
                   <View style={styles.photoPlaceholder}>
                     <Ionicons name="camera" size={30} color={theme.subtext} />
-                    <Text style={[styles.photoPlaceholderText, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.photoPlaceholderText, { color: theme.subtext }]}>
                       {isLocked ? "Locked" : "Tap to add"}
-                    </Text>
+                    </ThemedText>
                   </View>
                 )}
                 
                 {isUploading && (
                   <View style={styles.uploadOverlay}>
                     <ActivityIndicator size="large" color={theme.primary} />
-                    <Text style={styles.uploadText}>{uploadProgress}%</Text>
+                    <ThemedText style={styles.uploadText}>{uploadProgress}%</ThemedText>
                     <View style={styles.uploadProgressBar}>
                       <View 
                         style={[
@@ -1402,7 +1400,7 @@ export default function AddProducts() {
             
             <View style={{ flex: 1 }}>
               <View style={styles.labelRow}>
-                <Text style={[styles.label, { marginTop: 0, color: theme.subtext }]}>PRODUCT IMAGE</Text>
+                <ThemedText style={[styles.label, { marginTop: 0, color: theme.subtext }]}>PRODUCT IMAGE</ThemedText>
                 <Pressable style={{marginBottom: 10}} onPress={() => setShowFieldHelp(showFieldHelp === 'image' ? null : 'image')}>
                   <Ionicons name="help-circle-outline" size={16} color={theme.primary} />
                 </Pressable>
@@ -1410,9 +1408,9 @@ export default function AddProducts() {
               
               {showFieldHelp === 'image' && (
                 <View style={[styles.helpBox, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}>
-                  <Text style={[styles.helpText, { color: theme.text }]}>
+                  <ThemedText style={[styles.helpText, { color: theme.text }]}>
                     Add a clear photo of your product. This helps with identification and inventory management. If no image is provided, a default cube icon will be used.
-                  </Text>
+                  </ThemedText>
                 </View>
               )}
               
@@ -1422,7 +1420,7 @@ export default function AddProducts() {
                   size={16} 
                   color={image ? "#4CAF50" : theme.subtext} 
                 />
-                <Text style={{ 
+                <ThemedText style={{ 
                   color: image ? "#4CAF50" : theme.subtext, 
                   fontSize: 12, 
                   marginLeft: 6 
@@ -1431,7 +1429,7 @@ export default function AddProducts() {
                     ? "Image added successfully"
                     : "default cube image will be used"
                   }
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -1439,8 +1437,8 @@ export default function AddProducts() {
           {/* Enhanced Product Name Input */}
           <View style={styles.inputGroup}>
             <View style={styles.labelRow}>
-              <Text style={[styles.label, { color: theme.subtext }]}>PRODUCT NAME</Text>
-              <Text style={[styles.required, { color: theme.notification }]}>*</Text>
+              <ThemedText style={[styles.label, { color: theme.subtext }]}>PRODUCT NAME</ThemedText>
+              <ThemedText style={[styles.required, { color: theme.notification }]}>*</ThemedText>
             </View>
             
             <TextInput
@@ -1471,27 +1469,27 @@ export default function AddProducts() {
             
             <View style={styles.inputFooter}>
               {fieldErrors.name && (
-                <Text style={[styles.errorText, { color: theme.notification }]}>
+                <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                   {fieldErrors.name}
-                </Text>
+                </ThemedText>
               )}
               {validFields.includes('name') && (
                 <View style={styles.successRow}>
                   <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                  <Text style={[styles.successText, { color: '#4CAF50' }]}>Good name</Text>
+                  <ThemedText style={[styles.successText, { color: '#4CAF50' }]}>Good name</ThemedText>
                 </View>
               )}
-              <Text style={[styles.charCount, { color: theme.subtext }]}>
+              <ThemedText style={[styles.charCount, { color: theme.subtext }]}>
                 {formData.name.length}/100
-              </Text>
+              </ThemedText>
             </View>
           </View>
 
           {/* Enhanced Category Input */}
           <View style={styles.inputGroup}>
             <View style={styles.labelRow}>
-              <Text style={[styles.label, { color: theme.subtext }]}>CATEGORY</Text>
-              <Text style={[styles.required, { color: theme.notification }]}>*</Text>
+              <ThemedText style={[styles.label, { color: theme.subtext }]}>CATEGORY</ThemedText>
+              <ThemedText style={[styles.required, { color: theme.notification }]}>*</ThemedText>
               <HelpTooltip
                 title="Product Categories"
                 content={[
@@ -1508,7 +1506,7 @@ export default function AddProducts() {
               {(isLocked || (mode === "inventory" && existingProduct && existingProduct.category)) && (
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8 }}>
                   <Ionicons name="lock-closed" size={14} color={theme.subtext} />
-                  <Text style={{ color: theme.subtext, fontSize: 11, marginLeft: 4 }}>Locked</Text>
+                  <ThemedText style={{ color: theme.subtext, fontSize: 11, marginLeft: 4 }}>Locked</ThemedText>
                 </View>
               )}
             </View>
@@ -1549,26 +1547,26 @@ export default function AddProducts() {
               {(isLocked || (mode === "inventory" && existingProduct && existingProduct.category)) && (
                 <Ionicons name="lock-closed" size={18} color={theme.subtext} style={{ marginRight: 8 }} />
               )}
-              <Text style={{ 
+              <ThemedText style={{ 
                 color: formData.category ? theme.text : theme.subtext,
                 flex: 1,
               }}>
                 {formData.category || "Select category"}
-              </Text>
+              </ThemedText>
               {!(isLocked || (mode === "inventory" && existingProduct && existingProduct.category)) && (
                 <Ionicons name="chevron-down" size={20} color={theme.subtext} />
               )}
             </Pressable>
             
             {fieldErrors.category && (
-              <Text style={[styles.errorText, { color: theme.notification }]}>
+              <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                 {fieldErrors.category}
-              </Text>
+              </ThemedText>
             )}
             {validFields.includes('category') && (
               <View style={styles.successRow}>
                 <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                <Text style={[styles.successText, { color: '#4CAF50' }]}>Category selected</Text>
+                <ThemedText style={[styles.successText, { color: '#4CAF50' }]}>Category selected</ThemedText>
               </View>
             )}
           </View>
@@ -1576,8 +1574,8 @@ export default function AddProducts() {
           {mode === "registry" && (
             <View style={styles.toggleRow}>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: theme.text, fontWeight: "700", fontSize: 15 }}>Perishable Item?</Text>
-                <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Requires expiry date tracking</Text>
+                <ThemedText style={{ color: theme.text, fontSize: 15 }}>Perishable Item?</ThemedText>
+                <ThemedText style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Requires expiry date tracking</ThemedText>
               </View>
               <Switch
                 value={isPerishable}
@@ -1592,8 +1590,8 @@ export default function AddProducts() {
           {mode === "manual" && (
             <View style={styles.toggleRow}>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: theme.text, fontWeight: "700", fontSize: 15 }}>Perishable Item?</Text>
-                <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Requires expiry date tracking</Text>
+                <ThemedText style={{ color: theme.text, fontSize: 15 }}>Perishable Item?</ThemedText>
+                <ThemedText style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Requires expiry date tracking</ThemedText>
               </View>
               <Switch
                 value={isPerishable}
@@ -1610,13 +1608,13 @@ export default function AddProducts() {
 
           {(mode === "inventory" || mode === "manual") && (
             <View style={styles.batchSection}>
-              <Text style={styles.sectionTitle}>BATCH DETAILS</Text>
+              <ThemedText style={styles.sectionTitle}>BATCH DETAILS</ThemedText>
               
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>
                   <View style={styles.labelRow}>
-                    <Text style={[styles.label, { color: theme.subtext }]}>PRICE (₦)</Text>
-                    <Text style={[styles.required, { color: theme.notification }]}>*</Text>
+                    <ThemedText style={[styles.label, { color: theme.subtext }]}>PRICE (â‚¦)</ThemedText>
+                    <ThemedText style={[styles.required, { color: theme.notification }]}>*</ThemedText>
                   </View>
                   <TextInput
                     style={[
@@ -1641,16 +1639,16 @@ export default function AddProducts() {
                     onChangeText={(t) => handleFieldChange("price", t)}
                   />
                   {fieldErrors.price && (
-                    <Text style={[styles.errorText, { color: theme.notification }]}>
+                    <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                       {fieldErrors.price}
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
                 
                 <View style={{ flex: 1 }}>
                   <View style={styles.labelRow}>
-                    <Text style={[styles.label, { color: theme.subtext }]}>QUANTITY</Text>
-                    <Text style={[styles.required, { color: theme.notification }]}>*</Text>
+                    <ThemedText style={[styles.label, { color: theme.subtext }]}>QUANTITY</ThemedText>
+                    <ThemedText style={[styles.required, { color: theme.notification }]}>*</ThemedText>
                   </View>
                   <TextInput
                     style={[
@@ -1675,17 +1673,17 @@ export default function AddProducts() {
                     onChangeText={(t) => handleFieldChange("quantity", t)}
                   />
                   {fieldErrors.quantity && (
-                    <Text style={[styles.errorText, { color: theme.notification }]}>
+                    <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                       {fieldErrors.quantity}
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
                 
                 {isPerishable && (
                   <View style={{ flex: 1 }}>
                     <View style={styles.labelRow}>
-                      <Text style={[styles.label, { color: theme.subtext }]}>EXPIRY</Text>
-                      <Text style={[styles.required, { color: theme.notification }]}>*</Text>
+                      <ThemedText style={[styles.label, { color: theme.subtext }]}>EXPIRY</ThemedText>
+                      <ThemedText style={[styles.required, { color: theme.notification }]}>*</ThemedText>
                     </View>
                     <TextInput
                       style={[
@@ -1709,9 +1707,9 @@ export default function AddProducts() {
                       onChangeText={(t) => handleFieldChange("expiryDate", t)}
                     />
                     {fieldErrors.expiryDate && (
-                      <Text style={[styles.errorText, { color: theme.notification }]}>
+                      <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                         {fieldErrors.expiryDate}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                 )}
@@ -1720,7 +1718,7 @@ export default function AddProducts() {
               {/* Manufacturer Date Input */}
               <View style={styles.inputGroup}>
                 <View style={styles.labelRow}>
-                  <Text style={[styles.label, { color: theme.subtext }]}>MANUFACTURER DATE</Text>
+                  <ThemedText style={[styles.label, { color: theme.subtext }]}>MANUFACTURER DATE</ThemedText>
                   <Pressable style={{marginTop: 10}} onPress={() => setShowFieldHelp(showFieldHelp === 'manufacturerDate' ? null : 'manufacturerDate')}>
                     <Ionicons name="help-circle-outline" size={16} color={theme.primary} />
                   </Pressable>
@@ -1728,9 +1726,9 @@ export default function AddProducts() {
                 
                 {showFieldHelp === 'manufacturerDate' && (
                   <View style={[styles.helpBox, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}>
-                    <Text style={[styles.helpText, { color: theme.text }]}>
+                    <ThemedText style={[styles.helpText, { color: theme.text }]}>
                       The date when the product was manufactured. This helps track product age and shelf life. Cannot be in the future.
-                    </Text>
+                    </ThemedText>
                   </View>
                 )}
                 
@@ -1758,14 +1756,14 @@ export default function AddProducts() {
                 />
                 
                 {fieldErrors.manufacturerDate && (
-                  <Text style={[styles.errorText, { color: theme.notification }]}>
+                  <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                     {fieldErrors.manufacturerDate}
-                  </Text>
+                  </ThemedText>
                 )}
                 {validFields.includes('manufacturerDate') && (
                   <View style={styles.successRow}>
                     <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                    <Text style={[styles.successText, { color: '#4CAF50' }]}>Valid date</Text>
+                    <ThemedText style={[styles.successText, { color: '#4CAF50' }]}>Valid date</ThemedText>
                   </View>
                 )}
               </View>
@@ -1778,9 +1776,9 @@ export default function AddProducts() {
             {!featureAccess.isAllowed && role !== 'admin' && (
               <View style={[styles.permissionWarning, { backgroundColor: '#FF3B30' + '15', borderColor: '#FF3B30' }]}>
                 <Ionicons name="lock-closed" size={16} color="#FF3B30" />
-                <Text style={[styles.permissionWarningText, { color: '#FF3B30' }]}>
+                <ThemedText style={[styles.permissionWarningText, { color: '#FF3B30' }]}>
                   {featureAccess.reason || 'You don\'t have permission to add products'}
-                </Text>
+                </ThemedText>
               </View>
             )}
             
@@ -1799,25 +1797,25 @@ export default function AddProducts() {
               {(isSubmitting || isUploading) ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="small" color="#fff" />
-                  <Text style={styles.completeBtnText}>
+                  <ThemedText style={styles.completeBtnText}>
                     {isUploading ? "Uploading..." : "Saving..."}
-                  </Text>
+                  </ThemedText>
                 </View>
               ) : (
                 <>
                   <Ionicons name="checkmark-circle" size={22} color="#fff" />
-                  <Text style={styles.completeBtnText}>
+                  <ThemedText style={styles.completeBtnText}>
                     {mode === "registry" ? "Register Product" : "Add to Inventory"}
-                  </Text>
+                  </ThemedText>
                 </>
               )}
             </Pressable>
             
             {/* Form Summary */}
             <View style={styles.formSummary}>
-              <Text style={[styles.summaryText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.summaryText, { color: theme.subtext }]}>
                 {validFields.length} of {mode === "registry" ? "3" : "5"} required fields completed
-              </Text>
+              </ThemedText>
             </View>
           </View>
         </ScrollView>
@@ -1828,13 +1826,13 @@ export default function AddProducts() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
             <Ionicons name="refresh-circle" size={48} color={theme.primary} />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Reset Form?</Text>
-            <Text style={{ color: theme.subtext, textAlign: "center", marginBottom: 20 }}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Reset Form?</ThemedText>
+            <ThemedText style={{ color: theme.subtext, textAlign: "center", marginBottom: 20 }}>
               This will clear all your current inputs. Are you sure you want to continue?
-            </Text>
+            </ThemedText>
             <View style={styles.modalActions}>
               <Pressable style={[styles.modalBtn, { backgroundColor: theme.background }]} onPress={() => setShowRefreshConfirm(false)}>
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
@@ -1843,7 +1841,7 @@ export default function AddProducts() {
                   resetForm(true); // Show toast when user confirms reset
                 }}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Reset</Text>
+                <ThemedText style={{ color: "#FFF", }}>Reset</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1855,7 +1853,7 @@ export default function AddProducts() {
         <View style={styles.modalOverlay}>
           <View style={[styles.helpModal, { backgroundColor: theme.surface }]}>
             <View style={styles.helpModalHeader}>
-              <Text style={[styles.helpModalTitle, { color: theme.text }]}>Mode Selection Help</Text>
+              <ThemedText style={[styles.helpModalTitle, { color: theme.text }]}>Mode Selection Help</ThemedText>
               <Pressable onPress={() => setShowModeHelp(false)}>
                 <Ionicons name="close" size={24} color={theme.text} />
               </Pressable>
@@ -1865,22 +1863,22 @@ export default function AddProducts() {
               <View style={styles.helpModeItem}>
                 <Ionicons name="library-outline" size={24} color={theme.primary} />
                 <View style={{ flex: 1, marginLeft: 12 }}>
-                  <Text style={[styles.helpModeTitle, { color: theme.text }]}>Register Product</Text>
-                  <Text style={[styles.helpModeDesc, { color: theme.subtext }]}>
+                  <ThemedText style={[styles.helpModeTitle, { color: theme.text }]}>Register Product</ThemedText>
+                  <ThemedText style={[styles.helpModeDesc, { color: theme.subtext }]}>
                     Adds the product to your global database for future use. No inventory is added.
                     Perfect for building your product catalog.
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
               
               <View style={styles.helpModeItem}>
                 <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
                 <View style={{ flex: 1, marginLeft: 12 }}>
-                  <Text style={[styles.helpModeTitle, { color: theme.text }]}>Add to Inventory</Text>
-                  <Text style={[styles.helpModeDesc, { color: theme.subtext }]}>
+                  <ThemedText style={[styles.helpModeTitle, { color: theme.text }]}>Add to Inventory</ThemedText>
+                  <ThemedText style={[styles.helpModeDesc, { color: theme.subtext }]}>
                     Registers the product AND adds stock quantities. Use this when you want to 
                     track actual inventory levels.
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
             </ScrollView>
@@ -1892,17 +1890,17 @@ export default function AddProducts() {
       <Modal visible={showPicker} transparent animationType="slide">
         <View style={styles.pickerOverlay}>
           <View style={[styles.pickerContent, { backgroundColor: theme.surface }]}>
-            <Text style={[styles.pickerTitle, { color: theme.text }]}>Add Product Image</Text>
+            <ThemedText style={[styles.pickerTitle, { color: theme.text }]}>Add Product Image</ThemedText>
             <Pressable style={styles.pickerOpt} onPress={() => pickImage(true)}>
               <Ionicons name="camera" size={24} color={theme.primary} />
-              <Text style={{ color: theme.text, marginLeft: 15, fontSize: 16 }}>Take Photo</Text>
+              <ThemedText style={{ color: theme.text, marginLeft: 15, fontSize: 16 }}>Take Photo</ThemedText>
             </Pressable>
             <Pressable style={styles.pickerOpt} onPress={() => pickImage(false)}>
               <Ionicons name="images" size={24} color={theme.primary} />
-              <Text style={{ color: theme.text, marginLeft: 15, fontSize: 16 }}>Choose from Gallery</Text>
+              <ThemedText style={{ color: theme.text, marginLeft: 15, fontSize: 16 }}>Choose from Gallery</ThemedText>
             </Pressable>
             <Pressable style={[styles.pickerOpt, { borderBottomWidth: 0 }]} onPress={() => setShowPicker(false)}>
-              <Text style={{ color: "#FF4444", fontWeight: "700", fontSize: 16 }}>Cancel</Text>
+              <ThemedText style={{ color: "#FF4444", fontSize: 16 }}>Cancel</ThemedText>
             </Pressable>
           </View>
         </View>
@@ -1912,7 +1910,7 @@ export default function AddProducts() {
         <View style={styles.pickerOverlay}>
           <View style={[styles.categoryModal, { backgroundColor: theme.surface }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.pickerTitle, { color: theme.text }]}>Select Category</Text>
+              <ThemedText style={[styles.pickerTitle, { color: theme.text }]}>Select Category</ThemedText>
               <Pressable onPress={() => setShowCategoryPicker(false)}>
                 <Ionicons name="close" size={24} color={theme.text} />
               </Pressable>
@@ -1921,17 +1919,17 @@ export default function AddProducts() {
             {adminCategories.length === 0 ? (
               <View style={{ padding: 30, alignItems: 'center' }}>
                 <Ionicons name="alert-circle-outline" size={64} color={theme.notification} />
-                <Text style={{ color: theme.text, marginTop: 16, fontSize: 18, fontWeight: '700', textAlign: 'center' }}>
+                <ThemedText style={{ color: theme.text, marginTop: 16, fontSize: 18, textAlign: 'center' }}>
                   No Categories Available
-                </Text>
-                <Text style={{ color: theme.subtext, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
+                </ThemedText>
+                <ThemedText style={{ color: theme.subtext, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
                   Please ask your admin to create product categories before adding products.
-                </Text>
+                </ThemedText>
                 <Pressable
                   style={[styles.modalBtn, { backgroundColor: theme.primary, marginTop: 20, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 }]}
                   onPress={() => setShowCategoryPicker(false)}
                 >
-                  <Text style={{ color: "#FFF", fontWeight: "700" }}>Close</Text>
+                  <ThemedText style={{ color: "#FFF", }}>Close</ThemedText>
                 </Pressable>
               </View>
             ) : (
@@ -1953,14 +1951,14 @@ export default function AddProducts() {
                         size={20} 
                         color={formData.category === item ? theme.primary : theme.subtext} 
                       />
-                      <Text style={{ 
+                      <ThemedText style={{ 
                         color: formData.category === item ? theme.primary : theme.text, 
                         fontSize: 16,
                         marginLeft: 12,
                         fontWeight: formData.category === item ? '600' : '400'
                       }}>
                         {item}
-                      </Text>
+                      </ThemedText>
                     </View>
                     <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
                   </Pressable>
@@ -1975,10 +1973,10 @@ export default function AddProducts() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
             <Ionicons name="warning-outline" size={48} color={theme.notification} />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Discard Changes?</Text>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Discard Changes?</ThemedText>
             <View style={styles.modalActions}>
               <Pressable style={[styles.modalBtn, { backgroundColor: theme.background }]} onPress={() => setShowExitModal(false)}>
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Stay</Text>
+                <ThemedText style={{ color: theme.text, }}>Stay</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.notification }]}
@@ -1990,7 +1988,7 @@ export default function AddProducts() {
                   else { router.back(); }
                 }}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Discard</Text>
+                <ThemedText style={{ color: "#FFF", }}>Discard</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -2012,7 +2010,7 @@ export default function AddProducts() {
         <View style={styles.pickerOverlay}>
           <View style={[styles.categoryModal, { backgroundColor: theme.surface }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.pickerTitle, { color: theme.text }]}>Select Product</Text>
+              <ThemedText style={[styles.pickerTitle, { color: theme.text }]}>Select Product</ThemedText>
               <Pressable onPress={() => {
                 setShowProductSelector(false);
                 setProductSearchQuery("");
@@ -2036,17 +2034,17 @@ export default function AddProducts() {
             {registeredProducts.length === 0 ? (
               <View style={{ padding: 30, alignItems: 'center' }}>
                 <Ionicons name="cube-outline" size={64} color={theme.subtext} />
-                <Text style={{ color: theme.text, marginTop: 16, fontSize: 18, fontWeight: '700', textAlign: 'center' }}>
+                <ThemedText style={{ color: theme.text, marginTop: 16, fontSize: 18, textAlign: 'center' }}>
                   No Registered Products
-                </Text>
-                <Text style={{ color: theme.subtext, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
+                </ThemedText>
+                <ThemedText style={{ color: theme.subtext, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
                   Register products first before adding batches.
-                </Text>
+                </ThemedText>
                 <Pressable
                   style={[styles.modalBtn, { backgroundColor: theme.primary, marginTop: 20, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 }]}
                   onPress={() => setShowProductSelector(false)}
                 >
-                  <Text style={{ color: "#FFF", fontWeight: "700" }}>Close</Text>
+                  <ThemedText style={{ color: "#FFF", }}>Close</ThemedText>
                 </Pressable>
               </View>
             ) : (
@@ -2101,24 +2099,23 @@ export default function AddProducts() {
                         </View>
                       )}
                       <View style={{ flex: 1 }}>
-                        <Text style={{ 
+                        <ThemedText style={{ 
                           color: theme.text, 
                           fontSize: 16,
-                          fontWeight: '600',
                           marginBottom: 4
                         }}>
                           {item.name}
-                        </Text>
+                        </ThemedText>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
-                          <Text style={{ color: theme.subtext, fontSize: 12 }}>
+                          <ThemedText style={{ color: theme.subtext, fontSize: 12 }}>
                             {item.barcode}
-                          </Text>
+                          </ThemedText>
                           {item.category && (
                             <>
-                              <Text style={{ color: theme.subtext, fontSize: 12 }}>•</Text>
-                              <Text style={{ color: theme.subtext, fontSize: 12 }}>
+                              <ThemedText style={{ color: theme.subtext, fontSize: 12 }}>â€¢</ThemedText>
+                              <ThemedText style={{ color: theme.subtext, fontSize: 12 }}>
                                 {item.category}
-                              </Text>
+                              </ThemedText>
                             </>
                           )}
                         </View>
@@ -2130,9 +2127,9 @@ export default function AddProducts() {
                 ListEmptyComponent={
                   <View style={{ padding: 30, alignItems: 'center' }}>
                     <Ionicons name="search-outline" size={48} color={theme.subtext} />
-                    <Text style={{ color: theme.subtext, marginTop: 12, fontSize: 14 }}>
+                    <ThemedText style={{ color: theme.subtext, marginTop: 12, fontSize: 14 }}>
                       No products found
-                    </Text>
+                    </ThemedText>
                   </View>
                 }
               />
@@ -2168,8 +2165,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  title: { fontSize: 25, fontWeight: "900", letterSpacing: -1 },
-  subtitle: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
+  title: { fontSize: 25, letterSpacing: -1 },
+  subtitle: { fontSize: 10, letterSpacing: 2 },
   
   // Enhanced mode selection
   modeSelection: {
@@ -2213,8 +2210,7 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 12,
     marginTop: 8,
-    fontWeight: "600",
-  },
+    },
   
   // Enhanced input groups
   inputGroup: {
@@ -2228,8 +2224,7 @@ const styles = StyleSheet.create({
   },
   required: {
     fontSize: 16,
-    fontWeight: "bold",
-  },
+    },
   helpBox: {
     padding: 12,
     borderRadius: 8,
@@ -2258,8 +2253,7 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 12,
-    fontWeight: "500",
-  },
+    },
   charCount: {
     fontSize: 11,
     marginLeft: "auto",
@@ -2272,8 +2266,7 @@ const styles = StyleSheet.create({
   },
   photoPlaceholderText: {
     fontSize: 11,
-    fontWeight: "500",
-  },
+    },
   uploadOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.8)",
@@ -2285,8 +2278,7 @@ const styles = StyleSheet.create({
   uploadText: {
     color: "#fff",
     fontSize: 14,
-    fontWeight: "600",
-  },
+    },
   uploadProgressBar: {
     width: 60,
     height: 4,
@@ -2335,8 +2327,7 @@ const styles = StyleSheet.create({
   },
   summaryText: {
     fontSize: 12,
-    fontWeight: "500",
-  },
+    },
   
   // Help modal styles
   helpModal: {
@@ -2357,8 +2348,7 @@ const styles = StyleSheet.create({
   },
   helpModalTitle: {
     fontSize: 18,
-    fontWeight: "700",
-  },
+    },
   helpModalContent: {
     padding: 20,
   },
@@ -2372,7 +2362,6 @@ const styles = StyleSheet.create({
   },
   helpModeTitle: {
     fontSize: 16,
-    fontWeight: "600",
     marginBottom: 4,
   },
   helpModeDesc: {
@@ -2413,12 +2402,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#888",
     letterSpacing: 2,
-    fontWeight: "800",
     marginBottom: 20,
   },
   label: {
     fontSize: 11,
-    fontWeight: "800",
     marginBottom: 8,
     marginTop: 15,
   },
@@ -2426,8 +2413,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 15,
     fontSize: 14,
-    fontWeight: "400",
-  },
+    },
   errorHighlight: {
     borderColor: '#FF4444',
     backgroundColor: 'rgba(255, 68, 68, 0.1)',
@@ -2492,7 +2478,6 @@ const styles = StyleSheet.create({
   },
   completeBtnText: {
     color: "#FFF",
-    fontWeight: "800",
     fontSize: 16,
   },
   pickerOverlay: {
@@ -2507,7 +2492,6 @@ const styles = StyleSheet.create({
   },
   pickerTitle: {
     fontSize: 18,
-    fontWeight: "800",
     marginBottom: 20,
     textAlign: "center",
   },
@@ -2560,7 +2544,6 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "900",
     marginTop: 15,
     marginBottom: 5,
   },
@@ -2601,7 +2584,7 @@ const styles = StyleSheet.create({
   },
   permissionWarningText: {
     fontSize: 13,
-    fontWeight: '600',
     flex: 1,
   },
 });
+

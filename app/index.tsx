@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import {
     Pressable,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import { AIOnboardingModal } from "../components/AIOnboardingModal";
+import { ThemedText } from '../components/ThemedText';
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 
@@ -83,7 +83,7 @@ export default function WelcomeScreen() {
     if (role === 'admin') {
       router.push("/admin/inventory" as any);
     } else {
-      router.push("/(tabs)" as any);
+      router.push("inventory/(tabs)" as any);
     }
   };
 
@@ -108,7 +108,7 @@ export default function WelcomeScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         {/* Semicircular Header */}
       <View style={[styles.headerCurve, { backgroundColor: theme.header }]}>
-        <Text style={styles.headerTitle}>Insightory</Text>
+        <ThemedText style={styles.headerTitle}>Insightory</ThemedText>
       </View>
 
       {/* Centered Content */}
@@ -116,10 +116,10 @@ export default function WelcomeScreen() {
         <View style={[styles.logoMark, { backgroundColor: theme.primaryLight }]}>
           <Ionicons name="cube" size={48} color={theme.primary} />
         </View>
-        <Text style={[styles.appName, { color: theme.primary }]}>Insightory</Text>
-        <Text style={[styles.subtitle, { color: theme.subtext }]}>
+        <ThemedText style={[styles.appName, { color: theme.primary }]}>Insightory</ThemedText>
+        <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
           Smart tracking for products & expiry dates
-        </Text>
+        </ThemedText>
       </View>
 
       {/* Action Buttons */}
@@ -128,7 +128,7 @@ export default function WelcomeScreen() {
           style={[styles.primaryButton, { backgroundColor: theme.primary }]}
           onPress={handleViewInventory}
         >
-          <Text style={styles.primaryText}>View Inventory</Text>
+          <ThemedText style={styles.primaryText}>View Inventory</ThemedText>
         </Pressable>
 
         <Pressable
@@ -141,9 +141,9 @@ export default function WelcomeScreen() {
           ]}
           onPress={handleAddProduct}
         >
-          <Text style={[styles.secondaryText, { color: theme.text }]}>
+          <ThemedText style={[styles.secondaryText, { color: theme.text }]}>
             Add Product
-          </Text>
+          </ThemedText>
         </Pressable>
 
         <Pressable
@@ -152,9 +152,9 @@ export default function WelcomeScreen() {
         >
           <View style={styles.ghostBtncontent}>
             <Ionicons name="scan-outline" size={24} color={theme.primary} />
-            <Text style={[styles.ghostText, { color: theme.primary }]}>
+            <ThemedText style={[styles.ghostText, { color: theme.primary }]}>
               Scan Barcode
-            </Text>
+            </ThemedText>
           </View>
         </Pressable>
       </View>
@@ -189,8 +189,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: "900",
+    fontSize: 30,
     color: "#FFFFFF",
     letterSpacing: 1,
   },
@@ -209,8 +208,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   appName: {
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 11,
     letterSpacing: 4,
     textTransform: 'uppercase',
     marginBottom: 8,
@@ -227,15 +225,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
   },
-  primaryText: { color: "#FFFFFF", fontSize: 17, fontWeight: "500" },
+  primaryText: { color: "#FFFFFF", fontSize: 14, },
   secondaryButton: {
     paddingVertical: 15,
     borderRadius: 20,
     alignItems: "center",
     borderWidth: 1.5,
   },
-  secondaryText: { fontSize: 16, fontWeight: "500" },
+  secondaryText: { fontSize: 14, },
   ghostButton: { paddingVertical: 10, alignItems: "center" },
   ghostBtncontent: { flexDirection: "row", gap: 10, alignItems: "center" },
-  ghostText: { fontSize: 16, fontWeight: "500" },
+  ghostText: { fontSize: 14, },
 });
+

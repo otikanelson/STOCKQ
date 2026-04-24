@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
 import {
-  Animated,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+    Animated,
+    Dimensions,
+    Pressable,
+    StyleSheet,
+    View
 } from 'react-native';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 import { tourSteps, useTour } from '../context/TourContext';
 
@@ -186,21 +186,21 @@ export const TourOverlay: React.FC = () => {
 
         <View style={styles.bubbleContent}>
           <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+            <ThemedText style={[styles.title, { color: theme.text }]} numberOfLines={1}>
               {step.title}
-            </Text>
-            <Text style={[styles.counter, { color: '#FFD700' }]}>
+            </ThemedText>
+            <ThemedText style={[styles.counter, { color: '#FFD700' }]}>
               {currentStep + 1}/{tourSteps.length}
-            </Text>
+            </ThemedText>
           </View>
           
-          <Text style={[styles.description, { color: theme.subtext }]} numberOfLines={3}>
+          <ThemedText style={[styles.description, { color: theme.subtext }]} numberOfLines={3}>
             {step.description}
-          </Text>
+          </ThemedText>
 
           <View style={styles.controls}>
             <Pressable onPress={skipTour}>
-              <Text style={[styles.skipText, { color: theme.subtext }]}>Skip</Text>
+              <ThemedText style={[styles.skipText, { color: theme.subtext }]}>Skip</ThemedText>
             </Pressable>
 
             <View style={styles.navButtons}>
@@ -218,7 +218,7 @@ export const TourOverlay: React.FC = () => {
                 style={[styles.nextBtn, { backgroundColor: '#FFD700' }]}
               >
                 {currentStep === tourSteps.length - 1 ? (
-                  <Text style={styles.btnText}>Done</Text>
+                  <ThemedText style={styles.btnText}>Done</ThemedText>
                 ) : (
                   <Ionicons name="chevron-forward" size={14} color="#000" />
                 )}
@@ -327,12 +327,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: '800',
     flex: 1,
   },
   counter: {
     fontSize: 11,
-    fontWeight: '700',
     marginLeft: 6,
   },
   description: {
@@ -347,8 +345,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 11,
-    fontWeight: '600',
-  },
+    },
   navButtons: {
     flexDirection: 'row',
     gap: 6,
@@ -371,6 +368,6 @@ const styles = StyleSheet.create({
   btnText: {
     color: '#000',
     fontSize: 12,
-    fontWeight: '700',
-  },
+    },
 });
+

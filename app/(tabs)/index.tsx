@@ -1,876 +1,327 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import axios from "axios";
 import { Href, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Pressable,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    View
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
-import Toast from "react-native-toast-message";
-import { AIInsightsBadge } from "../../components/AIInsightsBadge";
-import { HelpTooltip } from "../../components/HelpTooltip";
-import { ProductCard, ProductCardSkeleton } from "../../components/ProductCard";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ThemedText } from "../../components/ThemedText";
+import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
-import { useAIPredictions } from "../../hooks/useAIPredictions";
 import { useAlerts } from "../../hooks/useAlerts";
-import { useFeatureAccess } from "../../hooks/useFeatureAccess";
 import { useProducts } from "../../hooks/useProducts";
-import { Prediction } from "../../types/ai-predictions";
 
-interface SalesStats {
-  today: number;
-  week: number;
-  totalSales: number;
-}
-
-const RecentlySoldCard = ({ item, isBatchView = false }: { item: any; isBatchView?: boolean }) => {
-  const { theme } = useTheme();
-  const router = useRouter();
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  if (!item || !item.name) return null;
-
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      const now = new Date();
-      const diffDays = Math.ceil(Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-      if (diffDays === 1) return "Yesterday";
-      if (diffDays < 7) return `${diffDays}d ago`;
-      return date.toLocaleDateString();
-    } catch { return "Recently"; }
-  };
-
-  const handlePress = () => {
-    try {
-      const productId = isBatchView ? item.productId : item._id;
-      router.push(`/product/${productId}/sales` as Href);
-    } catch {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Could not open product details' });
-    }
-  };
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
-    >
-      <View style={styles.topLabels}>
-        <View style={[styles.pill, { backgroundColor: theme.primaryLight }]}>
-          <Ionicons name="trending-down" size={9} color={theme.primary} />
-          <Text style={[styles.pillText, { color: theme.primary }]}>SOLD</Text>
-        </View>
-        <View style={[styles.pill, { backgroundColor: theme.accent }]}>
-          <Ionicons name="time-outline" size={9} color={theme.subtext} />
-          <Text style={[styles.pillText, { color: theme.subtext }]}>
-            {formatDate(isBatchView ? item.saleDate : item.lastSaleDate)}
-          </Text>
-        </View>
-      </View>
-
-      <View style={[styles.imageWrapper, { backgroundColor: theme.accent }]}>
-        {!isLoaded && <Ionicons name="cube-outline" size={36} color={theme.border} />}
-        {item.imageUrl && item.imageUrl !== "cube" && (
-          <Image
-            source={{ uri: item.imageUrl }}
-            style={[styles.image, { opacity: isLoaded ? 1 : 0 }]}
-            onLoad={() => setIsLoaded(true)}
-            onError={() => setIsLoaded(false)}
-            resizeMode="contain"
-          />
-        )}
-      </View>
-
-      <View style={styles.footer}>
-        <View style={{ flex: 1 }}>
-          {isBatchView ? (
-            <>
-              <Text style={[styles.quantityLabel, { color: theme.primary }]}>
-                {item.quantitySold || 0} units · ₦{item.totalAmount?.toLocaleString() || 0}
-              </Text>
-              <Text style={[styles.name, { color: theme.text }]} numberOfLines={1}>{item.name}</Text>
-              {item.batchNumber && item.batchNumber !== 'N/A' && (
-                <Text style={[styles.batchLabel, { color: theme.subtext }]} numberOfLines={1}>
-                  Batch: {item.batchNumber.slice(-6)}
-                </Text>
-              )}
-            </>
-          ) : (
-            <>
-              <Text style={[styles.quantityLabel, { color: theme.primary }]}>
-                {item.totalSold || 0} sold · ₦{item.totalRevenue?.toLocaleString() || 0}
-              </Text>
-              <Text style={[styles.name, { color: theme.text }]} numberOfLines={1}>{item.name}</Text>
-            </>
-          )}
-        </View>
-      </View>
-    </Pressable>
-  );
+const CARD_COLORS = {
+  inventory: { bg: "#E8F4FF", icon: "#3B82F6" },
+  scan:      { bg: "#E8FFF4", icon: "#10B981" },
+  add:       { bg: "#F3E8FF", icon: "#8B5CF6" },
+  fefo:      { bg: "#FFF3E8", icon: "#F59E0B" },
 };
 
-export default function Dashboard() {
+const CARD_COLORS_DARK = {
+  inventory: { bg: "#1A2744", icon: "#60A5FA" },
+  scan:      { bg: "#0F2A1E", icon: "#34D399" },
+  add:       { bg: "#1E1040", icon: "#A78BFA" },
+  fefo:      { bg: "#2A1A08", icon: "#FBBF24" },
+};
+
+export default function DashboardScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
-  const { products, recentlySold, loading, refresh, inventoryStats } = useProducts();
-  const { fetchBatchPredictions } = useAIPredictions({ enableWebSocket: false, autoFetch: false });
-  const { summary: alertSummary } = useAlerts();
-  
-  // Check permission for sales access
-  const salesAccess = useFeatureAccess('processSales');
+  const { theme, isDark } = useTheme();
+  const { user, role } = useAuth();
+  const insets = useSafeAreaInsets();
 
-  const [activeTab, setActiveTab] = useState<"stocked" | "sold">("stocked");
-  const [displayLimit, setDisplayLimit] = useState(6);
-  const [viewByProduct, setViewByProduct] = useState(true);
-  const [recentlySoldBatches, setRecentlySoldBatches] = useState<any[]>([]);
-  const [predictions, setPredictions] = useState<Record<string, Prediction>>({});
-  
-  // Sales section state
-  const [salesExpanded, setSalesExpanded] = useState(false);
-  const [salesStats, setSalesStats] = useState<SalesStats>({
-    today: 0,
-    week: 0,
-    totalSales: 0
-  });
-  const [recentSales, setRecentSales] = useState<any[]>([]);
-  const [loadingSales, setLoadingSales] = useState(false);
+  const { inventoryStats, loading: productsLoading, refresh: refreshProducts } = useProducts();
+  const { summary, loading: alertsLoading, refresh: refreshAlerts } = useAlerts();
 
-  // Refresh data when screen comes into focus
+  const isLoading = productsLoading || alertsLoading;
+
   useFocusEffect(
     useCallback(() => {
-      refresh();
-      if (salesExpanded) {
-        fetchSalesData();
-      }
-    }, [refresh, salesExpanded])
+      refreshProducts();
+      refreshAlerts();
+    }, [refreshProducts, refreshAlerts])
   );
 
-  useEffect(() => {
-    const fetchBatchSales = async () => {
-      if (!viewByProduct && activeTab === "sold") {
-        try {
-          const response = await axios.get(
-            `${process.env.EXPO_PUBLIC_API_URL}/analytics/recently-sold-batches?limit=20`
-          );
-          if (response.data.success) setRecentlySoldBatches(response.data.data || []);
-        } catch {
-          setRecentlySoldBatches([]);
-        }
-      }
-    };
-    fetchBatchSales();
-  }, [viewByProduct, activeTab]);
+  const onRefresh = useCallback(async () => {
+    await Promise.all([refreshProducts(), refreshAlerts()]);
+  }, [refreshProducts, refreshAlerts]);
 
-  // Fetch sales data for the sales section
-  const fetchSalesData = async () => {
-    if (!salesExpanded) return;
-    
-    setLoadingSales(true);
-    try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/analytics/all-sales?limit=5&days=30`
-      );
-      
-      if (response.data.success) {
-        const salesData = response.data.data?.sales || response.data.data || [];
-        setRecentSales(salesData.slice(0, 5));
-        
-        // Calculate stats
-        const now = new Date();
-        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        
-        const todayRevenue = salesData
-          .filter((s: any) => new Date(s.saleDate) >= todayStart)
-          .reduce((sum: number, s: any) => sum + (s.totalAmount || 0), 0);
-          
-        const weekRevenue = salesData
-          .filter((s: any) => new Date(s.saleDate) >= weekStart)
-          .reduce((sum: number, s: any) => sum + (s.totalAmount || 0), 0);
-        
-        setSalesStats({
-          today: todayRevenue,
-          week: weekRevenue,
-          totalSales: salesData.length
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching sales data:', error);
-    } finally {
-      setLoadingSales(false);
-    }
+  const cards = isDark ? CARD_COLORS_DARK : CARD_COLORS;
+  const urgentAlerts = (summary?.expired ?? 0) + (summary?.critical ?? 0);
+  const totalAlerts = summary?.total ?? 0;
+
+  const getGreeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
   };
 
-  useEffect(() => {
-    fetchSalesData();
-  }, [salesExpanded]);
+  const firstName = user?.name?.split(" ")[0] ?? "there";
 
-  const fefoItems = useMemo(() => {
-    return products
-      .map((p) => {
-        const earliest = p.batches?.reduce((earliest: Date | null, b) => {
-          if (!b?.expiryDate || b.expiryDate === "N/A") return earliest;
-          const d = new Date(b.expiryDate);
-          return !earliest || d < earliest ? d : earliest;
-        }, null);
-        return { product: p, earliest };
-      })
-      .filter(({ product, earliest }) => product.isPerishable && earliest)
-      .sort((a, b) => a.earliest!.getTime() - b.earliest!.getTime())
-      .slice(0, 3)
-      .map(({ product }) => product);
-  }, [products]);
+  const operationCards = [
+    {
+      key: "inventory",
+      label: "Inventory",
+      subtitle: `${inventoryStats.totalSkus} SKUs`,
+      icon: "cube-outline" as const,
+      href: "/(tabs)/inventory" as Href,
+      colors: cards.inventory,
+    },
+    {
+      key: "scan",
+      label: "Scanner",
+      subtitle: "Scan & register",
+      icon: "scan-outline" as const,
+      href: "/(tabs)/scan" as Href,
+      colors: cards.scan,
+    },
+    {
+      key: "add",
+      label: "Add Stock",
+      subtitle: "New batch entry",
+      icon: "add-circle-outline" as const,
+      href: "/(tabs)/add-products" as Href,
+      colors: cards.add,
+    },
+    {
+      key: "fefo",
+      label: "FEFO Queue",
+      subtitle: "Expiry priority",
+      icon: "hourglass-outline" as const,
+      href: "/(tabs)/FEFO" as Href,
+      colors: cards.fefo,
+    },
+  ];
 
-  const visibleData = useMemo(() => {
-    let baseData;
-    if (activeTab === "stocked") {
-      baseData = [...products].sort(
-        (a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime()
-      );
-    } else {
-      baseData = viewByProduct ? recentlySold : recentlySoldBatches;
-    }
-    return baseData.slice(0, displayLimit);
-  }, [products, recentlySold, recentlySoldBatches, activeTab, displayLimit, viewByProduct]);
-
-  useEffect(() => {
-    const fetchPredictionsForVisible = async () => {
-      if (activeTab === "stocked" && visibleData.length > 0 && !loading) {
-        const productIds = visibleData.map((p: any) => p._id).filter(Boolean);
-        if (productIds.length > 0) {
-          try {
-            const batchPredictions = await fetchBatchPredictions(productIds);
-            const predictionsMap: Record<string, Prediction> = {};
-            batchPredictions.forEach((pred: Prediction) => {
-              if (pred.productId) predictionsMap[pred.productId] = pred;
-            });
-            setPredictions(predictionsMap);
-          } catch {}
-        }
-      }
-    };
-    fetchPredictionsForVisible();
-  }, [visibleData, activeTab, loading]);
-
-  const handleLoadMore = () => {
-    const maxLength = activeTab === "stocked"
-      ? products.length
-      : viewByProduct ? recentlySold.length : recentlySoldBatches.length;
-    if (displayLimit < maxLength) setDisplayLimit(prev => prev + 6);
-  };
-
-  const formatSaleDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      const now = new Date();
-      const diffDays = Math.ceil(Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-      if (diffDays === 1) return "Today";
-      if (diffDays === 2) return "Yesterday";
-      if (diffDays < 7) return `${diffDays - 1}d ago`;
-      return date.toLocaleDateString();
-    } catch { 
-      return "Recently"; 
-    }
-  };
+  const quickRows = [
+    {
+      key: "alerts",
+      label: "Alerts",
+      desc: totalAlerts > 0
+        ? `${totalAlerts} active${urgentAlerts > 0 ? ` - ${urgentAlerts} urgent` : ""}`
+        : "No active alerts",
+      icon: "notifications-outline" as const,
+      iconBg: urgentAlerts > 0 ? "#FF4444" : theme.primary,
+      badge: urgentAlerts > 0 ? urgentAlerts : undefined,
+      href: "/alerts" as Href,
+    },
+    {
+      key: "lowstock",
+      label: "Low Stock",
+      desc: `${inventoryStats.lowStockCount} items below threshold`,
+      icon: "warning-outline" as const,
+      iconBg: inventoryStats.lowStockCount > 0 ? "#F59E0B" : theme.primary,
+      badge: inventoryStats.lowStockCount > 0 ? inventoryStats.lowStockCount : undefined,
+      href: "/(tabs)/inventory" as Href,
+    },
+    {
+      key: "profile",
+      label: "Profile",
+      desc: role === "admin" ? "Administrator" : "Staff Member",
+      icon: "person-outline" as const,
+      iconBg: theme.primary,
+      badge: undefined,
+      href: "/profile" as Href,
+    },
+    {
+      key: "settings",
+      label: "Settings",
+      desc: "App preferences",
+      icon: "settings-outline" as const,
+      iconBg: theme.primary,
+      badge: undefined,
+      href: "/settings" as Href,
+    },
+  ];
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <FlatList
-        data={loading ? Array(6).fill({}) : visibleData}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        keyExtractor={(item, index) => loading ? `skeleton-${index}` : item._id}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={theme.primary} />
-        }
-        contentContainerStyle={styles.listPadding}
+      <ScrollView
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingTop: insets.top + 20, paddingBottom: 100 },
+        ]}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <View style={styles.headerContainer}>
-            {/* TOP BAR */}
-            <View style={styles.header}>
-              <View>
-                <Text style={[styles.greet, { color: theme.primary }]}>STAFF DASHBOARD</Text>
-                <Text style={[styles.title, { color: theme.text }]}>Insightory</Text>
-              </View>
-              <View style={styles.headerRight}>
-                <Pressable
-                  onPress={() => router.push("/alerts")}
-                  style={[styles.iconBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
-                >
-                  <Ionicons name="notifications-outline" size={20} color={theme.text} />
-                  {alertSummary && alertSummary.total > 0 && (
-                    <View style={[styles.dot, { backgroundColor: theme.notification }]} />
-                  )}
-                </Pressable>
-                <Pressable
-                  onPress={() => router.push("/settings" as any)}
-                  style={[styles.iconBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
-                >
-                  <Ionicons name="settings-outline" size={20} color={theme.text} />
-                </Pressable>
-              </View>
-            </View>
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={onRefresh}
+            tintColor={theme.primary}
+          />
+        }
+      >
+        <View style={styles.header}>
+          <View>
+            <ThemedText style={[styles.greeting, { color: theme.subtext }]}>
+              {getGreeting()},
+            </ThemedText>
+            <ThemedText style={[styles.name, { color: theme.text }]}>
+              {firstName}
+            </ThemedText>
+          </View>
+          <Pressable
+            onPress={() => router.push("/profile")}
+            style={[styles.avatar, { backgroundColor: theme.primaryLight }]}
+          >
+            <ThemedText style={[styles.avatarLetter, { color: theme.primary }]}>
+              {firstName[0]?.toUpperCase() ?? "U"}
+            </ThemedText>
+          </Pressable>
+        </View>
 
-            {/* STATS HUD */}
-            <View style={styles.statsRow}>
-              <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>
-                Inventory Stats
-              </Text>
-              <HelpTooltip
-                title="Dashboard Stats"
-                content={[
-                  "Total Records: Total product units across all batches.",
-                  "Expiring Soon: Products expiring within your alert threshold.",
-                  "Low Stock: Products below minimum stock level.",
-                  "Urgent Items: Products needing immediate attention."
-                ]}
-                icon="help-circle-outline"
-                iconSize={16}
-                iconColor={theme.primary}
-              />
-            </View>
+        <View style={[styles.statsStrip, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <StatPill label="SKUs" value={inventoryStats.totalSkus} icon="layers-outline" theme={theme} />
+          <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
+          <StatPill label="Units" value={inventoryStats.totalUnits} icon="cube-outline" theme={theme} />
+          <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
+          <StatPill label="Expiring" value={inventoryStats.expiringSoonCount} icon="time-outline" theme={theme} highlight={inventoryStats.expiringSoonCount > 0} />
+          <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
+          <StatPill label="Out of Stock" value={inventoryStats.outOfStockCount} icon="close-circle-outline" theme={theme} highlight={inventoryStats.outOfStockCount > 0} />
+        </View>
 
-            <View style={styles.statGrid}>
-              <View style={[styles.mainStat, { backgroundColor: theme.primary }]}>
-                <Text style={styles.statLabelMain}>TOTAL RECORDS</Text>
-                <Text style={styles.statValueMain}>{inventoryStats.totalUnits}</Text>
+        <ThemedText style={[styles.sectionLabel, { color: theme.subtext }]}>
+          OPERATIONS
+        </ThemedText>
+
+        <View style={styles.cardGrid}>
+          {operationCards.map((card) => (
+            <Pressable
+              key={card.key}
+              style={[styles.opCard, { backgroundColor: card.colors.bg }]}
+              onPress={() => router.push(card.href)}
+            >
+              <View style={[styles.opIconBox, { backgroundColor: card.colors.icon + "22" }]}>
+                <Ionicons name={card.icon} size={28} color={card.colors.icon} />
               </View>
-              <View style={styles.smallStatsCol}>
-                <View style={[styles.smallStat, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                  <Text style={[styles.smallStatVal, { color: theme.text }]}>{inventoryStats.expiringSoonCount}</Text>
-                  <Text style={[styles.smallStatLabel, { color: theme.subtext }]}>EXPIRING</Text>
+              <ThemedText style={[styles.opLabel, { color: isDark ? "#F0F2FF" : "#0D0F1A" }]}>
+                {card.label}
+              </ThemedText>
+              <ThemedText style={[styles.opSubtitle, { color: isDark ? "#8892B0" : "#6B7280" }]}>
+                {card.subtitle}
+              </ThemedText>
+            </Pressable>
+          ))}
+        </View>
+
+        <ThemedText style={[styles.sectionLabel, { color: theme.subtext }]}>
+          QUICK ACCESS
+        </ThemedText>
+
+        <View style={[styles.listCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          {quickRows.map((row, idx) => (
+            <Pressable
+              key={row.key}
+              style={[
+                styles.listRow,
+                idx < quickRows.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.border },
+              ]}
+              onPress={() => router.push(row.href)}
+            >
+              <View style={[styles.rowIconBox, { backgroundColor: row.iconBg + "18" }]}>
+                <Ionicons name={row.icon} size={20} color={row.iconBg} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <ThemedText style={[styles.rowLabel, { color: theme.text }]}>{row.label}</ThemedText>
+                <ThemedText style={[styles.rowDesc, { color: theme.subtext }]}>{row.desc}</ThemedText>
+              </View>
+              {row.badge ? (
+                <View style={[styles.badge, { backgroundColor: row.iconBg }]}>
+                  <ThemedText style={styles.badgeText}>{row.badge}</ThemedText>
                 </View>
-                <View style={[styles.smallStat, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                  <Text style={[styles.smallStatVal, { color: theme.text }]}>{inventoryStats.lowStockCount}</Text>
-                  <Text style={[styles.smallStatLabel, { color: theme.subtext }]}>LOW STOCK</Text>
-                </View>
-              </View>
-            </View>
+              ) : (
+                <Ionicons name="chevron-forward" size={18} color={theme.subtext} />
+              )}
+            </Pressable>
+          ))}
+        </View>
 
-            {/* AI INSIGHTS */}
-            <AIInsightsBadge />
-
-            {/* QUICK ACTIONS */}
-            <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 14 }]}>
-              Quick Actions
-            </Text>
-            <View style={styles.actionGrid}>
-              {[
-                { label: 'Scan', icon: 'scan-outline', color: '#5B4FE8', bg: '#5B4FE818',
-                  onPress: () => router.push({ pathname: "/scan", params: { initialTab: "registry" } }) },
-                { label: 'Search', icon: 'search-outline', color: '#F59E0B', bg: '#F59E0B18',
-                  onPress: () => router.push("/inventory") },
-                { label: 'Add', icon: 'add-circle-outline', color: '#10B981', bg: '#10B98118',
-                  onPress: () => router.push("/add-products") },
-                { label: 'Queue', icon: 'hourglass-outline', color: '#EF4444', bg: '#EF444418',
-                  onPress: () => router.push("/FEFO") },
-              ].map((action) => (
+        {role === "admin" && (
+          <>
+            <ThemedText style={[styles.sectionLabel, { color: theme.subtext }]}>
+              ADMIN
+            </ThemedText>
+            <View style={[styles.listCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              {([
+                { key: "sales", label: "Sales", desc: "Process & review transactions", icon: "receipt-outline" as const, href: "/admin/sales" as Href },
+                { key: "stats", label: "AI Insights", desc: "Analytics & predictions", icon: "analytics-outline" as const, href: "/admin/stats" as Href },
+                { key: "adminsettings", label: "Admin Settings", desc: "Store, staff & security", icon: "shield-checkmark-outline" as const, href: "/admin/settings" as Href },
+              ]).map((row, idx, arr) => (
                 <Pressable
-                  key={action.label}
-                  onPress={action.onPress}
-                  style={({ pressed }) => [
-                    styles.actionCard,
-                    { backgroundColor: theme.surface, borderColor: theme.border, opacity: pressed ? 0.8 : 1 },
+                  key={row.key}
+                  style={[
+                    styles.listRow,
+                    idx < arr.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.border },
                   ]}
+                  onPress={() => router.push(row.href)}
                 >
-                  <View style={[styles.actionIcon, { backgroundColor: action.bg }]}>
-                    <Ionicons name={action.icon as any} size={20} color={action.color} />
+                  <View style={[styles.rowIconBox, { backgroundColor: theme.primaryLight }]}>
+                    <Ionicons name={row.icon} size={20} color={theme.primary} />
                   </View>
-                  <Text style={[styles.actionText, { color: theme.text }]}>{action.label}</Text>
+                  <View style={{ flex: 1 }}>
+                    <ThemedText style={[styles.rowLabel, { color: theme.text }]}>{row.label}</ThemedText>
+                    <ThemedText style={[styles.rowDesc, { color: theme.subtext }]}>{row.desc}</ThemedText>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={theme.subtext} />
                 </Pressable>
               ))}
             </View>
+          </>
+        )}
+      </ScrollView>
+    </View>
+  );
+}
 
-            {/* SALES SECTION - Only show if user has permission */}
-            {salesAccess.isAllowed && (
-              <>
-                <Pressable
-                  onPress={() => setSalesExpanded(!salesExpanded)}
-                  style={[styles.salesHeader, { backgroundColor: theme.surface, borderColor: theme.border }]}
-                >
-                  <View style={styles.salesHeaderContent}>
-                    <View style={styles.salesHeaderLeft}>
-                      <Ionicons name="trending-up" size={20} color={theme.primary} />
-                      <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>
-                        Sales Overview
-                      </Text>
-                    </View>
-                    <Ionicons 
-                      name={salesExpanded ? "chevron-up" : "chevron-down"} 
-                      size={20} 
-                      color={theme.subtext} 
-                    />
-                  </View>
-                </Pressable>
+interface StatPillProps {
+  label: string;
+  value: number;
+  icon: keyof typeof Ionicons.glyphMap;
+  theme: any;
+  highlight?: boolean;
+}
 
-                {salesExpanded && (
-              <View style={[styles.salesContent, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                {loadingSales ? (
-                  <View style={styles.salesLoading}>
-                    <ActivityIndicator size="small" color={theme.primary} />
-                    <Text style={[styles.salesLoadingText, { color: theme.subtext }]}>
-                      Loading sales data...
-                    </Text>
-                  </View>
-                ) : (
-                  <>
-                    {/* Sales Stats */}
-                    <View style={styles.salesStatsRow}>
-                      <View style={[styles.salesStatCard, { backgroundColor: theme.background }]}>
-                        <Text style={[styles.salesStatValue, { color: theme.primary }]}>
-                          ₦{salesStats.today.toLocaleString()}
-                        </Text>
-                        <Text style={[styles.salesStatLabel, { color: theme.subtext }]}>TODAY</Text>
-                      </View>
-                      <View style={[styles.salesStatCard, { backgroundColor: theme.background }]}>
-                        <Text style={[styles.salesStatValue, { color: theme.primary }]}>
-                          ₦{salesStats.week.toLocaleString()}
-                        </Text>
-                        <Text style={[styles.salesStatLabel, { color: theme.subtext }]}>THIS WEEK</Text>
-                      </View>
-                      <View style={[styles.salesStatCard, { backgroundColor: theme.background }]}>
-                        <Text style={[styles.salesStatValue, { color: theme.primary }]}>
-                          {salesStats.totalSales}
-                        </Text>
-                        <Text style={[styles.salesStatLabel, { color: theme.subtext }]}>TOTAL</Text>
-                      </View>
-                    </View>
-
-                    {/* Recent Sales */}
-                    {recentSales.length > 0 ? (
-                      <>
-                        <Text style={[styles.salesSubtitle, { color: theme.text }]}>Recent Sales</Text>
-                        {recentSales.map((sale, index) => (
-                          <View key={sale._id || index} style={[
-                            styles.salesItem, 
-                            { 
-                              borderBottomColor: theme.border,
-                              borderBottomWidth: index < recentSales.length - 1 ? 1 : 0
-                            }
-                          ]}>
-                            <View style={styles.salesItemLeft}>
-                              <Text style={[styles.salesItemName, { color: theme.text }]} numberOfLines={1}>
-                                {sale.productName}
-                              </Text>
-                              <Text style={[styles.salesItemDate, { color: theme.subtext }]}>
-                                {formatSaleDate(sale.saleDate)}
-                              </Text>
-                            </View>
-                            <View style={styles.salesItemRight}>
-                              <Text style={[styles.salesItemAmount, { color: theme.primary }]}>
-                                ₦{(sale.totalAmount || 0).toLocaleString()}
-                              </Text>
-                              <Text style={[styles.salesItemQuantity, { color: theme.subtext }]}>
-                                {sale.quantitySold || 0} units
-                              </Text>
-                            </View>
-                          </View>
-                        ))}
-                      </>
-                    ) : (
-                      <View style={styles.salesEmpty}>
-                        <Ionicons name="receipt-outline" size={32} color={theme.subtext + "40"} />
-                        <Text style={[styles.salesEmptyText, { color: theme.subtext }]}>
-                          No sales recorded yet
-                        </Text>
-                      </View>
-                    )}
-                  </>
-                )}
-              </View>
-            )}
-            </>
-            )}
-
-            {/* PRIORITY QUEUE */}
-            <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>Priority Queue</Text>
-              <Pressable onPress={() => router.push("/FEFO")}>
-                <Text style={{ color: theme.primary, fontWeight: '700', fontSize: 13 }}>See all</Text>
-              </Pressable>
-            </View>
-
-            {fefoItems.length > 0 ? (
-              fefoItems.map((item) => (
-                <Pressable
-                  key={item._id}
-                  onPress={() => router.push(`/product/${item._id}` as Href)}
-                  style={[styles.fefoItem, { backgroundColor: theme.surface, borderColor: theme.border }]}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                    <View style={[styles.indicator, { backgroundColor: theme.notification }]} />
-                    <Text style={{ color: theme.text, fontWeight: '700', fontSize: 14 }}>{item.name}</Text>
-                  </View>
-                  <View style={[styles.expiryBadge, { backgroundColor: theme.notification + '18' }]}>
-                    <Text style={{ color: theme.notification, fontSize: 12, fontWeight: '700' }}>
-                      {new Date(item.batches?.[0]?.expiryDate || '').toLocaleDateString()}
-                    </Text>
-                  </View>
-                </Pressable>
-              ))
-            ) : (
-              <View style={[styles.emptyFefo, { borderColor: theme.border }]}>
-                <Ionicons name="checkmark-circle-outline" size={20} color={theme.subtext} />
-                <Text style={{ color: theme.subtext, marginLeft: 8 }}>No urgent items</Text>
-              </View>
-            )}
-
-            {/* ACTIVITY TABS */}
-            <View style={styles.tabContainer}>
-              <Pressable
-                onPress={() => { setActiveTab("stocked"); setDisplayLimit(6); }}
-                style={[styles.tab, activeTab === "stocked" && { borderBottomColor: theme.primary }]}
-              >
-                <Text style={[styles.tabText, { color: activeTab === "stocked" ? theme.text : theme.subtext }]}>
-                  Recently Stocked
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => { setActiveTab("sold"); setDisplayLimit(6); }}
-                style={[styles.tab, activeTab === "sold" && { borderBottomColor: theme.primary }]}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Text style={[styles.tabText, { color: activeTab === "sold" ? theme.text : theme.subtext }]}>
-                    Recently Sold
-                  </Text>
-                  {activeTab === "sold" && (
-                    <Pressable
-                      onPress={() => { setViewByProduct(!viewByProduct); setDisplayLimit(6); }}
-                      style={[styles.inlineToggle, {
-                        backgroundColor: viewByProduct ? theme.primaryLight : theme.primary,
-                        borderColor: theme.primary,
-                      }]}
-                    >
-                      <Text style={[styles.inlineToggleText, { color: viewByProduct ? theme.primary : '#FFF' }]}>
-                        {viewByProduct ? 'BY PRODUCT' : 'BY BATCH'}
-                      </Text>
-                    </Pressable>
-                  )}
-                </View>
-              </Pressable>
-            </View>
-          </View>
-        }
-        renderItem={({ item }) =>
-          loading ? (
-            <ProductCardSkeleton />
-          ) : activeTab === "sold" ? (
-            <RecentlySoldCard item={item} isBatchView={!viewByProduct} />
-          ) : (
-            <ProductCard item={item} prediction={predictions[item._id] || null} />
-          )
-        }
-        ListEmptyComponent={
-          !loading && activeTab === "sold" ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="cart-outline" size={56} color={theme.subtext + '40'} />
-              <Text style={[styles.emptyText, { color: theme.subtext }]}>No Sales Yet</Text>
-              <Text style={[styles.emptyHint, { color: theme.subtext }]}>
-                Sales will appear here once you complete transactions
-              </Text>
-            </View>
-          ) : null
-        }
-        ListFooterComponent={(() => {
-          const maxLength = activeTab === "stocked"
-            ? products.length
-            : viewByProduct ? recentlySold.length : recentlySoldBatches.length;
-          return displayLimit < maxLength && !loading ? (
-            <ActivityIndicator style={{ marginVertical: 20 }} color={theme.primary} />
-          ) : null;
-        })()}
-      />
+function StatPill({ label, value, icon, theme, highlight }: StatPillProps) {
+  return (
+    <View style={styles.statPill}>
+      <Ionicons name={icon} size={14} color={highlight ? "#F59E0B" : theme.subtext} />
+      <ThemedText style={[styles.statValue, { color: highlight ? "#F59E0B" : theme.text }]}>
+        {value}
+      </ThemedText>
+      <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>{label}</ThemedText>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  listPadding: { paddingHorizontal: 20, paddingBottom: 120 },
-  headerContainer: { paddingTop: 60, marginBottom: 10 },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  headerRight: { flexDirection: 'row', gap: 10 },
-  greet: { fontSize: 10, fontWeight: '800', letterSpacing: 2, marginBottom: 2 },
-  title: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
-  iconBtn: {
-    height: 42,
-    width: 42,
-    borderRadius: 13,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  dot: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  statGrid: { flexDirection: 'row', gap: 12, marginBottom: 24 },
-  mainStat: {
-    flex: 1.2,
-    borderRadius: 22,
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-    minHeight: 108,
-  },
-  statLabelMain: { color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: '700', marginBottom: 4 },
-  statValueMain: { color: '#FFF', fontSize: 34, fontWeight: '800' },
-  smallStatsCol: { flex: 1, gap: 10 },
-  smallStat: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 12,
-    borderWidth: 1,
-    justifyContent: 'center',
-  },
-  smallStatVal: { fontSize: 18, fontWeight: '800' },
-  smallStatLabel: { fontSize: 9, fontWeight: '700', marginTop: 2 },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  sectionTitle: { fontSize: 17, fontWeight: '800' },
-  actionGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 24,
-  },
-  actionCard: {
-    flex: 1,
-    height: 58,
-    minWidth: '47%',
-    maxWidth: '48%',
-    paddingHorizontal: 14,
-    borderRadius: 18,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  actionIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionText: { fontSize: 13, fontWeight: '700' },
-  fefoItem: {
-    padding: 14,
-    borderRadius: 16,
-    marginBottom: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  indicator: { width: 4, height: 18, borderRadius: 2 },
-  expiryBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
-  },
-  emptyFefo: {
-    padding: 18,
-    borderRadius: 16,
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    marginTop: 20,
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(150,150,150,0.1)',
-  },
-  tab: {
-    paddingVertical: 10,
-    marginRight: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabText: { fontSize: 14, fontWeight: '700' },
-  inlineToggle: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  inlineToggleText: { fontSize: 9, fontWeight: '800', letterSpacing: 0.5 },
-  row: { justifyContent: 'space-between' },
-  // Recently Sold Card
-  card: {
-    width: '48%',
-    borderRadius: 24,
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 16,
-  },
-  topLabels: { flexDirection: 'row', gap: 6, marginBottom: 10 },
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 7,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  pillText: { fontSize: 8, fontWeight: '700', textTransform: 'uppercase' },
-  imageWrapper: {
-    width: '100%',
-    height: 130,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  image: { width: '85%', height: '85%', borderRadius: 18 },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    paddingHorizontal: 2,
-  },
-  quantityLabel: { fontSize: 11, fontWeight: '500', marginBottom: 2 },
-  name: { fontSize: 14, fontWeight: '800' },
-  batchLabel: { fontSize: 10, fontWeight: '600', marginTop: 2 },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 60,
-    paddingHorizontal: 40,
-  },
-  emptyText: { fontSize: 17, fontWeight: '800', marginTop: 14, marginBottom: 8 },
-  emptyHint: { fontSize: 14, fontWeight: '500', textAlign: 'center', lineHeight: 20 },
-
-  // Sales Section Styles
-  salesHeader: {
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 2,
-  },
-  salesHeaderContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  salesHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  salesContent: {
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 24,
-  },
-  salesLoading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 20,
-  },
-  salesLoadingText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  salesStatsRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
-  },
-  salesStatCard: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  salesStatValue: {
-    fontSize: 14,
-    fontWeight: '800',
-    marginBottom: 2,
-  },
-  salesStatLabel: {
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  salesSubtitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    marginBottom: 12,
-  },
-  salesItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-  },
-  salesItemLeft: {
-    flex: 1,
-  },
-  salesItemName: {
-    fontSize: 14,
-    fontWeight: '700',
-    marginBottom: 2,
-  },
-  salesItemDate: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  salesItemRight: {
-    alignItems: 'flex-end',
-  },
-  salesItemAmount: {
-    fontSize: 14,
-    fontWeight: '800',
-    marginBottom: 2,
-  },
-  salesItemQuantity: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  salesEmpty: {
-    alignItems: 'center',
-    paddingVertical: 30,
-  },
-  salesEmptyText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 8,
-  },
+  scroll: { paddingHorizontal: 20 },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
+  greeting: { fontSize: 14, marginBottom: 2 },
+  name: { fontSize: 28, letterSpacing: -0.5 },
+  avatar: { width: 46, height: 46, borderRadius: 23, justifyContent: "center", alignItems: "center" },
+  avatarLetter: { fontSize: 18 },
+  statsStrip: { flexDirection: "row", borderRadius: 18, borderWidth: 1, paddingVertical: 14, paddingHorizontal: 8, marginBottom: 28, alignItems: "center" },
+  statPill: { flex: 1, alignItems: "center", gap: 3 },
+  statValue: { fontSize: 18 },
+  statLabel: { fontSize: 9, textAlign: "center" },
+  statDivider: { width: 1, height: 36, borderRadius: 1 },
+  sectionLabel: { fontSize: 11, letterSpacing: 1.8, marginBottom: 12 },
+  cardGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12, marginBottom: 28 },
+  opCard: { width: "47.5%", borderRadius: 20, padding: 18, minHeight: 130, justifyContent: "flex-end" },
+  opIconBox: { width: 52, height: 52, borderRadius: 14, justifyContent: "center", alignItems: "center", marginBottom: 14 },
+  opLabel: { fontSize: 16, marginBottom: 4 },
+  opSubtitle: { fontSize: 12 },
+  listCard: { borderRadius: 20, borderWidth: 1, overflow: "hidden", marginBottom: 28 },
+  listRow: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 14, gap: 14 },
+  rowIconBox: { width: 42, height: 42, borderRadius: 12, justifyContent: "center", alignItems: "center" },
+  rowLabel: { fontSize: 15, marginBottom: 2 },
+  rowDesc: { fontSize: 12 },
+  badge: { minWidth: 22, height: 22, borderRadius: 11, justifyContent: "center", alignItems: "center", paddingHorizontal: 6 },
+  badgeText: { color: "#FFF", fontSize: 11 },
 });

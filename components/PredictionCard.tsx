@@ -9,9 +9,9 @@ import {
     Animated,
     Pressable,
     StyleSheet,
-    Text,
     View
 } from 'react-native';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 import { Prediction } from '../types/ai-predictions';
 import { PredictionCardSkeleton } from './SkeletonLoaders';
@@ -91,12 +91,12 @@ export const PredictionCard = ({ prediction, loading, onRefresh }: PredictionCar
         </View>
 
         <View style={styles.headerText}>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>
+          <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
             AI Predictions
-          </Text>
-          <Text style={[styles.headerSubtitle, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.headerSubtitle, { color: theme.subtext }]}>
             {isExpanded ? 'Tap to collapse' : 'Tap to view insights'}
-          </Text>
+          </ThemedText>
         </View>
 
         {onRefresh && (
@@ -141,114 +141,114 @@ export const PredictionCard = ({ prediction, loading, onRefresh }: PredictionCar
           {warning && (
             <View style={[styles.warningBanner, { backgroundColor: '#FFCC00' + '20', borderColor: '#FFCC00' + '40' }]}>
               <Ionicons name="warning" size={16} color="#FFCC00" />
-              <Text style={[styles.warningText, { color: isDark ? '#FFF' : '#000' }]}>
+              <ThemedText style={[styles.warningText, { color: isDark ? '#FFF' : '#000' }]}>
                 {warning}
-              </Text>
+              </ThemedText>
             </View>
           )}
 
           {/* Forecast Section */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Demand Forecast
-            </Text>
+            </ThemedText>
             <View style={styles.forecastGrid}>
               <View style={styles.forecastItem}>
-                <Text style={[styles.forecastLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.forecastLabel, { color: theme.subtext }]}>
                   Next 7 Days
-                </Text>
-                <Text style={[styles.forecastValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.forecastValue, { color: theme.text }]}>
                   {forecast.next7Days} units
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.forecastItem}>
-                <Text style={[styles.forecastLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.forecastLabel, { color: theme.subtext }]}>
                   Next 14 Days
-                </Text>
-                <Text style={[styles.forecastValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.forecastValue, { color: theme.text }]}>
                   {forecast.next14Days} units
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.forecastItem}>
-                <Text style={[styles.forecastLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.forecastLabel, { color: theme.subtext }]}>
                   Next 30 Days
-                </Text>
-                <Text style={[styles.forecastValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.forecastValue, { color: theme.text }]}>
                   {forecast.next30Days} units
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
             {/* Confidence Badge */}
             <View style={[styles.confidenceBadge, { backgroundColor: confidenceColor + '20' }]}>
               <Ionicons name="checkmark-circle" size={14} color={confidenceColor} />
-              <Text style={[styles.confidenceText, { color: confidenceColor }]}>
+              <ThemedText style={[styles.confidenceText, { color: confidenceColor }]}>
                 {forecast.confidence.toUpperCase()} CONFIDENCE
-              </Text>
+              </ThemedText>
             </View>
           </View>
 
           {/* Metrics Section */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Key Metrics
-            </Text>
+            </ThemedText>
             <View style={styles.metricsGrid}>
               <View style={styles.metricCard}>
                 <View style={[styles.metricIcon, { backgroundColor: riskColor + '20' }]}>
                   <Ionicons name="alert-circle" size={16} color={riskColor} />
                 </View>
-                <Text style={[styles.metricLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.metricLabel, { color: theme.subtext }]}>
                   Risk Score
-                </Text>
-                <Text style={[styles.metricValue, { color: riskColor }]}>
+                </ThemedText>
+                <ThemedText style={[styles.metricValue, { color: riskColor }]}>
                   {metrics.riskScore}/100
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={styles.metricCard}>
                 <View style={[styles.metricIcon, { backgroundColor: theme.primary + '20' }]}>
                   <Ionicons name="speedometer" size={16} color={theme.primary} />
                 </View>
-                <Text style={[styles.metricLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.metricLabel, { color: theme.subtext }]}>
                   Velocity
-                </Text>
-                <Text style={[styles.metricValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.metricValue, { color: theme.text }]}>
                   {metrics.velocity.toFixed(1)}/day
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={styles.metricCard}>
                 <View style={[styles.metricIcon, { backgroundColor: theme.primary + '20' }]}>
                   <Ionicons name={getTrendIcon(metrics.trend)} size={16} color={theme.primary} />
                 </View>
-                <Text style={[styles.metricLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.metricLabel, { color: theme.subtext }]}>
                   Trend
-                </Text>
-                <Text style={[styles.metricValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.metricValue, { color: theme.text }]}>
                   {metrics.trend}
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={styles.metricCard}>
                 <View style={[styles.metricIcon, { backgroundColor: theme.primary + '20' }]}>
                   <Ionicons name="time" size={16} color={theme.primary} />
                 </View>
-                <Text style={[styles.metricLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.metricLabel, { color: theme.subtext }]}>
                   Stockout
-                </Text>
-                <Text style={[styles.metricValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.metricValue, { color: theme.text }]}>
                   {metrics.daysUntilStockout < 999 ? `${metrics.daysUntilStockout}d` : 'N/A'}
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </View>
 
           {/* Risk Meter */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Risk Assessment
-            </Text>
+            </ThemedText>
             <View style={styles.riskMeterContainer}>
               <View style={[styles.riskMeterTrack, { backgroundColor: isDark ? '#ffffff10' : '#00000010' }]}>
                 <View
@@ -261,7 +261,7 @@ export const PredictionCard = ({ prediction, loading, onRefresh }: PredictionCar
                   ]}
                 />
               </View>
-              <Text style={[styles.riskMeterLabel, { color: theme.subtext }]}>
+              <ThemedText style={[styles.riskMeterLabel, { color: theme.subtext }]}>
                 {metrics.riskScore < 30
                   ? 'Low Risk'
                   : metrics.riskScore < 50
@@ -269,16 +269,16 @@ export const PredictionCard = ({ prediction, loading, onRefresh }: PredictionCar
                     : metrics.riskScore < 70
                       ? 'High Risk'
                       : 'Critical Risk'}
-              </Text>
+              </ThemedText>
             </View>
           </View>
 
           {/* Recommendations */}
           {recommendations.length > 0 && (
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
                 Recommendations
-              </Text>
+              </ThemedText>
               {recommendations.map((rec, index) => {
                 const priorityColor =
                   rec.priority === 'critical'
@@ -304,13 +304,13 @@ export const PredictionCard = ({ prediction, loading, onRefresh }: PredictionCar
                     <View style={styles.recommendationContent}>
                       <View style={styles.recommendationHeader}>
                         <Ionicons name={rec.icon as any} size={14} color={priorityColor} />
-                        <Text style={[styles.recommendationPriority, { color: priorityColor }]}>
+                        <ThemedText style={[styles.recommendationPriority, { color: priorityColor }]}>
                           {rec.priority.toUpperCase()}
-                        </Text>
+                        </ThemedText>
                       </View>
-                      <Text style={[styles.recommendationMessage, { color: theme.text }]}>
+                      <ThemedText style={[styles.recommendationMessage, { color: theme.text }]}>
                         {rec.message}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
                 );
@@ -321,10 +321,10 @@ export const PredictionCard = ({ prediction, loading, onRefresh }: PredictionCar
           {/* Data Info */}
           <View style={[styles.dataInfo, { backgroundColor: isDark ? '#ffffff05' : '#00000005' }]}>
             <Ionicons name="information-circle-outline" size={14} color={theme.subtext} />
-            <Text style={[styles.dataInfoText, { color: theme.subtext }]}>
+            <ThemedText style={[styles.dataInfoText, { color: theme.subtext }]}>
               Based on {prediction.dataPoints} days of sales data • Last updated{' '}
               {new Date(prediction.calculatedAt).toLocaleTimeString()}
-            </Text>
+            </ThemedText>
           </View>
         </Animated.View>
       )}
@@ -356,11 +356,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 15,
-    fontWeight: '800',
-  },
+    },
   headerSubtitle: {
     fontSize: 11,
-    fontWeight: '600',
     marginTop: 2,
   },
   refreshButton: {
@@ -385,7 +383,6 @@ const styles = StyleSheet.create({
   warningText: {
     flex: 1,
     fontSize: 11,
-    fontWeight: '600',
     lineHeight: 16,
   },
   section: {
@@ -393,8 +390,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: '800',
-  },
+    },
   forecastGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -406,14 +402,12 @@ const styles = StyleSheet.create({
   },
   forecastLabel: {
     fontSize: 10,
-    fontWeight: '700',
     textTransform: 'uppercase',
     marginBottom: 4,
   },
   forecastValue: {
     fontSize: 16,
-    fontWeight: '800',
-  },
+    },
   confidenceBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -425,8 +419,7 @@ const styles = StyleSheet.create({
   },
   confidenceText: {
     fontSize: 10,
-    fontWeight: '800',
-  },
+    },
   metricsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -447,13 +440,11 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     fontSize: 10,
-    fontWeight: '700',
     textTransform: 'uppercase',
   },
   metricValue: {
     fontSize: 14,
-    fontWeight: '800',
-  },
+    },
   riskMeterContainer: {
     gap: 8,
   },
@@ -468,7 +459,6 @@ const styles = StyleSheet.create({
   },
   riskMeterLabel: {
     fontSize: 11,
-    fontWeight: '700',
     textAlign: 'center',
   },
   recommendationItem: {
@@ -493,11 +483,9 @@ const styles = StyleSheet.create({
   },
   recommendationPriority: {
     fontSize: 10,
-    fontWeight: '800',
-  },
+    },
   recommendationMessage: {
     fontSize: 12,
-    fontWeight: '600',
     lineHeight: 16,
   },
   dataInfo: {
@@ -510,7 +498,7 @@ const styles = StyleSheet.create({
   dataInfoText: {
     flex: 1,
     fontSize: 10,
-    fontWeight: '600',
     lineHeight: 14,
   },
 });
+

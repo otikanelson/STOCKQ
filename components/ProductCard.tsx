@@ -7,9 +7,9 @@ import {
     Image,
     Pressable,
     StyleSheet,
-    Text,
-    View,
+    View
 } from "react-native";
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from "../context/ThemeContext";
 import { Product } from "../hooks/useProducts";
 import { Prediction } from "../types/ai-predictions";
@@ -98,9 +98,9 @@ export const ProductCard = React.memo(({ item, prediction, sortField = 'name' }:
       <View style={styles.topLabels}>
         <View style={[styles.pill, styles.categoryPill, { backgroundColor: isDark ? '#ffffff0D' : '#0000000A' }]}>
           <Ionicons name="pricetag-outline" size={9} color={theme.subtext} />
-          <Text style={[styles.pillText, { color: theme.subtext }]} numberOfLines={1}>
+          <ThemedText style={[styles.pillText, { color: theme.subtext }]} numberOfLines={1}>
             {item.category || 'General'}
-          </Text>
+          </ThemedText>
         </View>
         <View style={[styles.pill, { backgroundColor: item.isPerishable ? theme.primaryLight : (isDark ? '#ffffff0D' : '#0000000A') }]}>
           <Ionicons
@@ -108,9 +108,9 @@ export const ProductCard = React.memo(({ item, prediction, sortField = 'name' }:
             size={9}
             color={item.isPerishable ? theme.primary : theme.subtext}
           />
-          <Text style={[styles.pillText, { color: item.isPerishable ? theme.primary : theme.subtext }]}>
+          <ThemedText style={[styles.pillText, { color: item.isPerishable ? theme.primary : theme.subtext }]}>
             {item.isPerishable ? 'FEFO' : 'STD'}
-          </Text>
+          </ThemedText>
         </View>
       </View>
 
@@ -138,22 +138,22 @@ export const ProductCard = React.memo(({ item, prediction, sortField = 'name' }:
         <View style={{ flex: 1 }}>
           {sortField === 'risk' && prediction ? (
             <>
-              <Text style={[styles.quantityLabel, { color: riskColor || theme.subtext }]}>Risk Score</Text>
-              <Text style={[styles.name, { color: riskColor || theme.text }]} numberOfLines={1}>
+              <ThemedText style={[styles.quantityLabel, { color: riskColor || theme.subtext }]}>Risk Score</ThemedText>
+              <ThemedText style={[styles.name, { color: riskColor || theme.text }]} numberOfLines={1}>
                 {Math.round(riskScore)}/100
-              </Text>
+              </ThemedText>
             </>
           ) : sortField === 'velocity' && prediction ? (
             <>
-              <Text style={[styles.quantityLabel, { color: velocityIndicator?.color || theme.subtext }]}>Velocity</Text>
-              <Text style={[styles.name, { color: velocityIndicator?.color || theme.text }]} numberOfLines={1}>
+              <ThemedText style={[styles.quantityLabel, { color: velocityIndicator?.color || theme.subtext }]}>Velocity</ThemedText>
+              <ThemedText style={[styles.name, { color: velocityIndicator?.color || theme.text }]} numberOfLines={1}>
                 {velocity.toFixed(1)}/day
-              </Text>
+              </ThemedText>
             </>
           ) : (
             <>
-              <Text style={[styles.quantityLabel, { color: theme.subtext }]}>{item.totalQuantity} items</Text>
-              <Text style={[styles.name, { color: theme.text }]} numberOfLines={1}>{item.name}</Text>
+              <ThemedText style={[styles.quantityLabel, { color: theme.subtext }]}>{item.totalQuantity} items</ThemedText>
+              <ThemedText style={[styles.name, { color: theme.text }]} numberOfLines={1}>{item.name}</ThemedText>
             </>
           )}
         </View>
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   categoryPill: { flex: 1, minWidth: 0 },
-  pillText: { fontSize: 8, fontWeight: '700', textTransform: 'uppercase' },
+  pillText: { fontSize: 8, textTransform: 'uppercase' },
   imageWrapper: {
     width: '100%',
     height: 130,
@@ -220,8 +220,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingHorizontal: 2,
   },
-  quantityLabel: { fontSize: 11, fontWeight: '500', marginBottom: 2 },
-  name: { fontSize: 14, fontWeight: '800' },
+  quantityLabel: { fontSize: 11, marginBottom: 2 },
+  name: { fontSize: 14, },
   arrowCircle: {
     width: 30,
     height: 30,
@@ -231,3 +231,4 @@ const styles = StyleSheet.create({
   },
   skeletonPill: { height: 18, width: 52, borderRadius: 8 },
 });
+

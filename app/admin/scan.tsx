@@ -16,7 +16,6 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -24,6 +23,7 @@ import AdminSecurityPINWarning from "../../components/AdminSecurityPINWarning";
 import { BarcodeScanner } from "../../components/BarcodeScanner";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { HelpTooltip } from "../../components/HelpTooltip";
+import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { hasSecurityPIN } from "../../utils/securityPINCheck";
 
@@ -481,9 +481,9 @@ export default function AdminScanScreen() {
     console.log('⏳ [ADMIN-SCAN] Permission object is null/undefined - waiting...');
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={[styles.permissionText, { color: theme.text }]}>
+        <ThemedText style={[styles.permissionText, { color: theme.text }]}>
           Requesting camera permission...
-        </Text>
+        </ThemedText>
       </View>
     );
   }
@@ -495,14 +495,14 @@ export default function AdminScanScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.permissionContainer}>
           <Ionicons name="camera-outline" size={64} color={theme.subtext} />
-          <Text style={[styles.permissionText, { color: theme.text }]}>
+          <ThemedText style={[styles.permissionText, { color: theme.text }]}>
             Camera permission required
-          </Text>
+          </ThemedText>
           <Pressable
             style={[styles.permissionBtn, { backgroundColor: theme.primary }]}
             onPress={requestPermission}
           >
-            <Text style={styles.permissionBtnText}>Grant Permission</Text>
+            <ThemedText style={styles.permissionBtnText}>Grant Permission</ThemedText>
           </Pressable>
         </View>
       </View>
@@ -520,9 +520,9 @@ export default function AdminScanScreen() {
       <ErrorBoundary>
         <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center' }]}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={[styles.permissionText, { color: theme.text, marginTop: 20 }]}>
+          <ThemedText style={[styles.permissionText, { color: theme.text, marginTop: 20 }]}>
             Initializing camera...
-          </Text>
+          </ThemedText>
         </View>
       </ErrorBoundary>
     );
@@ -535,9 +535,9 @@ export default function AdminScanScreen() {
       <ErrorBoundary>
         <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
           <Ionicons name="camera-outline" size={64} color={theme.subtext} />
-          <Text style={[styles.permissionText, { color: theme.text, marginTop: 20, textAlign: 'center' }]}>
+          <ThemedText style={[styles.permissionText, { color: theme.text, marginTop: 20, textAlign: 'center' }]}>
             Camera failed to initialize
-          </Text>
+          </ThemedText>
           <Pressable
             style={[styles.permissionBtn, { backgroundColor: theme.primary, marginTop: 20 }]}
             onPress={() => {
@@ -546,13 +546,13 @@ export default function AdminScanScreen() {
               setCameraKey(prev => prev + 1);
             }}
           >
-            <Text style={styles.permissionBtnText}>Retry</Text>
+            <ThemedText style={styles.permissionBtnText}>Retry</ThemedText>
           </Pressable>
           <Pressable
             style={[styles.permissionBtn, { backgroundColor: '#444', marginTop: 10 }]}
             onPress={() => router.back()}
           >
-            <Text style={styles.permissionBtnText}>Go Back</Text>
+            <ThemedText style={styles.permissionBtnText}>Go Back</ThemedText>
           </Pressable>
         </View>
       </ErrorBoundary>
@@ -598,9 +598,9 @@ export default function AdminScanScreen() {
                 mode === "sales" && { backgroundColor: "#00D1FF" },
               ]}
             >
-              <Text style={[styles.tabText, mode === "sales" && { color: "#000" }]}>
+              <ThemedText style={[styles.tabText, mode === "sales" && { color: "#000" }]}>
                 SALES
-              </Text>
+              </ThemedText>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -612,9 +612,9 @@ export default function AdminScanScreen() {
                 mode === "register" && { backgroundColor: "#00FF00" },
               ]}
             >
-              <Text style={[styles.tabText, mode === "register" && { color: "#000" }]}>
+              <ThemedText style={[styles.tabText, mode === "register" && { color: "#000" }]}>
                 REGISTER
-              </Text>
+              </ThemedText>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -626,9 +626,9 @@ export default function AdminScanScreen() {
                 mode === "lookup" && { backgroundColor: theme.primary },
               ]}
             >
-              <Text style={[styles.tabText, mode === "lookup" && { color: "#000" }]}>
+              <ThemedText style={[styles.tabText, mode === "lookup" && { color: "#000" }]}>
                 LOOKUP
-              </Text>
+              </ThemedText>
             </Pressable>
           </View>
 
@@ -645,13 +645,13 @@ export default function AdminScanScreen() {
 
         {/* BOTTOM BAR - Instructions and Cart Button */}
         <View style={styles.bottomBar}>
-          <Text style={styles.hintText}>
+          <ThemedText style={styles.hintText}>
             {mode === "lookup" 
               ? "Scan to view product details" 
               : mode === "register"
               ? "Scan to register or add inventory"
               : "Scan items to add to cart"}
-          </Text>
+          </ThemedText>
 
           {mode === "sales" && (
             <Animated.View
@@ -669,7 +669,7 @@ export default function AdminScanScreen() {
                 <Ionicons name="cart" size={24} color="#FFF" />
                 {cart.length > 0 && (
                   <View style={styles.cartBadge}>
-                    <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
+                    <ThemedText style={styles.cartBadgeText}>{getTotalItems()}</ThemedText>
                   </View>
                 )}
               </Pressable>
@@ -699,7 +699,7 @@ export default function AdminScanScreen() {
                 });
               }}
             >
-              <Text style={styles.manualBtnText}>Manual Entry</Text>
+              <ThemedText style={styles.manualBtnText}>Manual Entry</ThemedText>
             </Pressable>
           )}
           
@@ -724,12 +724,12 @@ export default function AdminScanScreen() {
             {/* Modal Header */}
             <View style={styles.modalHeader}>
               <View>
-                <Text style={[styles.modalTitle, { color: theme.text }]}>
+                <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
                   Shopping Cart
-                </Text>
-                <Text style={[styles.modalSubtitle, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.modalSubtitle, { color: theme.subtext }]}>
                   {cart.length} {cart.length === 1 ? "item" : "items"} • {getTotalItems()} total units
-                </Text>
+                </ThemedText>
               </View>
               <Pressable
                 onPress={() => setShowCartModal(false)}
@@ -743,12 +743,12 @@ export default function AdminScanScreen() {
             {cart.length === 0 ? (
               <View style={styles.emptyCart}>
                 <Ionicons name="cart-outline" size={80} color={theme.subtext + "40"} />
-                <Text style={[styles.emptyText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
                   Cart is empty
-                </Text>
-                <Text style={[styles.emptyHint, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.emptyHint, { color: theme.subtext }]}>
                   Scan products to add them
-                </Text>
+                </ThemedText>
               </View>
             ) : (
               <FlatList
@@ -777,12 +777,12 @@ export default function AdminScanScreen() {
 
                     {/* Product Info */}
                     <View style={styles.cartItemInfo}>
-                      <Text style={[styles.cartItemName, { color: theme.text }]} numberOfLines={1}>
+                      <ThemedText style={[styles.cartItemName, { color: theme.text }]} numberOfLines={1}>
                         {item.name}
-                      </Text>
-                      <Text style={[styles.cartItemMeta, { color: theme.subtext }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.cartItemMeta, { color: theme.subtext }]}>
                         Stock: {item.totalQuantity} units
-                      </Text>
+                      </ThemedText>
                     </View>
 
                     {/* Quantity Controls */}
@@ -800,9 +800,9 @@ export default function AdminScanScreen() {
                       >
                         <Ionicons name="remove" size={16} color={theme.text} />
                       </Pressable>
-                      <Text style={[styles.qtyText, { color: theme.text }]}>
+                      <ThemedText style={[styles.qtyText, { color: theme.text }]}>
                         {item.quantity}
-                      </Text>
+                      </ThemedText>
                       <Pressable
                         style={[
                           styles.qtyBtn, 
@@ -837,9 +837,9 @@ export default function AdminScanScreen() {
                 onPress={handleDone}
               >
                 <Ionicons name="checkmark-circle" size={24} color="#FFF" />
-                <Text style={styles.doneButtonText}>
+                <ThemedText style={styles.doneButtonText}>
                   Proceed to Checkout ({getTotalItems()} items)
-                </Text>
+                </ThemedText>
               </Pressable>
             )}
           </View>
@@ -884,8 +884,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: "rgba(255,255,255,0.5)",
     fontSize: 11,
-    fontWeight: "800",
-  },
+    },
   iconCircle: {
     width: 45,
     height: 45,
@@ -904,7 +903,6 @@ const styles = StyleSheet.create({
   hintText: {
     color: "#FFF",
     marginBottom: 20,
-    fontWeight: "600",
     textAlign: "center",
   },
   manualBtn: {
@@ -916,7 +914,6 @@ const styles = StyleSheet.create({
   },
   manualBtnText: { 
     color: "#000", 
-    fontWeight: "800", 
     fontSize: 14 
   },
   cartButton: {
@@ -948,8 +945,7 @@ const styles = StyleSheet.create({
   cartBadgeText: {
     color: "#FFF",
     fontSize: 11,
-    fontWeight: "900",
-  },
+    },
 
   // Permissions
   permissionContainer: {
@@ -972,8 +968,7 @@ const styles = StyleSheet.create({
   permissionBtnText: {
     color: "#FFF",
     fontSize: 16,
-    fontWeight: "700",
-  },
+    },
 
   // Cart Modal
   modalOverlay: {
@@ -995,11 +990,9 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 24,
-    fontWeight: "900",
-  },
+    },
   modalSubtitle: {
     fontSize: 13,
-    fontWeight: "600",
     marginTop: 4,
   },
   closeBtn: {
@@ -1018,12 +1011,10 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: "800",
     marginTop: 20,
   },
   emptyHint: {
     fontSize: 14,
-    fontWeight: "600",
     marginTop: 8,
   },
 
@@ -1061,13 +1052,11 @@ const styles = StyleSheet.create({
   },
   cartItemName: {
     fontSize: 15,
-    fontWeight: "800",
     marginBottom: 4,
   },
   cartItemMeta: {
     fontSize: 12,
-    fontWeight: "600",
-  },
+    },
   qtyControls: {
     flexDirection: "row",
     alignItems: "center",
@@ -1082,7 +1071,6 @@ const styles = StyleSheet.create({
   },
   qtyText: {
     fontSize: 16,
-    fontWeight: "900",
     minWidth: 30,
     textAlign: "center",
   },
@@ -1104,6 +1092,5 @@ const styles = StyleSheet.create({
   doneButtonText: {
     color: "#FFF",
     fontSize: 16,
-    fontWeight: "900",
-  },
+    },
 });

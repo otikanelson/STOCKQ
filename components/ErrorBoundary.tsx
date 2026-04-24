@@ -1,6 +1,7 @@
-import React, { Component, ReactNode, ErrorInfo } from 'react';
-import { View, Text, StyleSheet, Pressable, useColorScheme } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Pressable, StyleSheet, useColorScheme, View } from 'react-native';
+import { ThemedText } from '../components/ThemedText';
 
 interface Props {
   children: ReactNode;
@@ -70,22 +71,22 @@ const ErrorFallback: React.FC<{ error: Error | null; onReset: () => void }> = ({
         <Ionicons name="warning-outline" size={64} color={colors.notification} />
       </View>
 
-      <Text style={[styles.title, { color: colors.text }]}>
+      <ThemedText style={[styles.title, { color: colors.text }]}>
         Something Went Wrong
-      </Text>
+      </ThemedText>
 
-      <Text style={[styles.message, { color: colors.subtext }]}>
+      <ThemedText style={[styles.message, { color: colors.subtext }]}>
         {error?.message || 'An unexpected error occurred'}
-      </Text>
+      </ThemedText>
 
       {__DEV__ && (
         <View style={[styles.debugBox, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.debugTitle, { color: colors.primary }]}>
+          <ThemedText style={[styles.debugTitle, { color: colors.primary }]}>
             Debug Info:
-          </Text>
-          <Text style={[styles.debugText, { color: colors.text }]}>
+          </ThemedText>
+          <ThemedText style={[styles.debugText, { color: colors.text }]}>
             {error?.stack || 'No stack trace available'}
-          </Text>
+          </ThemedText>
         </View>
       )}
 
@@ -93,7 +94,7 @@ const ErrorFallback: React.FC<{ error: Error | null; onReset: () => void }> = ({
         style={[styles.button, { backgroundColor: colors.primary }]}
         onPress={onReset}
       >
-        <Text style={styles.buttonText}>Try Again</Text>
+        <ThemedText style={styles.buttonText}>Try Again</ThemedText>
       </Pressable>
     </View>
   );
@@ -116,7 +117,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '900',
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
   },
   debugTitle: {
     fontSize: 14,
-    fontWeight: '800',
     marginBottom: 8,
   },
   debugText: {
@@ -150,8 +149,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '700',
-  },
+    },
 });
 
 // Export wrapper function to use the error boundary

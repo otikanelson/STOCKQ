@@ -8,11 +8,11 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
     TextInput,
-    View,
+    View
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -147,10 +147,10 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
             <Ionicons name="shield-checkmark" size={40} color={theme.primary} />
           </View>
 
-          <Text style={[styles.title, { color: theme.text }]}>Author Access</Text>
-          <Text style={[styles.subtitle, { color: theme.subtext }]}>
+          <ThemedText style={[styles.title, { color: theme.text }]}>Author Access</ThemedText>
+          <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
             Enter the secret key to access the author dashboard
-          </Text>
+          </ThemedText>
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -203,7 +203,7 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
               onPress={handleClose}
               disabled={isLoading}
             >
-              <Text style={[styles.buttonText, { color: theme.text }]}>Cancel</Text>
+              <ThemedText style={[styles.buttonText, { color: theme.text }]}>Cancel</ThemedText>
             </Pressable>
 
             <Pressable
@@ -214,7 +214,7 @@ export function AuthorLogin({ visible, onClose }: AuthorLoginProps) {
               {isLoading ? (
                 <ActivityIndicator size="small" color="#FFF" />
               ) : (
-                <Text style={[styles.buttonText, { color: '#FFF' }]}>Login</Text>
+                <ThemedText style={[styles.buttonText, { color: '#FFF' }]}>Login</ThemedText>
               )}
             </Pressable>
           </View>
@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '900',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -272,8 +271,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingRight: 50,
     fontSize: 16,
-    fontWeight: '600',
-  },
+    },
   eyeIcon: {
     position: 'absolute',
     right: 15,
@@ -298,6 +296,6 @@ const styles = StyleSheet.create({
   loginButton: {},
   buttonText: {
     fontSize: 16,
-    fontWeight: '700',
-  },
+    },
 });
+

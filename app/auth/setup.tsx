@@ -10,12 +10,12 @@ import {
     Platform,
     Pressable,
     StyleSheet,
-    Text,
     TextInput,
     View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { PinInput } from '../../components/PinInput';
+import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from '../../context/ThemeContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -293,12 +293,12 @@ export default function SetupScreen() {
         {step === 'welcome' && (
           <>
             <Image source={require('../../assets/images/favicon.png')} style={[styles.logoMark, { width: 80, height: 80 }]} contentFit="contain" />
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               Welcome
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
               Let's set up your admin account to get started
-            </Text>
+            </ThemedText>
 
             <View style={styles.featureList}>
               <View style={styles.featureItem}>
@@ -306,12 +306,12 @@ export default function SetupScreen() {
                   <Ionicons name="shield-checkmark" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.featureText}>
-                  <Text style={[styles.featureTitle, { color: theme.text }]}>
+                  <ThemedText style={[styles.featureTitle, { color: theme.text }]}>
                     Secure Access
-                  </Text>
-                  <Text style={[styles.featureDesc, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.featureDesc, { color: theme.subtext }]}>
                     Protect your inventory with PIN authentication
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
 
@@ -320,12 +320,12 @@ export default function SetupScreen() {
                   <Ionicons name="people" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.featureText}>
-                  <Text style={[styles.featureTitle, { color: theme.text }]}>
+                  <ThemedText style={[styles.featureTitle, { color: theme.text }]}>
                     Staff Management
-                  </Text>
-                  <Text style={[styles.featureDesc, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.featureDesc, { color: theme.subtext }]}>
                     Add staff members with limited access
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
 
@@ -334,39 +334,39 @@ export default function SetupScreen() {
                   <Ionicons name="analytics" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.featureText}>
-                  <Text style={[styles.featureTitle, { color: theme.text }]}>
+                  <ThemedText style={[styles.featureTitle, { color: theme.text }]}>
                     Full Control
-                  </Text>
-                  <Text style={[styles.featureDesc, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.featureDesc, { color: theme.subtext }]}>
                     Access all features and settings
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
             </View>
 
             {/* Login Links */}
             <View style={styles.loginLinksContainer}>
-              <Text style={[styles.loginPrompt, { color: theme.subtext }]}>
+              <ThemedText style={[styles.loginPrompt, { color: theme.subtext }]}>
                 Already have an account?
-              </Text>
+              </ThemedText>
               <View style={styles.loginButtons}>
                 <Pressable 
                   style={[styles.loginButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
                   onPress={() => router.push('/auth/login?role=admin' as any)}
                 >
                   <Ionicons name="shield-checkmark-outline" size={20} color={theme.primary} />
-                  <Text style={[styles.loginButtonText, { color: theme.text }]}>
+                  <ThemedText style={[styles.loginButtonText, { color: theme.text }]}>
                     Admin Login
-                  </Text>
+                  </ThemedText>
                 </Pressable>
                 <Pressable 
                   style={[styles.loginButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
                   onPress={() => router.push('/auth/login?role=staff' as any)}
                 >
                   <Ionicons name="people-outline" size={20} color={theme.primary} />
-                  <Text style={[styles.loginButtonText, { color: theme.text }]}>
+                  <ThemedText style={[styles.loginButtonText, { color: theme.text }]}>
                     Staff Login
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               </View>
             </View>
@@ -376,9 +376,9 @@ export default function SetupScreen() {
               style={styles.authorLink}
               onPress={() => setShowAuthorLogin(true)}
             >
-              <Text style={[styles.authorLinkText, { color: theme.subtext + '80' }]}>
+              <ThemedText style={[styles.authorLinkText, { color: theme.subtext + '80' }]}>
                 Author
-              </Text>
+              </ThemedText>
             </Pressable>
           </>
         )}
@@ -388,12 +388,12 @@ export default function SetupScreen() {
             <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
               <Ionicons name="storefront" size={48} color={theme.primary} />
             </View>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               Name Your Store
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
               This will be your store's identity
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[
@@ -414,12 +414,12 @@ export default function SetupScreen() {
             <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
               <Ionicons name="person" size={48} color={theme.primary} />
             </View>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               What's your name?
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
               This will be displayed in the app
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[
@@ -440,14 +440,14 @@ export default function SetupScreen() {
             <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
               <Ionicons name="log-in" size={48} color={theme.primary} />
             </View>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               {isFirstPin ? 'Create Login PIN' : 'Confirm Login PIN'}
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
               {isFirstPin
                 ? 'This PIN will be used to log into the app'
                 : 'Enter your Login PIN again to confirm'}
-            </Text>
+            </ThemedText>
 
             <View style={styles.pinContainer}>
               <PinInput
@@ -464,9 +464,9 @@ export default function SetupScreen() {
                 }}
               />
               {pinError && (
-                <Text style={[styles.errorText, { color: theme.notification }]}>
+                <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                   PINs don't match. Please try again.
-                </Text>
+                </ThemedText>
               )}
             </View>
           </>
@@ -477,20 +477,20 @@ export default function SetupScreen() {
             <View style={[styles.iconCircle, { backgroundColor: '#FF9500' + '15' }]}>
               <Ionicons name="shield-checkmark" size={48} color="#FF9500" />
             </View>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               {isFirstPin ? 'Create Security PIN' : 'Confirm Security PIN'}
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
               {isFirstPin
                 ? 'This PIN protects sensitive operations like product registration and deletion'
                 : 'Enter your Security PIN again to confirm'}
-            </Text>
+            </ThemedText>
 
             <View style={[styles.tipCard, { backgroundColor: '#FF9500' + '10', borderColor: '#FF9500', marginBottom: 20 }]}>
               <Ionicons name="information-circle" size={20} color="#FF9500" />
-              <Text style={[styles.tipText, { color: theme.text }]}>
+              <ThemedText style={[styles.tipText, { color: theme.text }]}>
                 Security PIN must be different from Login PIN for better security
-              </Text>
+              </ThemedText>
             </View>
 
             <View style={styles.pinContainer}>
@@ -508,9 +508,9 @@ export default function SetupScreen() {
                 }}
               />
               {pinError && (
-                <Text style={[styles.errorText, { color: theme.notification }]}>
+                <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                   PINs don't match. Please try again.
-                </Text>
+                </ThemedText>
               )}
             </View>
           </>
@@ -521,37 +521,37 @@ export default function SetupScreen() {
             <View style={[styles.iconCircle, { backgroundColor: '#34C759' + '15' }]}>
               <Ionicons name="checkmark-circle" size={64} color="#34C759" />
             </View>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               All Set!
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
               Your admin account has been created successfully
-            </Text>
+            </ThemedText>
 
             <View style={[styles.infoCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: theme.subtext }]}>Store:</Text>
-                <Text style={[styles.infoValue, { color: theme.text }]}>{storeName}</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.subtext }]}>Store:</ThemedText>
+                <ThemedText style={[styles.infoValue, { color: theme.text }]}>{storeName}</ThemedText>
               </View>
               <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: theme.subtext }]}>Name:</Text>
-                <Text style={[styles.infoValue, { color: theme.text }]}>{adminName}</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.subtext }]}>Name:</ThemedText>
+                <ThemedText style={[styles.infoValue, { color: theme.text }]}>{adminName}</ThemedText>
               </View>
               <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: theme.subtext }]}>Role:</Text>
-                <Text style={[styles.infoValue, { color: theme.text }]}>Admin</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.subtext }]}>Role:</ThemedText>
+                <ThemedText style={[styles.infoValue, { color: theme.text }]}>Admin</ThemedText>
               </View>
               <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: theme.subtext }]}>PIN:</Text>
-                <Text style={[styles.infoValue, { color: theme.text }]}>••••</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.subtext }]}>PIN:</ThemedText>
+                <ThemedText style={[styles.infoValue, { color: theme.text }]}>••••</ThemedText>
               </View>
             </View>
 
             <View style={[styles.tipCard, { backgroundColor: theme.primary + '10', borderColor: theme.primary }]}>
               <Ionicons name="information-circle" size={20} color={theme.primary} />
-              <Text style={[styles.tipText, { color: theme.text }]}>
+              <ThemedText style={[styles.tipText, { color: theme.text }]}>
                 You can add staff members later from Admin Settings
-              </Text>
+              </ThemedText>
             </View>
           </>
         )}
@@ -564,9 +564,9 @@ export default function SetupScreen() {
             style={[styles.continueButton, { backgroundColor: theme.primary }]}
             onPress={handleContinue}
           >
-            <Text style={styles.continueText}>
+            <ThemedText style={styles.continueText}>
               {step === 'complete' ? 'Go to Login' : 'Continue'}
-            </Text>
+            </ThemedText>
             <Ionicons name="arrow-forward" size={20} color="#FFF" />
           </Pressable>
         </View>
@@ -607,7 +607,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 32,
-    fontWeight: '900',
     color: '#FFFFFF',
     letterSpacing: 1,
   },
@@ -636,7 +635,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: '900',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -667,7 +665,6 @@ const styles = StyleSheet.create({
   },
   featureTitle: {
     fontSize: 16,
-    fontWeight: '700',
     marginBottom: 4,
   },
   featureDesc: {
@@ -689,15 +686,13 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingHorizontal: 20,
     fontSize: 16,
-    fontWeight: '600',
-  },
+    },
   pinContainer: {
     alignItems: 'center',
     gap: 16,
   },
   errorText: {
     fontSize: 14,
-    fontWeight: '600',
     textAlign: 'center',
   },
   infoCard: {
@@ -715,12 +710,10 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    fontWeight: '600',
-  },
+    },
   infoValue: {
     fontSize: 16,
-    fontWeight: '800',
-  },
+    },
   tipCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -733,7 +726,6 @@ const styles = StyleSheet.create({
   tipText: {
     flex: 1,
     fontSize: 13,
-    fontWeight: '600',
     lineHeight: 18,
   },
   footer: {
@@ -751,8 +743,7 @@ const styles = StyleSheet.create({
   continueText: {
     color: '#FFF',
     fontSize: 17,
-    fontWeight: '800',
-  },
+    },
   loginLink: {
     marginTop: 30,
     paddingVertical: 10,
@@ -762,8 +753,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   loginLinkBold: {
-    fontWeight: '700',
-  },
+    },
   loginLinksContainer: {
     marginTop: 30,
     width: '100%',
@@ -791,8 +781,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     fontSize: 15,
-    fontWeight: '700',
-  },
+    },
   authorLink: {
     marginTop: 20,
   },
@@ -813,6 +802,6 @@ const styles = StyleSheet.create({
   },
   diagnosticsText: {
     fontSize: 13,
-    fontWeight: '600',
-  },
+    },
 });
+

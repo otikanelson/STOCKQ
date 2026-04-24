@@ -1,6 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+﻿import { Ionicons } from '@expo/vector-icons';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { ThemedText } from '../components/ThemedText';
 
 interface AdminSecurityPINWarningProps {
   visible: boolean;
@@ -23,12 +24,12 @@ export default function AdminSecurityPINWarning({
             <Ionicons name="warning" size={32} color="#FF9500" />
           </View>
 
-          <Text style={[styles.modalTitle, { color: theme.text }]}>
+          <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
             Admin Security PIN Required
-          </Text>
-          <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
             You need to set up your Admin Security PIN before registering new products. This PIN authorizes sensitive operations in the system.
-          </Text>
+          </ThemedText>
 
           <View style={styles.modalActions}>
             <Pressable
@@ -38,13 +39,13 @@ export default function AdminSecurityPINWarning({
               ]}
               onPress={onClose}
             >
-              <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
+              <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
             </Pressable>
             <Pressable
               style={[styles.modalBtn, { backgroundColor: theme.primary }]}
               onPress={onNavigateToSettings}
             >
-              <Text style={{ color: '#FFF', fontWeight: '700' }}>Go to Settings</Text>
+              <ThemedText style={{ color: '#FFF', }}>Go to Settings</ThemedText>
             </Pressable>
           </View>
         </View>
@@ -78,7 +79,6 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 22,
-    fontWeight: '900',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -102,3 +102,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+

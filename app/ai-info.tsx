@@ -3,13 +3,13 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View
 } from "react-native";
 import { AIStatusIndicator } from '../components/AIStatusIndicator';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 
 export default function AIInfoScreen() {
@@ -43,9 +43,9 @@ export default function AIInfoScreen() {
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={theme.text} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>
+        <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
           AI Predictions
-        </Text>
+        </ThemedText>
         <View style={{ width: 40 }} />
       </View>
 
@@ -61,71 +61,71 @@ export default function AIInfoScreen() {
         <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="information-circle" size={24} color={theme.primary} />
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               What are AI Predictions?
-            </Text>
+            </ThemedText>
           </View>
-          <Text style={[styles.sectionText, { color: theme.subtext }]}>
+          <ThemedText style={[styles.sectionText, { color: theme.subtext }]}>
             Insightory uses artificial intelligence to analyze your sales history and inventory patterns. 
             The system learns from your data to provide accurate forecasts and recommendations.
-          </Text>
+          </ThemedText>
         </View>
 
         {/* How It Works */}
         <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="cog" size={24} color={theme.primary} />
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               How It Works
-            </Text>
+            </ThemedText>
           </View>
           
           <View style={styles.stepContainer}>
             <View style={styles.step}>
               <View style={[styles.stepNumber, { backgroundColor: theme.primary }]}>
-                <Text style={styles.stepNumberText}>1</Text>
+                <ThemedText style={styles.stepNumberText}>1</ThemedText>
               </View>
               <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: theme.text }]}>Data Collection</Text>
-                <Text style={[styles.stepText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.stepTitle, { color: theme.text }]}>Data Collection</ThemedText>
+                <ThemedText style={[styles.stepText, { color: theme.subtext }]}>
                   The system collects data from your product inventory and sales transactions.
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
             <View style={styles.step}>
               <View style={[styles.stepNumber, { backgroundColor: theme.primary }]}>
-                <Text style={styles.stepNumberText}>2</Text>
+                <ThemedText style={styles.stepNumberText}>2</ThemedText>
               </View>
               <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: theme.text }]}>Pattern Analysis</Text>
-                <Text style={[styles.stepText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.stepTitle, { color: theme.text }]}>Pattern Analysis</ThemedText>
+                <ThemedText style={[styles.stepText, { color: theme.subtext }]}>
                   AI analyzes sales velocity, trends, and seasonal patterns to understand demand.
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
             <View style={styles.step}>
               <View style={[styles.stepNumber, { backgroundColor: theme.primary }]}>
-                <Text style={styles.stepNumberText}>3</Text>
+                <ThemedText style={styles.stepNumberText}>3</ThemedText>
               </View>
               <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: theme.text }]}>Predictions</Text>
-                <Text style={[styles.stepText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.stepTitle, { color: theme.text }]}>Predictions</ThemedText>
+                <ThemedText style={[styles.stepText, { color: theme.subtext }]}>
                   Generates forecasts for 7, 14, and 30 days, plus risk scores for each product.
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
             <View style={styles.step}>
               <View style={[styles.stepNumber, { backgroundColor: theme.primary }]}>
-                <Text style={styles.stepNumberText}>4</Text>
+                <ThemedText style={styles.stepNumberText}>4</ThemedText>
               </View>
               <View style={styles.stepContent}>
-                <Text style={[styles.stepTitle, { color: theme.text }]}>Recommendations</Text>
-                <Text style={[styles.stepText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.stepTitle, { color: theme.text }]}>Recommendations</ThemedText>
+                <ThemedText style={[styles.stepText, { color: theme.subtext }]}>
                   Provides actionable suggestions like discounts, restocking, or order adjustments.
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -135,9 +135,9 @@ export default function AIInfoScreen() {
         <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="sparkles" size={24} color={theme.primary} />
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Key Features
-            </Text>
+            </ThemedText>
           </View>
 
           <FeatureItem
@@ -176,13 +176,13 @@ export default function AIInfoScreen() {
         <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="checkmark-done" size={24} color={theme.primary} />
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Requirements
-            </Text>
+            </ThemedText>
           </View>
-          <Text style={[styles.sectionText, { color: theme.subtext }]}>
+          <ThemedText style={[styles.sectionText, { color: theme.subtext }]}>
             For accurate predictions, the AI needs:
-          </Text>
+          </ThemedText>
           
           <View style={styles.requirementsList}>
             <RequirementItem
@@ -210,23 +210,23 @@ export default function AIInfoScreen() {
         <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="shield-checkmark" size={24} color={theme.primary} />
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Privacy & Security
-            </Text>
+            </ThemedText>
           </View>
-          <Text style={[styles.sectionText, { color: theme.subtext }]}>
+          <ThemedText style={[styles.sectionText, { color: theme.subtext }]}>
             Your data stays on your server. All AI calculations happen on your backend. 
             We don't collect, store, or share any of your business data with third parties.
-          </Text>
+          </ThemedText>
         </View>
 
         {/* Accuracy Note */}
         <View style={[styles.noteBox, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}>
           <Ionicons name="information-circle" size={20} color={theme.primary} />
-          <Text style={[styles.noteText, { color: theme.text }]}>
+          <ThemedText style={[styles.noteText, { color: theme.text }]}>
             Predictions improve over time as the AI learns from more data. 
             The more sales history you have, the more accurate the forecasts become.
-          </Text>
+          </ThemedText>
         </View>
       </ScrollView>
     </View>
@@ -247,10 +247,10 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ icon, title, description, the
       <Ionicons name={icon} size={20} color={theme.primary} />
     </View>
     <View style={styles.featureContent}>
-      <Text style={[styles.featureTitle, { color: theme.text }]}>{title}</Text>
-      <Text style={[styles.featureDescription, { color: theme.subtext }]}>
+      <ThemedText style={[styles.featureTitle, { color: theme.text }]}>{title}</ThemedText>
+      <ThemedText style={[styles.featureDescription, { color: theme.subtext }]}>
         {description}
-      </Text>
+      </ThemedText>
     </View>
   </View>
 );
@@ -265,9 +265,9 @@ interface RequirementItemProps {
 const RequirementItem: React.FC<RequirementItemProps> = ({ icon, text, met, theme }) => (
   <View style={styles.requirementItem}>
     <Ionicons name={icon} size={18} color={met ? '#34C759' : theme.subtext} />
-    <Text style={[styles.requirementText, { color: met ? theme.text : theme.subtext }]}>
+    <ThemedText style={[styles.requirementText, { color: met ? theme.text : theme.subtext }]}>
       {text}
-    </Text>
+    </ThemedText>
     {met && <Ionicons name="checkmark-circle" size={18} color="#34C759" />}
   </View>
 );
@@ -295,8 +295,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '900',
-  },
+    },
   content: {
     flex: 1,
   },
@@ -318,8 +317,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '800',
-  },
+    },
   sectionText: {
     fontSize: 14,
     lineHeight: 22,
@@ -341,14 +339,12 @@ const styles = StyleSheet.create({
   stepNumberText: {
     color: '#FFF',
     fontSize: 14,
-    fontWeight: '900',
-  },
+    },
   stepContent: {
     flex: 1,
   },
   stepTitle: {
     fontSize: 15,
-    fontWeight: '700',
     marginBottom: 4,
   },
   stepText: {
@@ -372,7 +368,6 @@ const styles = StyleSheet.create({
   },
   featureTitle: {
     fontSize: 14,
-    fontWeight: '700',
     marginBottom: 4,
   },
   featureDescription: {
@@ -406,3 +401,4 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
+

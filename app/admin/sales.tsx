@@ -1,6 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useAudioPlayer } from "expo-audio";
+import { ThemedText } from '../../components/ThemedText';
 
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -15,7 +16,6 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -263,8 +263,8 @@ export default function AdminSales() {
   };
 
   const formatCurrency = (amount: number | undefined) => {
-    if (amount === undefined || amount === null) return '₦0';
-    return `₦${amount.toLocaleString()}`;
+    if (amount === undefined || amount === null) return 'â‚¦0';
+    return `â‚¦${amount.toLocaleString()}`;
   };
 
   const formatDate = (dateString: string) => {
@@ -294,27 +294,27 @@ export default function AdminSales() {
     >
       <View style={styles.saleHeader}>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.saleName, { color: theme.text }]} numberOfLines={1}>
+          <ThemedText style={[styles.saleName, { color: theme.text }]} numberOfLines={1}>
             {item.productName}
-          </Text>
-          <Text style={[styles.saleDate, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.saleDate, { color: theme.subtext }]}>
             {formatDate(item.saleDate)}
-          </Text>
+          </ThemedText>
         </View>
         <View style={styles.saleAmountContainer}>
-          <Text style={[styles.saleAmount, { color: theme.primary }]}>
+          <ThemedText style={[styles.saleAmount, { color: theme.primary }]}>
             {formatCurrency(item.totalAmount)}
-          </Text>
-          <Text style={[styles.saleQuantity, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.saleQuantity, { color: theme.subtext }]}>
             {item.quantitySold} units
-          </Text>
+          </ThemedText>
         </View>
       </View>
       <View style={styles.saleMeta}>
         <View style={[styles.saleBadge, { backgroundColor: theme.primary + "15" }]}>
-          <Text style={[styles.saleBadgeText, { color: theme.primary }]}>
+          <ThemedText style={[styles.saleBadgeText, { color: theme.primary }]}>
             {item.batchNumber || "N/A"}
-          </Text>
+          </ThemedText>
         </View>
         <Ionicons name="chevron-forward" size={16} color={theme.subtext} />
       </View>
@@ -334,12 +334,12 @@ export default function AdminSales() {
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <View>
-            <Text style={[styles.systemLabel, { color: theme.primary }]}>
+            <ThemedText style={[styles.systemLabel, { color: theme.primary }]}>
               ADMIN//SALES_TERMINAL
-            </Text>
-            <Text style={[styles.title, { color: theme.text }]}>
+            </ThemedText>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               {activeTab === "checkout" ? "TRANSACTIONS" : "SALES_HISTORY"}
-            </Text>
+            </ThemedText>
           </View>
           <HelpTooltip
             style={{marginTop: 20}}
@@ -386,14 +386,14 @@ export default function AdminSales() {
             size={18} 
             color={activeTab === "checkout" ? theme.primary : theme.subtext} 
           />
-          <Text
+          <ThemedText
             style={[
               styles.tabText,
               { color: activeTab === "checkout" ? theme.text : theme.subtext },
             ]}
           >
             Checkout
-          </Text>
+          </ThemedText>
         </Pressable>
         <Pressable
           onPress={() => setActiveTab("history")}
@@ -407,14 +407,14 @@ export default function AdminSales() {
             size={18} 
             color={activeTab === "history" ? theme.primary : theme.subtext} 
           />
-          <Text
+          <ThemedText
             style={[
               styles.tabText,
               { color: activeTab === "history" ? theme.text : theme.subtext },
             ]}
           >
             History
-          </Text>
+          </ThemedText>
         </Pressable>
       </View>
 
@@ -438,25 +438,25 @@ export default function AdminSales() {
                     { backgroundColor: cart.length > 0 ? "#34C759" : theme.border },
                   ]}
                 />
-                <Text style={[styles.panelTitle, { color: theme.text }]}>
+                <ThemedText style={[styles.panelTitle, { color: theme.text }]}>
                   ACTIVE SESSION
-                </Text>
+                </ThemedText>
               </View>
-              <Text style={[styles.itemCount, { color: theme.subtext }]}>
+              <ThemedText style={[styles.itemCount, { color: theme.subtext }]}>
                 {cart.length} {cart.length === 1 ? "ITEM" : "ITEMS"}
-              </Text>
+              </ThemedText>
             </View>
 
             {/* Product List - Professional Table Style */}
             {cart.length === 0 ? (
               <View style={styles.emptyState}>
                 <Ionicons name="cart-outline" size={64} color={theme.subtext + "40"} />
-                <Text style={[styles.emptyText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
                   NO ITEMS IN SESSION
-                </Text>
-                <Text style={[styles.emptyHint, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.emptyHint, { color: theme.subtext }]}>
                   Scan products or add manually to begin transaction
-                </Text>
+                </ThemedText>
               </View>
             ) : (
               <View style={styles.productList}>
@@ -467,30 +467,30 @@ export default function AdminSales() {
                     { borderBottomColor: theme.border },
                   ]}
                 >
-                  <Text
+                  <ThemedText
                     style={[
                       styles.tableHeaderText,
                       { color: theme.subtext, flex: 1 },
                     ]}
                   >
                     PRODUCT
-                  </Text>
-                  <Text
+                  </ThemedText>
+                  <ThemedText
                     style={[
                       styles.tableHeaderText,
                       { color: theme.subtext, width: 120, textAlign: "center" },
                     ]}
                   >
                     QUANTITY
-                  </Text>
-                  <Text
+                  </ThemedText>
+                  <ThemedText
                     style={[
                       styles.tableHeaderText,
                       { color: theme.subtext, width: 40 },
                     ]}
                   >
                     {" "}
-                  </Text>
+                  </ThemedText>
                 </View>
 
                 {/* Product Rows */}
@@ -507,15 +507,15 @@ export default function AdminSales() {
                   >
                     {/* Product Info */}
                     <View style={styles.productInfo}>
-                      <Text
+                      <ThemedText
                         style={[styles.productName, { color: theme.text }]}
                         numberOfLines={1}
                       >
                         {item.name}
-                      </Text>
-                      <Text style={[styles.productMeta, { color: theme.subtext }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.productMeta, { color: theme.subtext }]}>
                         Available: {item.totalQuantity || 0} units
-                      </Text>
+                      </ThemedText>
                     </View>
 
                     {/* Quantity Controls */}
@@ -535,9 +535,9 @@ export default function AdminSales() {
                       </Pressable>
 
                       <View style={styles.qtyDisplay}>
-                        <Text style={[styles.qtyText, { color: theme.text }]}>
+                        <ThemedText style={[styles.qtyText, { color: theme.text }]}>
                           {item.quantity}
-                        </Text>
+                        </ThemedText>
                       </View>
 
                       <Pressable
@@ -583,7 +583,7 @@ export default function AdminSales() {
               }}
             >
               <Ionicons name="add-circle-outline" size={20} color={theme.primary} />
-              <Text style={[styles.addManualButtonText, { color: theme.primary }]}>Add Product Manually</Text>
+              <ThemedText style={[styles.addManualButtonText, { color: theme.primary }]}>Add Product Manually</ThemedText>
             </Pressable>
 
             {/* Complete Transaction Button */}
@@ -593,9 +593,9 @@ export default function AdminSales() {
                 onPress={() => setShowFefoModal(true)}
               >
                 <Ionicons name="checkmark-done" size={20} color="#FFF" />
-                <Text style={styles.completeButtonText}>
+                <ThemedText style={styles.completeButtonText}>
                   COMPLETE TRANSACTION
-                </Text>
+                </ThemedText>
               </Pressable>
             )}
           </View>
@@ -608,10 +608,10 @@ export default function AdminSales() {
             ]}
           >
             <Ionicons name="information-circle-outline" size={20} color={theme.primary} />
-            <Text style={[styles.infoText, { color: theme.subtext }]}>
+            <ThemedText style={[styles.infoText, { color: theme.subtext }]}>
               All sales use FEFO (First-Expired-First-Out) logic to automatically
               deduct from batches closest to expiry
-            </Text>
+            </ThemedText>
           </View>
         </ScrollView>
       ) : (
@@ -620,22 +620,22 @@ export default function AdminSales() {
           <View style={styles.historyHeader}>
             <View style={styles.statsContainer}>
               <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <Text style={[styles.statLabel, { color: theme.subtext }]}>TODAY</Text>
-                <Text style={[styles.statValue, { color: theme.primary }]}>
+                <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>TODAY</ThemedText>
+                <ThemedText style={[styles.statValue, { color: theme.primary }]}>
                   {formatCurrency(revenueStats.today)}
-                </Text>
+                </ThemedText>
               </View>
               <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <Text style={[styles.statLabel, { color: theme.subtext }]}>THIS WEEK</Text>
-                <Text style={[styles.statValue, { color: theme.primary }]}>
+                <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>THIS WEEK</ThemedText>
+                <ThemedText style={[styles.statValue, { color: theme.primary }]}>
                   {formatCurrency(revenueStats.week)}
-                </Text>
+                </ThemedText>
               </View>
               <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <Text style={[styles.statLabel, { color: theme.subtext }]}>THIS MONTH</Text>
-                <Text style={[styles.statValue, { color: theme.primary }]}>
+                <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>THIS MONTH</ThemedText>
+                <ThemedText style={[styles.statValue, { color: theme.primary }]}>
                   {formatCurrency(revenueStats.month)}
-                </Text>
+                </ThemedText>
               </View>
             </View>
             
@@ -760,9 +760,9 @@ export default function AdminSales() {
               }}
             >
               <Ionicons name="download-outline" size={18} color={theme.primary} />
-              <Text style={[styles.exportButtonText, { color: theme.primary }]}>
+              <ThemedText style={[styles.exportButtonText, { color: theme.primary }]}>
                 Export PDF
-              </Text>
+              </ThemedText>
             </Pressable>
           </View>
 
@@ -770,19 +770,19 @@ export default function AdminSales() {
           {loadingHistory ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={theme.primary} />
-              <Text style={[styles.loadingText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.loadingText, { color: theme.subtext }]}>
                 Loading sales history...
-              </Text>
+              </ThemedText>
             </View>
           ) : salesHistory.length === 0 ? (
             <View style={styles.emptyHistoryState}>
               <Ionicons name="receipt-outline" size={64} color={theme.subtext + "40"} />
-              <Text style={[styles.emptyText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
                 NO SALES RECORDED
-              </Text>
-              <Text style={[styles.emptyHint, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.emptyHint, { color: theme.subtext }]}>
                 Sales will appear here once transactions are completed
-              </Text>
+              </ThemedText>
             </View>
           ) : (
             <FlatList
@@ -814,13 +814,13 @@ export default function AdminSales() {
               size={64}
               color={theme.primary}
             />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               CONFIRM TRANSACTION
-            </Text>
-            <Text style={[styles.modalText, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalText, { color: theme.subtext }]}>
               Inventory will be deducted using FEFO logic to ensure stock
               freshness. This action cannot be undone.
-            </Text>
+            </ThemedText>
 
             {isSyncing ? (
               <ActivityIndicator
@@ -837,9 +837,9 @@ export default function AdminSales() {
                   ]}
                   onPress={() => setShowFefoModal(false)}
                 >
-                  <Text style={[styles.modalButtonText, { color: theme.text }]}>
+                  <ThemedText style={[styles.modalButtonText, { color: theme.text }]}>
                     Cancel
-                  </Text>
+                  </ThemedText>
                 </Pressable>
                 <Pressable
                   style={[
@@ -848,11 +848,11 @@ export default function AdminSales() {
                   ]}
                   onPress={finalizeSale}
                 >
-                  <Text
+                  <ThemedText
                     style={[styles.modalButtonText, { color: "#FFF" }]}
                   >
                     Complete Sale
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               </View>
             )}
@@ -891,9 +891,9 @@ export default function AdminSales() {
         <View style={styles.modalOverlay}>
           <View style={[styles.detailsModalContent, { backgroundColor: theme.surface }]}>
             <View style={styles.detailsHeader}>
-              <Text style={[styles.detailsTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.detailsTitle, { color: theme.text }]}>
                 Sale Details
-              </Text>
+              </ThemedText>
               <Pressable onPress={() => setShowSaleDetails(false)}>
                 <Ionicons name="close" size={28} color={theme.text} />
               </Pressable>
@@ -902,46 +902,46 @@ export default function AdminSales() {
             {selectedSale && (
               <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: theme.subtext }]}>Product</Text>
-                  <Text style={[styles.detailValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.detailLabel, { color: theme.subtext }]}>Product</ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: theme.text }]}>
                     {selectedSale.productName}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: theme.subtext }]}>Batch Number</Text>
-                  <Text style={[styles.detailValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.detailLabel, { color: theme.subtext }]}>Batch Number</ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: theme.text }]}>
                     {selectedSale.batchNumber || "N/A"}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: theme.subtext }]}>Quantity Sold</Text>
-                  <Text style={[styles.detailValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.detailLabel, { color: theme.subtext }]}>Quantity Sold</ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: theme.text }]}>
                     {selectedSale.quantitySold} units
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: theme.subtext }]}>Unit Price</Text>
-                  <Text style={[styles.detailValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.detailLabel, { color: theme.subtext }]}>Unit Price</ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: theme.text }]}>
                     {formatCurrency(selectedSale.price)}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: theme.subtext }]}>Total Amount</Text>
-                  <Text style={[styles.detailValue, { color: theme.primary, fontWeight: "900" }]}>
+                  <ThemedText style={[styles.detailLabel, { color: theme.subtext }]}>Total Amount</ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: theme.primary, }]}>
                     {formatCurrency(selectedSale.totalAmount)}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: theme.subtext }]}>Payment Method</Text>
-                  <Text style={[styles.detailValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.detailLabel, { color: theme.subtext }]}>Payment Method</ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: theme.text }]}>
                     {selectedSale.paymentMethod.toUpperCase()}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={[styles.detailRow, { borderBottomWidth: 0 }]}>
-                  <Text style={[styles.detailLabel, { color: theme.subtext }]}>Sale Date</Text>
-                  <Text style={[styles.detailValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.detailLabel, { color: theme.subtext }]}>Sale Date</ThemedText>
+                  <ThemedText style={[styles.detailValue, { color: theme.text }]}>
                     {new Date(selectedSale.saleDate).toLocaleString()}
-                  </Text>
+                  </ThemedText>
                 </View>
               </ScrollView>
             )}
@@ -965,13 +965,11 @@ const styles = StyleSheet.create({
   },
   systemLabel: {
     fontSize: 10,
-    fontWeight: "900",
     letterSpacing: 1.5,
     marginBottom: 4,
   },
   title: {
     fontSize: 23,
-    fontWeight: "900",
     letterSpacing: -0.5,
   },
   scanButton: {
@@ -1008,8 +1006,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 14,
-    fontWeight: "800",
-  },
+    },
 
   scrollContent: {
     paddingHorizontal: 20,
@@ -1043,12 +1040,10 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     fontSize: 14,
-    fontWeight: "900",
     letterSpacing: 1,
   },
   itemCount: {
     fontSize: 11,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
 
@@ -1058,13 +1053,11 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    fontWeight: "800",
     marginTop: 16,
     letterSpacing: 0.5,
   },
   emptyHint: {
     fontSize: 12,
-    fontWeight: "600",
     marginTop: 6,
     textAlign: "center",
     marginBottom: 20,
@@ -1080,8 +1073,7 @@ const styles = StyleSheet.create({
   addManualButtonText: {
     color: "#FFF",
     fontSize: 14,
-    fontWeight: "700",
-  },
+    },
 
   productList: {},
   tableHeader: {
@@ -1094,7 +1086,6 @@ const styles = StyleSheet.create({
   },
   tableHeaderText: {
     fontSize: 10,
-    fontWeight: "900",
     letterSpacing: 1,
   },
 
@@ -1109,14 +1100,12 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 15,
-    fontWeight: "800",
     marginBottom: 4,
     letterSpacing: -0.2,
   },
   productMeta: {
     fontSize: 11,
-    fontWeight: "600",
-  },
+    },
 
   quantityControls: {
     flexDirection: "row",
@@ -1137,7 +1126,6 @@ const styles = StyleSheet.create({
   },
   qtyText: {
     fontSize: 16,
-    fontWeight: "900",
     fontFamily: "monospace",
   },
 
@@ -1159,7 +1147,6 @@ const styles = StyleSheet.create({
   completeButtonText: {
     color: "#FFF",
     fontSize: 14,
-    fontWeight: "900",
     letterSpacing: 0.5,
   },
 
@@ -1174,7 +1161,6 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 12,
-    fontWeight: "600",
     lineHeight: 18,
   },
 
@@ -1196,14 +1182,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 10,
-    fontWeight: "800",
     letterSpacing: 1,
     marginBottom: 8,
   },
   statValue: {
     fontSize: 13,
-    fontWeight: "900",
-  },
+    },
   exportButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -1217,7 +1201,6 @@ const styles = StyleSheet.create({
   },
   exportButtonText: {
     fontSize: 13,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
 
@@ -1230,8 +1213,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 14,
-    fontWeight: "600",
-  },
+    },
 
   emptyHistoryState: {
     flex: 1,
@@ -1257,25 +1239,21 @@ const styles = StyleSheet.create({
   },
   saleName: {
     fontSize: 16,
-    fontWeight: "800",
     marginBottom: 4,
   },
   saleDate: {
     fontSize: 12,
-    fontWeight: "600",
-  },
+    },
   saleAmountContainer: {
     alignItems: "flex-end",
   },
   saleAmount: {
     fontSize: 18,
-    fontWeight: "900",
     marginBottom: 2,
   },
   saleQuantity: {
     fontSize: 11,
-    fontWeight: "600",
-  },
+    },
   saleMeta: {
     flexDirection: "row",
     alignItems: "center",
@@ -1288,7 +1266,6 @@ const styles = StyleSheet.create({
   },
   saleBadgeText: {
     fontSize: 11,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
 
@@ -1308,7 +1285,6 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "900",
     marginTop: 16,
     marginBottom: 10,
     letterSpacing: 1,
@@ -1333,7 +1309,6 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     fontSize: 14,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
 
@@ -1356,8 +1331,7 @@ const styles = StyleSheet.create({
   },
   detailsTitle: {
     fontSize: 22,
-    fontWeight: "900",
-  },
+    },
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -1368,11 +1342,9 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    fontWeight: "600",
-  },
+    },
   detailValue: {
     fontSize: 14,
-    fontWeight: "800",
     textAlign: "right",
     flex: 1,
     marginLeft: 16,

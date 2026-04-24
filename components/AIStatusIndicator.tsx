@@ -1,8 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { ThemedText } from '../components/ThemedText';
 
 interface AIStatusIndicatorProps {
   onPress?: () => void;
@@ -97,9 +98,9 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
         ]}
       >
         <Ionicons name={config.icon} size={14} color={config.color} />
-        <Text style={[styles.compactText, { color: config.color }]}>
+        <ThemedText style={[styles.compactText, { color: config.color }]}>
           {config.label}
-        </Text>
+        </ThemedText>
       </Pressable>
     );
   }
@@ -117,12 +118,12 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
           <Ionicons name={config.icon} size={20} color={config.color} />
         </View>
         <View style={styles.headerText}>
-          <Text style={[styles.label, { color: theme.text }]}>
+          <ThemedText style={[styles.label, { color: theme.text }]}>
             AI Predictions
-          </Text>
-          <Text style={[styles.status, { color: config.color }]}>
+          </ThemedText>
+          <ThemedText style={[styles.status, { color: config.color }]}>
             {config.label}
-          </Text>
+          </ThemedText>
         </View>
         {onPress && (
           <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
@@ -169,16 +170,16 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
           </View>
 
           {/* Message */}
-          <Text style={[styles.message, { color: theme.subtext }]}>
+          <ThemedText style={[styles.message, { color: theme.subtext }]}>
             {statusData.message}
-          </Text>
+          </ThemedText>
         </>
       )}
 
       {statusData.status === 'active' && (
-        <Text style={[styles.activeMessage, { color: theme.subtext }]}>
+        <ThemedText style={[styles.activeMessage, { color: theme.subtext }]}>
           AI is analyzing your inventory and providing predictions
-        </Text>
+        </ThemedText>
       )}
     </Pressable>
   );
@@ -205,9 +206,9 @@ const RequirementItem: React.FC<RequirementItemProps> = ({
   return (
     <View style={styles.requirementItem}>
       <Ionicons name={icon} size={16} color={color} />
-      <Text style={[styles.requirementText, { color }]}>
+      <ThemedText style={[styles.requirementText, { color }]}>
         {label}: {current}/{required}
-      </Text>
+      </ThemedText>
       {isComplete && (
         <Ionicons name="checkmark-circle" size={16} color="#34C759" />
       )}
@@ -240,12 +241,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
     marginBottom: 2,
   },
   status: {
     fontSize: 12,
-    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -272,8 +271,7 @@ const styles = StyleSheet.create({
   },
   requirementText: {
     fontSize: 12,
-    fontWeight: '600',
-  },
+    },
   message: {
     fontSize: 13,
     lineHeight: 18,
@@ -293,8 +291,8 @@ const styles = StyleSheet.create({
   },
   compactText: {
     fontSize: 11,
-    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
 });
+

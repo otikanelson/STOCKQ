@@ -1,3 +1,4 @@
+import { DisabledButton } from "@/components/DisabledButton";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -8,7 +9,6 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import { PredictionCard } from "../../components/PredictionCard";
@@ -16,8 +16,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
 import { useFeatureAccess } from "../../hooks/useFeatureAccess";
 import { useProducts } from "../../hooks/useProducts";
-import { DisabledButton } from "@/components/DisabledButton";
-import { Colors } from "@/constants/Colors";
+import { ThemedText } from '../../components/ThemedText';
 
 interface Batch {
   batchNumber: string;
@@ -131,7 +130,7 @@ export default function ProductDetails() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={[styles.loadingText, { color: theme.text }]}>Loading product...</Text>
+          <ThemedText style={[styles.loadingText, { color: theme.text }]}>Loading product...</ThemedText>
         </View>
       </View>
     );
@@ -142,7 +141,7 @@ export default function ProductDetails() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.loadingContainer}>
           <Ionicons name="alert-circle-outline" size={64} color={theme.subtext} />
-          <Text style={[styles.errorText, { color: theme.text }]}>Product not found</Text>
+          <ThemedText style={[styles.errorText, { color: theme.text }]}>Product not found</ThemedText>
         </View>
       </View>
     );
@@ -179,12 +178,12 @@ export default function ProductDetails() {
           </Pressable>
           
           <View style={styles.headerInfo}>
-            <Text style={[styles.headerLabel, { color: theme.primary }]}>
+            <ThemedText style={[styles.headerLabel, { color: theme.primary }]}>
               PRODUCT DETAILS
-            </Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]} numberOfLines={1}>
+            </ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]} numberOfLines={1}>
               {product.name}
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
@@ -205,14 +204,14 @@ export default function ProductDetails() {
         <View style={[styles.infoCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.infoHeader}>
             <View style={styles.infoMain}>
-              <Text style={[styles.productCategory, { color: theme.primary }]}>
+              <ThemedText style={[styles.productCategory, { color: theme.primary }]}>
                 {product.category}
-              </Text>
+              </ThemedText>
               <View style={[styles.statusBadge, { backgroundColor: stockColor + '20', borderColor: stockColor }]}>
                 <Ionicons name="alert-circle" size={14} color={stockColor} />
-                <Text style={[styles.statusText, { color: stockColor }]}>
+                <ThemedText style={[styles.statusText, { color: stockColor }]}>
                   {stockStatus}
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -220,32 +219,32 @@ export default function ProductDetails() {
           <View style={styles.statsGrid}>
             <View style={styles.statItem}>
               <Ionicons name="cube-outline" size={24} color={theme.primary} />
-              <Text style={[styles.statValue, { color: theme.text }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 {product.totalQuantity}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>
                 In Stock
-              </Text>
+              </ThemedText>
             </View>
 
             <View style={styles.statItem}>
               <Ionicons name="barcode-outline" size={24} color={theme.primary} />
-              <Text style={[styles.statValue, { color: theme.text }]} numberOfLines={1}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]} numberOfLines={1}>
                 {product.barcode || "N/A"}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>
                 Barcode
-              </Text>
+              </ThemedText>
             </View>
 
             <View style={styles.statItem}>
               <Ionicons name="layers-outline" size={24} color={theme.primary} />
-              <Text style={[styles.statValue, { color: theme.text }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 {product.batches?.length || 0}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>
                 Batches
-              </Text>
+              </ThemedText>
             </View>
           </View>
         </View>
@@ -259,21 +258,21 @@ export default function ProductDetails() {
         {/* Price Information */}
         {priceAnalytics && (priceAnalytics.genericPrice || priceAnalytics.hasBatchPrices) && (
           <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <Text style={[styles.cardTitle, { color: theme.primary }]}>
+            <ThemedText style={[styles.cardTitle, { color: theme.primary }]}>
               PRICE INFORMATION
-            </Text>
+            </ThemedText>
 
             {priceAnalytics.genericPrice && (
               <View style={styles.priceRow}>
                 <View style={styles.priceInfo}>
                   <Ionicons name="cash-outline" size={20} color={theme.subtext} />
-                  <Text style={[styles.priceLabel, { color: theme.subtext }]}>
+                  <ThemedText style={[styles.priceLabel, { color: theme.subtext }]}>
                     Generic Price
-                  </Text>
+                  </ThemedText>
                 </View>
-                <Text style={[styles.priceValue, { color: theme.text }]}>
+                <ThemedText style={[styles.priceValue, { color: theme.text }]}>
                   ${priceAnalytics.genericPrice.toFixed(2)}
-                </Text>
+                </ThemedText>
               </View>
             )}
 
@@ -282,25 +281,25 @@ export default function ProductDetails() {
                 <View style={styles.priceRow}>
                   <View style={styles.priceInfo}>
                     <Ionicons name="trending-up-outline" size={20} color={theme.subtext} />
-                    <Text style={[styles.priceLabel, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.priceLabel, { color: theme.subtext }]}>
                       Avg Batch Price
-                    </Text>
+                    </ThemedText>
                   </View>
-                  <Text style={[styles.priceValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.priceValue, { color: theme.text }]}>
                     ${priceAnalytics.avgBatchPrice?.toFixed(2)}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.priceRow}>
                   <View style={styles.priceInfo}>
                     <Ionicons name="swap-horizontal-outline" size={20} color={theme.subtext} />
-                    <Text style={[styles.priceLabel, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.priceLabel, { color: theme.subtext }]}>
                       Price Range
-                    </Text>
+                    </ThemedText>
                   </View>
-                  <Text style={[styles.priceValue, { color: theme.text }]}>
+                  <ThemedText style={[styles.priceValue, { color: theme.text }]}>
                     ${priceAnalytics.minBatchPrice?.toFixed(2)} - $
                     {priceAnalytics.maxBatchPrice?.toFixed(2)}
-                  </Text>
+                  </ThemedText>
                 </View>
               </>
             )}
@@ -310,45 +309,45 @@ export default function ProductDetails() {
         {/* Expiry Analytics */}
         {product.isPerishable && expiryAnalytics && (
           <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <Text style={[styles.cardTitle, { color: theme.primary }]}>
+            <ThemedText style={[styles.cardTitle, { color: theme.primary }]}>
               EXPIRY STATUS
-            </Text>
+            </ThemedText>
 
             <View style={styles.expiryGrid}>
               <View style={styles.expiryItem}>
                 <View style={[styles.expiryIcon, { backgroundColor: '#F59E0B' + '20' }]}>
                   <Ionicons name="time-outline" size={24} color="#F59E0B" />
                 </View>
-                <Text style={[styles.expiryCount, { color: "#F59E0B" }]}>
+                <ThemedText style={[styles.expiryCount, { color: "#F59E0B" }]}>
                   {expiryAnalytics.expiringSoonCount}
-                </Text>
-                <Text style={[styles.expiryLabel, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.expiryLabel, { color: theme.subtext }]}>
                   Expiring Soon
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={styles.expiryItem}>
                 <View style={[styles.expiryIcon, { backgroundColor: '#EF4444' + '20' }]}>
                   <Ionicons name="alert-circle-outline" size={24} color="#EF4444" />
                 </View>
-                <Text style={[styles.expiryCount, { color: "#EF4444" }]}>
+                <ThemedText style={[styles.expiryCount, { color: "#EF4444" }]}>
                   {expiryAnalytics.expiredCount}
-                </Text>
-                <Text style={[styles.expiryLabel, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.expiryLabel, { color: theme.subtext }]}>
                   Expired
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={styles.expiryItem}>
                 <View style={[styles.expiryIcon, { backgroundColor: theme.primary + '20' }]}>
                   <Ionicons name="checkmark-circle-outline" size={24} color={theme.primary} />
                 </View>
-                <Text style={[styles.expiryCount, { color: theme.primary }]}>
+                <ThemedText style={[styles.expiryCount, { color: theme.primary }]}>
                   {expiryAnalytics.totalBatches}
-                </Text>
-                <Text style={[styles.expiryLabel, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.expiryLabel, { color: theme.subtext }]}>
                   Total Batches
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -357,9 +356,9 @@ export default function ProductDetails() {
         {/* Batches */}
         {product.batches && product.batches.length > 0 && (
           <View style={styles.batchesSection}>
-            <Text style={[styles.cardTitle, { color: theme.primary }]}>
+            <ThemedText style={[styles.cardTitle, { color: theme.primary }]}>
               BATCH INVENTORY ({product.batches.length})
-            </Text>
+            </ThemedText>
 
             {product.batches.map((batch: Batch, index: number) => {
               const expiryDate = new Date(batch.expiryDate);
@@ -391,47 +390,47 @@ export default function ProductDetails() {
                 >
                   <View style={styles.batchHeader}>
                     <View style={styles.batchInfo}>
-                      <Text style={[styles.batchNumber, { color: theme.text }]}>
+                      <ThemedText style={[styles.batchNumber, { color: theme.text }]}>
                         {batch.batchNumber}
-                      </Text>
-                      <Text style={[styles.batchQuantity, { color: theme.primary }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.batchQuantity, { color: theme.primary }]}>
                         {batch.quantity} units
-                      </Text>
+                      </ThemedText>
                     </View>
                     
                     {batch.price && (
-                      <Text style={[styles.batchPrice, { color: theme.text }]}>
+                      <ThemedText style={[styles.batchPrice, { color: theme.text }]}>
                         ${batch.price.toFixed(2)}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
 
                   <View style={styles.batchDetails}>
                     <View style={styles.batchDetail}>
                       <Ionicons name="calendar-outline" size={16} color={theme.subtext} />
-                      <Text style={[styles.batchDetailText, { color: theme.subtext }]}>
+                      <ThemedText style={[styles.batchDetailText, { color: theme.subtext }]}>
                         Expires: {expiryDate.toLocaleDateString()}
-                      </Text>
+                      </ThemedText>
                     </View>
 
                     {(batch as any).manufacturerDate && (
                       <View style={styles.batchDetail}>
                         <Ionicons name="construct-outline" size={16} color={theme.subtext} />
-                        <Text style={[styles.batchDetailText, { color: theme.subtext }]}>
+                        <ThemedText style={[styles.batchDetailText, { color: theme.subtext }]}>
                           Mfg: {new Date((batch as any).manufacturerDate).toLocaleDateString()}
-                        </Text>
+                        </ThemedText>
                       </View>
                     )}
 
                     <View style={styles.batchDetail}>
                       <Ionicons name="alert-circle-outline" size={16} color={expiryColor} />
-                      <Text style={[styles.batchDetailText, { color: expiryColor }]}>
+                      <ThemedText style={[styles.batchDetailText, { color: expiryColor }]}>
                         {isExpired
                           ? "Expired"
                           : isExpiringSoon
                             ? `${daysUntilExpiry} days left`
                             : "Good condition"}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
                 </View>
@@ -462,7 +461,7 @@ export default function ProductDetails() {
           style={[styles.fixedAddBatchButton, { backgroundColor: "#5B4FE8" }]}
         >
           <Ionicons name="add-circle" size={24} color="#FFF" />
-          <Text style={styles.fixedAddBatchText}>Add New Batch</Text>
+          <ThemedText style={styles.fixedAddBatchText}>Add New Batch</ThemedText>
         </DisabledButton>
       </View>
     </View>

@@ -8,11 +8,11 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
   TextInput,
   View
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { ThemedText } from '../../../components/ThemedText';
 import { useTheme } from "../../../context/ThemeContext";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -350,13 +350,13 @@ export default function SecuritySettingsScreen() {
             <Ionicons name={icon} size={20} color={theme.primary} />
           </View>
           <View style={styles.textStack}>
-            <Text style={[styles.settingLabel, { color: theme.text }]}>
+            <ThemedText style={[styles.settingLabel, { color: theme.text }]}>
               {label}
-            </Text>
+            </ThemedText>
             {description && (
-              <Text style={[styles.settingDesc, { color: theme.subtext }]}>
+              <ThemedText style={[styles.settingDesc, { color: theme.subtext }]}>
                 {description}
-              </Text>
+              </ThemedText>
             )}
           </View>
         </View>
@@ -390,27 +390,27 @@ export default function SecuritySettingsScreen() {
             <Ionicons name="arrow-back" size={24} color={theme.primary} />
           </Pressable>
           <View>
-            <Text style={[styles.headerSub, { color: theme.primary }]}>
+            <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
               ADMIN_SETTINGS
-            </Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>
+            </ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
               SECURITY
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
         {/* LOGIN PIN MANAGEMENT SECTION */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
               LOGIN PIN MANAGEMENT
-            </Text>
+            </ThemedText>
             {hasLoginPin && (
               <View style={[styles.statusBadge, { backgroundColor: '#34C759' + '15', borderColor: '#34C759' }]}>
                 <Ionicons name="checkmark-circle" size={14} color="#34C759" />
-                <Text style={[styles.statusBadgeText, { color: '#34C759' }]}>
+                <ThemedText style={[styles.statusBadgeText, { color: '#34C759' }]}>
                   CONFIGURED
-                </Text>
+                </ThemedText>
               </View>
             )}
           </View>
@@ -426,32 +426,32 @@ export default function SecuritySettingsScreen() {
 
           <View style={[styles.infoBanner, { backgroundColor: theme.primary + '10', borderColor: theme.primary + '30' }]}>
             <Ionicons name="information-circle-outline" size={20} color={theme.primary} />
-            <Text style={[styles.infoText, { color: theme.text }]}>
+            <ThemedText style={[styles.infoText, { color: theme.text }]}>
               Your Login PIN is used to authenticate and access your admin account. It's different from the Security PIN used for sensitive operations.
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
         {/* ADMIN PIN MANAGEMENT SECTION */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
               ADMIN PIN MANAGEMENT
-            </Text>
+            </ThemedText>
             {!hasSecurityPin && (
               <View style={[styles.statusBadge, { backgroundColor: '#FF9500' + '15', borderColor: '#FF9500' }]}>
                 <Ionicons name="alert-circle" size={14} color="#FF9500" />
-                <Text style={[styles.statusBadgeText, { color: '#FF9500' }]}>
+                <ThemedText style={[styles.statusBadgeText, { color: '#FF9500' }]}>
                   NOT SET
-                </Text>
+                </ThemedText>
               </View>
             )}
             {hasSecurityPin && (
               <View style={[styles.statusBadge, { backgroundColor: '#34C759' + '15', borderColor: '#34C759' }]}>
                 <Ionicons name="shield-checkmark" size={14} color="#34C759" />
-                <Text style={[styles.statusBadgeText, { color: '#34C759' }]}>
+                <ThemedText style={[styles.statusBadgeText, { color: '#34C759' }]}>
                   PROTECTED
-                </Text>
+                </ThemedText>
               </View>
             )}
           </View>
@@ -479,18 +479,18 @@ export default function SecuritySettingsScreen() {
           {!hasSecurityPin && (
             <View style={[styles.warningBanner, { backgroundColor: '#FF9500' + '15', borderColor: '#FF9500' }]}>
               <Ionicons name="warning-outline" size={20} color="#FF9500" />
-              <Text style={[styles.warningText, { color: '#FF9500' }]}>
+              <ThemedText style={[styles.warningText, { color: '#FF9500' }]}>
                 No Admin Security PIN set. Anyone can register products and perform sensitive operations.
-              </Text>
+              </ThemedText>
             </View>
           )}
         </View>
 
         {/* SESSION MANAGEMENT SECTION */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary, marginBottom: 15 }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary, marginBottom: 15 }]}>
             SESSION MANAGEMENT
-          </Text>
+          </ThemedText>
 
           <SettingRow
             icon="shield-checkmark-outline"
@@ -519,7 +519,7 @@ export default function SecuritySettingsScreen() {
 
           {autoLogout && (
             <View style={[styles.timeoutSelector, { backgroundColor: theme.background, borderColor: theme.border }]}>
-              <Text style={[styles.timeoutLabel, { color: theme.text }]}>Auto-logout Time</Text>
+              <ThemedText style={[styles.timeoutLabel, { color: theme.text }]}>Auto-logout Time</ThemedText>
               <View style={styles.timeoutButtons}>
                 <Pressable
                   style={[
@@ -528,9 +528,9 @@ export default function SecuritySettingsScreen() {
                   ]}
                   onPress={() => handleAutoLogoutTimeChange(30)}
                 >
-                  <Text style={[styles.timeoutBtnText, { color: autoLogoutTime === 30 ? '#FFF' : theme.text }]}>
+                  <ThemedText style={[styles.timeoutBtnText, { color: autoLogoutTime === 30 ? '#FFF' : theme.text }]}>
                     30 min
-                  </Text>
+                  </ThemedText>
                 </Pressable>
                 <Pressable
                   style={[
@@ -539,9 +539,9 @@ export default function SecuritySettingsScreen() {
                   ]}
                   onPress={() => handleAutoLogoutTimeChange(45)}
                 >
-                  <Text style={[styles.timeoutBtnText, { color: autoLogoutTime === 45 ? '#FFF' : theme.text }]}>
+                  <ThemedText style={[styles.timeoutBtnText, { color: autoLogoutTime === 45 ? '#FFF' : theme.text }]}>
                     45 min
-                  </Text>
+                  </ThemedText>
                 </Pressable>
                 <Pressable
                   style={[
@@ -550,9 +550,9 @@ export default function SecuritySettingsScreen() {
                   ]}
                   onPress={() => handleAutoLogoutTimeChange(60)}
                 >
-                  <Text style={[styles.timeoutBtnText, { color: autoLogoutTime === 60 ? '#FFF' : theme.text }]}>
+                  <ThemedText style={[styles.timeoutBtnText, { color: autoLogoutTime === 60 ? '#FFF' : theme.text }]}>
                     60 min
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               </View>
             </View>
@@ -570,12 +570,12 @@ export default function SecuritySettingsScreen() {
               <Ionicons name="log-in" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Update Login PIN
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               Enter your current Login PIN and choose a new 4-digit code.
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[styles.pinInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
@@ -620,13 +620,13 @@ export default function SecuritySettingsScreen() {
                   setConfirmLoginPin("");
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={handleLoginPinUpdate}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>UPDATE PIN</Text>
+                <ThemedText style={{ color: "#FFF", }}>UPDATE PIN</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -641,15 +641,15 @@ export default function SecuritySettingsScreen() {
               <Ionicons name="key" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               {hasSecurityPin ? "Update Admin Security PIN" : "Set Admin Security PIN"}
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               {hasSecurityPin 
                 ? "Enter current Security PIN and choose a new 4-digit code."
                 : "Create a 4-digit Security PIN for sensitive operations like registering products."
               }
-            </Text>
+            </ThemedText>
 
             {hasSecurityPin && (
               <TextInput
@@ -696,15 +696,15 @@ export default function SecuritySettingsScreen() {
                   setConfirmSecurityPin("");
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={hasSecurityPin ? handleSecurityPinUpdate : handleSecurityPinFirstTimeSetup}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>
+                <ThemedText style={{ color: "#FFF", }}>
                   {hasSecurityPin ? "UPDATE PIN" : "CREATE PIN"}
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
           </View>
@@ -719,12 +719,12 @@ export default function SecuritySettingsScreen() {
               <Ionicons name="warning" size={32} color="#FF4444" />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Remove Admin Security PIN
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               Warning: Removing the Security PIN allows unrestricted access to sensitive operations.
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[styles.pinInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
@@ -745,13 +745,13 @@ export default function SecuritySettingsScreen() {
                   setRemoveSecurityPinConfirm("");
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: '#FF4444' }]}
                 onPress={handleRemoveSecurityPin}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Remove PIN</Text>
+                <ThemedText style={{ color: "#FFF", }}>Remove PIN</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -778,8 +778,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerSub: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
-  headerTitle: { fontSize: 25, fontWeight: "900", letterSpacing: -1 },
+  headerSub: { fontSize: 10, letterSpacing: 2 },
+  headerTitle: { fontSize: 25, letterSpacing: -1 },
   section: { marginBottom: 50 },
   sectionHeader: {
     flexDirection: "row",
@@ -789,7 +789,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "800",
     letterSpacing: 1.5,
   },
   statusBadge: {
@@ -803,7 +802,6 @@ const styles = StyleSheet.create({
   },
   statusBadgeText: {
     fontSize: 10,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
   settingRow: {
@@ -823,7 +821,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   textStack: { flex: 1 },
-  settingLabel: { fontSize: 16, fontWeight: "600" },
+  settingLabel: { fontSize: 16, },
   settingDesc: { fontSize: 12, marginTop: 2 },
   timeoutSelector: {
     marginTop: 12,
@@ -833,7 +831,6 @@ const styles = StyleSheet.create({
   },
   timeoutLabel: {
     fontSize: 14,
-    fontWeight: "700",
     marginBottom: 12,
   },
   timeoutButtons: {
@@ -849,8 +846,7 @@ const styles = StyleSheet.create({
   },
   timeoutBtnText: {
     fontSize: 13,
-    fontWeight: "700",
-  },
+    },
   warningBanner: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -863,7 +859,6 @@ const styles = StyleSheet.create({
   warningText: {
     flex: 1,
     fontSize: 13,
-    fontWeight: "600",
     lineHeight: 18,
   },
   infoBanner: {
@@ -878,7 +873,6 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 13,
-    fontWeight: "500",
     lineHeight: 18,
   },
   modalOverlay: {
@@ -903,7 +897,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  modalTitle: { fontSize: 22, fontWeight: "900", marginBottom: 10, textAlign: "center" },
+  modalTitle: { fontSize: 22, marginBottom: 10, textAlign: "center" },
   modalDesc: { fontSize: 14, textAlign: "center", marginBottom: 25, lineHeight: 20 },
   pinInput: {
     width: "100%",
@@ -914,8 +908,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
     fontSize: 18,
-    fontWeight: "600",
-  },
+    },
   modalActions: { flexDirection: "row", gap: 12, marginTop: 10, width: "100%" },
   modalBtn: {
     flex: 1,
@@ -925,3 +918,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+

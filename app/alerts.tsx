@@ -8,10 +8,10 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    Text,
     TextInput,
     View
 } from "react-native";
+import { ThemedText } from '../components/ThemedText';
 import Toast from "react-native-toast-message";
 import { HelpTooltip } from "../components/HelpTooltip";
 import { useTheme } from "../context/ThemeContext";
@@ -187,13 +187,13 @@ export default function Alerts() {
       >
         <View style={styles.header}>
           <View>
-            <Text style={[styles.subtitle, { color: theme.primary }]}>
+            <ThemedText style={[styles.subtitle, { color: theme.primary }]}>
               NOTIFICATION_CENTER
-            </Text>
+            </ThemedText>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={[styles.title, { color: theme.text }]}>
+              <ThemedText style={[styles.title, { color: theme.text }]}>
                 ALERTS
-              </Text>
+              </ThemedText>
               <Pressable onPress={() => setShowInfoCard(!showInfoCard)}>
                 <Ionicons 
                   name={showInfoCard ? "chevron-up-circle" : "information-circle-outline"} 
@@ -243,12 +243,12 @@ export default function Alerts() {
                 },
               ]}
             >
-              <Text style={[styles.summaryValue, { color: item.color }]}>
+              <ThemedText style={[styles.summaryValue, { color: item.color }]}>
                 {summary ? (summary as any)[item.key] || 0 : 0}
-              </Text>
-              <Text style={[styles.summaryLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>
                 {item.label}
-              </Text>
+              </ThemedText>
             </View>
           ))}
         </View>
@@ -258,33 +258,33 @@ export default function Alerts() {
           <View style={[styles.infoCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <View style={styles.infoHeader}>
               <Ionicons name="information-circle-outline" size={18} color={theme.primary} />
-              <Text style={[styles.infoTitle, { color: theme.text }]}>Alert Labels</Text>
+              <ThemedText style={[styles.infoTitle, { color: theme.text }]}>Alert Labels</ThemedText>
             </View>
             <View style={styles.infoContent}>
               <View style={styles.infoRow}>
                 <View style={[styles.infoDot, { backgroundColor: '#FF3B30' }]} />
-                <Text style={[styles.infoLabel, { color: theme.text }]}>Expired</Text>
-                <Text style={[styles.infoDesc, { color: theme.subtext }]}>Past expiry date</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.text }]}>Expired</ThemedText>
+                <ThemedText style={[styles.infoDesc, { color: theme.subtext }]}>Past expiry date</ThemedText>
               </View>
               <View style={styles.infoRow}>
                 <View style={[styles.infoDot, { backgroundColor: '#FF3B30' }]} />
-                <Text style={[styles.infoLabel, { color: theme.text }]}>Critical</Text>
-                <Text style={[styles.infoDesc, { color: theme.subtext }]}>≤7 days left</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.text }]}>Critical</ThemedText>
+                <ThemedText style={[styles.infoDesc, { color: theme.subtext }]}>≤7 days left</ThemedText>
               </View>
               <View style={styles.infoRow}>
                 <View style={[styles.infoDot, { backgroundColor: '#FF9500' }]} />
-                <Text style={[styles.infoLabel, { color: theme.text }]}>High</Text>
-                <Text style={[styles.infoDesc, { color: theme.subtext }]}>8-14 days left</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.text }]}>High</ThemedText>
+                <ThemedText style={[styles.infoDesc, { color: theme.subtext }]}>8-14 days left</ThemedText>
               </View>
               <View style={styles.infoRow}>
                 <View style={[styles.infoDot, { backgroundColor: '#FFD60A' }]} />
-                <Text style={[styles.infoLabel, { color: theme.text }]}>Early</Text>
-                <Text style={[styles.infoDesc, { color: theme.subtext }]}>15-30 days left</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.text }]}>Early</ThemedText>
+                <ThemedText style={[styles.infoDesc, { color: theme.subtext }]}>15-30 days left</ThemedText>
               </View>
               <View style={styles.infoRow}>
                 <View style={[styles.infoDot, { backgroundColor: '#9B59B6' }]} />
-                <Text style={[styles.infoLabel, { color: theme.text }]}>Slow</Text>
-                <Text style={[styles.infoDesc, { color: theme.subtext }]}>Low sales velocity</Text>
+                <ThemedText style={[styles.infoLabel, { color: theme.text }]}>Slow</ThemedText>
+                <ThemedText style={[styles.infoDesc, { color: theme.subtext }]}>Low sales velocity</ThemedText>
               </View>
             </View>
           </View>
@@ -324,14 +324,14 @@ export default function Alerts() {
                 },
               ]}
             >
-              <Text
+              <ThemedText
                 style={[
                   styles.filterText,
                   { color: selectedLevel === level ? "#FFF" : theme.text },
                 ]}
               >
                 {level === "slow-moving" ? "SLOW" : level.toUpperCase()}
-              </Text>
+              </ThemedText>
             </Pressable>
           ))}
         </ScrollView>
@@ -352,20 +352,20 @@ export default function Alerts() {
               onPress={() => router.push(`/product/${alert.productId}`)}>
               <View style={styles.alertHeader}>
                 <View style={styles.alertInfo}>
-                  <Text style={[styles.alertName, { color: theme.text }]}>
+                  <ThemedText style={[styles.alertName, { color: theme.text }]}>
                     {alert.productName}
-                  </Text>
-                  <Text style={[styles.alertMeta, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.alertMeta, { color: theme.subtext }]}>
                     Qty: {alert.quantity} • {alert.category}
                     {(alert.level || alert.alertLevel) === 'slow-moving' && (alert as any).velocity && (
-                      <Text style={{ color: '#9B59B6', fontWeight: '600' }}>
+                      <ThemedText style={{ color: '#9B59B6', }}>
                         {' '}• {(alert as any).velocity} units/day
-                      </Text>
+                      </ThemedText>
                     )}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.alertStatus}>
-                  <Text style={[styles.daysText, { color: alert.color }]}>
+                  <ThemedText style={[styles.daysText, { color: alert.color }]}>
                     {(alert.level || alert.alertLevel) === 'slow-moving' 
                       ? 'SLOW'
                       : alert.daysUntilExpiry !== null && alert.daysUntilExpiry !== undefined
@@ -373,16 +373,16 @@ export default function Alerts() {
                           ? "EXP"
                           : `${alert.daysUntilExpiry}d`
                         : "N/A"}
-                  </Text>
+                  </ThemedText>
                   <View
                     style={[
                       styles.levelBadge,
                       { backgroundColor: alert.color + "20" },
                     ]}
                   >
-                    <Text style={[styles.levelText, { color: alert.color }]}>
+                    <ThemedText style={[styles.levelText, { color: alert.color }]}>
                       {(alert.alertLevel || alert.level || "N/A").toUpperCase()}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               </View>
@@ -407,14 +407,14 @@ export default function Alerts() {
                     size={14}
                     color={action.urgent ? alert.color : theme.text}
                   />
-                  <Text
+                  <ThemedText
                     style={[
                       styles.actionText,
                       { color: action.urgent ? alert.color : theme.text },
                     ]}
                   >
                     {action.label}
-                  </Text>
+                  </ThemedText>
                 </Pressable>
               ))}
             </View>
@@ -427,26 +427,26 @@ export default function Alerts() {
           <View
             style={[styles.modalContent, { backgroundColor: theme.surface }]}
           >
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Resolve Alert
-            </Text>
-            <Text style={[styles.modalText, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalText, { color: theme.subtext }]}>
               Mark {selectedAlert?.productName} as processed?
-            </Text>
+            </ThemedText>
             <View style={styles.modalActions}>
               <Pressable
                 onPress={() => setActionModalVisible(false)}
                 style={[styles.modalBtn, { backgroundColor: theme.background }]}
               >
-                <Text style={{ color: theme.text }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 onPress={confirmAction}
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>
+                <ThemedText style={{ color: "#FFF", }}>
                   Confirm
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
           </View>
@@ -460,15 +460,15 @@ export default function Alerts() {
             style={[styles.modalContent, { backgroundColor: theme.surface }]}
           >
             <Ionicons name="lock-closed" size={40} color={theme.primary} style={{ marginBottom: 15 }} />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Admin Authentication
-            </Text>
-            <Text style={[styles.modalText, { color: theme.subtext, marginBottom: 20 }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalText, { color: theme.subtext, marginBottom: 20 }]}>
               {selectedAction?.type === 'remove' 
                 ? `Remove batch ${selectedAlert?.batchNumber} of ${selectedAlert?.productName}?`
                 : `Apply ${selectedAction?.label.includes('30-50') ? '40%' : '20%'} discount to ${selectedAlert?.productName}?`
               }
-            </Text>
+            </ThemedText>
             
             <View style={[styles.passwordInput, { backgroundColor: theme.background, borderColor: passwordError ? '#FF4444' : theme.border }]}>
               <Ionicons name="key-outline" size={18} color={theme.subtext} />
@@ -490,9 +490,9 @@ export default function Alerts() {
             </View>
             
             {passwordError ? (
-              <Text style={[styles.errorText, { color: '#FF4444' }]}>
+              <ThemedText style={[styles.errorText, { color: '#FF4444' }]}>
                 {passwordError}
-              </Text>
+              </ThemedText>
             ) : null}
 
             <View style={styles.modalActions}>
@@ -504,15 +504,15 @@ export default function Alerts() {
                 }}
                 style={[styles.modalBtn, { backgroundColor: theme.background }]}
               >
-                <Text style={{ color: theme.text }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 onPress={verifyPassword}
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>
+                <ThemedText style={{ color: "#FFF", }}>
                   Confirm
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
           </View>
@@ -536,8 +536,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  title: { fontSize: 28, fontWeight: "900", letterSpacing: -1 },
-  subtitle: { fontSize: 10, marginTop: 4, fontWeight: "900", letterSpacing: 2 },
+  title: { fontSize: 28, letterSpacing: -1 },
+  subtitle: { fontSize: 10, marginTop: 4, letterSpacing: 2 },
   settingsBtn: {
     width: 40,
     height: 40,
@@ -553,8 +553,8 @@ const styles = StyleSheet.create({
     borderRadius: 16, 
     alignItems: "center" 
   },
-  summaryValue: { fontSize: 20, fontWeight: "900" },
-  summaryLabel: { fontSize: 9, fontWeight: "700", marginTop: 4 },
+  summaryValue: { fontSize: 20, },
+  summaryLabel: { fontSize: 9, marginTop: 4 },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     borderWidth: 1,
   },
-  filterText: { fontSize: 11, fontWeight: "800" },
+  filterText: { fontSize: 11, },
   alertCard: {
     borderRadius: 20,
     borderWidth: 1,
@@ -586,17 +586,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   alertInfo: { flex: 1 },
-  alertName: { fontSize: 16, fontWeight: "800" },
+  alertName: { fontSize: 16, },
   alertMeta: { fontSize: 12, marginTop: 4 },
   alertStatus: { alignItems: "flex-end" },
-  daysText: { fontSize: 18, fontWeight: "900" },
+  daysText: { fontSize: 18, },
   levelBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
     marginTop: 4,
   },
-  levelText: { fontSize: 9, fontWeight: "800" },
+  levelText: { fontSize: 9, },
   actionsRow: { flexDirection: "row", gap: 8 },
   actionBtn: {
     flex: 1,
@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
   },
-  actionText: { fontSize: 11, fontWeight: "700" },
+  actionText: { fontSize: 11, },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.7)",
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: "center",
   },
-  modalTitle: { fontSize: 20, fontWeight: "800", marginBottom: 10 },
+  modalTitle: { fontSize: 20, marginBottom: 10 },
   modalText: { fontSize: 14, textAlign: "center", marginBottom: 20 },
   modalActions: { flexDirection: "row", gap: 10, width: "100%" },
   modalBtn: {
@@ -648,8 +648,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     marginBottom: 15,
-    fontWeight: '600',
-  },
+    },
   infoCard: {
     marginTop: 12,
     marginBottom: 12,
@@ -665,7 +664,6 @@ const styles = StyleSheet.create({
   },
   infoTitle: {
     fontSize: 14,
-    fontWeight: '800',
     letterSpacing: 0.3,
   },
   infoContent: {
@@ -683,12 +681,11 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 13,
-    fontWeight: '700',
     width: 60,
   },
   infoDesc: {
     fontSize: 12,
-    fontWeight: '500',
     flex: 1,
   },
 });
+

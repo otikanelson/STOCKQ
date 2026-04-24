@@ -4,18 +4,18 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    TextInput,
+    View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { PinInput } from '../../components/PinInput';
+import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from '../../context/ThemeContext';
 
 type RegistrationStep = 'store-verify' | 'name' | 'permissions' | 'pin' | 'complete';
@@ -266,9 +266,9 @@ export default function StaffRegisterScreen() {
             <Pressable style={styles.backButton} onPress={handleBack}>
               <Ionicons name="arrow-back" size={24} color={theme.primary} />
             </Pressable>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
               Add Staff Member
-            </Text>
+            </ThemedText>
           </View>
 
           {/* Content */}
@@ -278,10 +278,10 @@ export default function StaffRegisterScreen() {
                 <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
                   <Ionicons name="storefront" size={48} color={theme.primary} />
                 </View>
-                <Text style={[styles.title, { color: theme.text }]}>Join a Store</Text>
-                <Text style={[styles.subtitle, { color: theme.subtext }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>Join a Store</ThemedText>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
                   Enter the store name and the admin's login PIN to verify access
-                </Text>
+                </ThemedText>
 
                 <TextInput
                   style={[styles.nameInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.surface }]}
@@ -292,9 +292,9 @@ export default function StaffRegisterScreen() {
                   autoFocus
                 />
 
-                <Text style={[styles.subtitle, { color: theme.subtext, marginBottom: 12, marginTop: 8 }]}>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext, marginBottom: 12, marginTop: 8 }]}>
                   Admin login PIN
-                </Text>
+                </ThemedText>
 
                 <View style={styles.pinContainer}>
                   <PinInput
@@ -305,7 +305,7 @@ export default function StaffRegisterScreen() {
                     onClear={() => setAdminPinKey(prev => prev + 1)}
                   />
                   {verifyingStore && (
-                    <Text style={[styles.errorText, { color: theme.primary }]}>Verifying...</Text>
+                    <ThemedText style={[styles.errorText, { color: theme.primary }]}>Verifying...</ThemedText>
                   )}
                 </View>
               </>
@@ -316,12 +316,12 @@ export default function StaffRegisterScreen() {
                 <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
                   <Ionicons name="person-add" size={48} color={theme.primary} />
                 </View>
-                <Text style={[styles.title, { color: theme.text }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
                   Staff Information
-                </Text>
-                <Text style={[styles.subtitle, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
                   Enter the name of the staff member
-                </Text>
+                </ThemedText>
 
                 <TextInput
                   style={[
@@ -337,9 +337,9 @@ export default function StaffRegisterScreen() {
 
                 <View style={[styles.infoCard, { backgroundColor: theme.primary + '10', borderColor: theme.primary }]}>
                   <Ionicons name="information-circle" size={20} color={theme.primary} />
-                  <Text style={[styles.infoText, { color: theme.text }]}>
+                  <ThemedText style={[styles.infoText, { color: theme.text }]}>
                     You'll set specific permissions for this staff member in the next step.
-                  </Text>
+                  </ThemedText>
                 </View>
               </>
             )}
@@ -349,12 +349,12 @@ export default function StaffRegisterScreen() {
                 <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
                   <Ionicons name="shield-checkmark" size={48} color={theme.primary} />
                 </View>
-                <Text style={[styles.title, { color: theme.text }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
                   Set Permissions
-                </Text>
-                <Text style={[styles.subtitle, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
                   Choose what {staffName} can do
-                </Text>
+                </ThemedText>
 
                 <View style={styles.permissionsContainer}>
                   {permissionsList.map((perm) => (
@@ -369,12 +369,12 @@ export default function StaffRegisterScreen() {
                         <Ionicons name={perm.icon as any} size={20} color={theme.primary} />
                       </View>
                       <View style={styles.permTextBox}>
-                        <Text style={[styles.permLabel, { color: theme.text }]}>
+                        <ThemedText style={[styles.permLabel, { color: theme.text }]}>
                           {perm.label}
-                        </Text>
-                        <Text style={[styles.permDesc, { color: theme.subtext }]}>
+                        </ThemedText>
+                        <ThemedText style={[styles.permDesc, { color: theme.subtext }]}>
                           {perm.description}
-                        </Text>
+                        </ThemedText>
                       </View>
                       <Switch
                         value={permissions[perm.key]}
@@ -393,14 +393,14 @@ export default function StaffRegisterScreen() {
                 <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
                   <Ionicons name="key" size={48} color={theme.primary} />
                 </View>
-                <Text style={[styles.title, { color: theme.text }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
                   {isFirstPin ? 'Create Staff Log in PIN' : 'Confirm PIN'}
-                </Text>
-                <Text style={[styles.subtitle, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
                   {isFirstPin
                     ? 'Choose a 4-digit PIN for this staff member'
                     : 'Enter the PIN again to confirm'}
-                </Text>
+                </ThemedText>
 
                 <View style={styles.pinContainer}>
                   <PinInput
@@ -418,17 +418,17 @@ export default function StaffRegisterScreen() {
                     }}
                   />
                   {pinError && (
-                    <Text style={[styles.errorText, { color: theme.notification }]}>
+                    <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                       PINs don't match. Please try again.
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
 
                 <View style={[styles.warningCard, { backgroundColor: '#FF9500' + '10', borderColor: '#FF9500' }]}>
                   <Ionicons name="warning" size={20} color="#FF9500" />
-                  <Text style={[styles.warningText, { color: theme.text }]}>
+                  <ThemedText style={[styles.warningText, { color: theme.text }]}>
                     Make sure to share this PIN securely with the staff member. It cannot be recovered if lost.
-                  </Text>
+                  </ThemedText>
                 </View>
               </>
             )}
@@ -438,32 +438,32 @@ export default function StaffRegisterScreen() {
                 <View style={[styles.iconCircle, { backgroundColor: '#34C759' + '15' }]}>
                   <Ionicons name="checkmark-circle" size={64} color="#34C759" />
                 </View>
-                <Text style={[styles.title, { color: theme.text }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
                   Staff Added!
-                </Text>
-                <Text style={[styles.subtitle, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
                   {staffName} can now log in with their PIN
-                </Text>
+                </ThemedText>
 
                 <View style={[styles.summaryCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                   <View style={styles.summaryRow}>
-                    <Text style={[styles.summaryLabel, { color: theme.subtext }]}>Name:</Text>
-                    <Text style={[styles.summaryValue, { color: theme.text }]}>{staffName}</Text>
+                    <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>Name:</ThemedText>
+                    <ThemedText style={[styles.summaryValue, { color: theme.text }]}>{staffName}</ThemedText>
                   </View>
                   <View style={styles.summaryRow}>
-                    <Text style={[styles.summaryLabel, { color: theme.subtext }]}>Role:</Text>
-                    <Text style={[styles.summaryValue, { color: theme.text }]}>Staff</Text>
+                    <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>Role:</ThemedText>
+                    <ThemedText style={[styles.summaryValue, { color: theme.text }]}>Staff</ThemedText>
                   </View>
                   <View style={styles.summaryRow}>
-                    <Text style={[styles.summaryLabel, { color: theme.subtext }]}>PIN:</Text>
-                    <Text style={[styles.summaryValue, { color: theme.text }]}>••••</Text>
+                    <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>PIN:</ThemedText>
+                    <ThemedText style={[styles.summaryValue, { color: theme.text }]}>••••</ThemedText>
                   </View>
                 </View>
 
                 <View style={[styles.permissionsCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                  <Text style={[styles.permissionsTitle, { color: theme.text }]}>
+                  <ThemedText style={[styles.permissionsTitle, { color: theme.text }]}>
                     Assigned Permissions
-                  </Text>
+                  </ThemedText>
                   <View style={styles.permissionsList}>
                     {permissionsList.map((perm) => (
                       <View key={perm.key} style={styles.permissionItem}>
@@ -472,14 +472,14 @@ export default function StaffRegisterScreen() {
                           size={20}
                           color={permissions[perm.key] ? '#34C759' : '#FF3B30'}
                         />
-                        <Text
+                        <ThemedText
                           style={[
                             styles.permissionText,
                             { color: permissions[perm.key] ? theme.text : theme.subtext }
                           ]}
                         >
                           {perm.label}
-                        </Text>
+                        </ThemedText>
                       </View>
                     ))}
                   </View>
@@ -495,9 +495,9 @@ export default function StaffRegisterScreen() {
                 style={[styles.continueButton, { backgroundColor: theme.primary }]}
                 onPress={handleContinue}
               >
-                <Text style={styles.continueText}>
+                <ThemedText style={styles.continueText}>
                   {step === 'complete' ? 'Done' : 'Continue'}
-                </Text>
+                </ThemedText>
                 <Ionicons
                   name={step === 'complete' ? 'checkmark' : 'arrow-forward'}
                   size={20}
@@ -532,8 +532,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '900',
-  },
+    },
   content: {
     flex: 1,
     alignItems: 'center',
@@ -549,7 +548,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 26,
-    fontWeight: '900',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -566,7 +564,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingHorizontal: 20,
     fontSize: 16,
-    fontWeight: '600',
     marginBottom: 20,
   },
   infoCard: {
@@ -581,7 +578,6 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 13,
-    fontWeight: '600',
     lineHeight: 18,
   },
   permissionsContainer: {
@@ -608,7 +604,6 @@ const styles = StyleSheet.create({
   },
   permLabel: {
     fontSize: 15,
-    fontWeight: '700',
     marginBottom: 2,
   },
   permDesc: {
@@ -622,7 +617,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    fontWeight: '600',
     textAlign: 'center',
   },
   warningCard: {
@@ -637,7 +631,6 @@ const styles = StyleSheet.create({
   warningText: {
     flex: 1,
     fontSize: 13,
-    fontWeight: '600',
     lineHeight: 18,
   },
   summaryCard: {
@@ -655,12 +648,10 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    fontWeight: '600',
-  },
+    },
   summaryValue: {
     fontSize: 16,
-    fontWeight: '800',
-  },
+    },
   permissionsCard: {
     width: '100%',
     padding: 20,
@@ -669,7 +660,6 @@ const styles = StyleSheet.create({
   },
   permissionsTitle: {
     fontSize: 16,
-    fontWeight: '800',
     marginBottom: 16,
   },
   permissionsList: {
@@ -682,8 +672,7 @@ const styles = StyleSheet.create({
   },
   permissionText: {
     fontSize: 14,
-    fontWeight: '600',
-  },
+    },
   footer: {
     paddingHorizontal: 30,
     paddingVertical: 20,
@@ -699,6 +688,6 @@ const styles = StyleSheet.create({
   continueText: {
     color: '#FFF',
     fontSize: 17,
-    fontWeight: '800',
-  },
+    },
 });
+

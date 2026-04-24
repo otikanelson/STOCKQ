@@ -1,7 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+﻿import { Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useTheme } from '../context/ThemeContext';
+import { ThemedText } from '../components/ThemedText';
 
 interface DisabledButtonProps {
   onPress: () => void;
@@ -60,7 +61,7 @@ export const DisabledButton: React.FC<DisabledButtonProps> = ({
       )}
       {icon && <Ionicons name={icon} size={iconSize} color={disabled ? theme.subtext : textStyle?.color || theme.text} />}
       {typeof children === 'string' ? (
-        <Text style={[textStyle, disabled && { color: theme.subtext }]}>{children}</Text>
+        <ThemedText style={[textStyle, disabled && { color: theme.subtext }]}>{children}</ThemedText>
       ) : (
         children
       )}

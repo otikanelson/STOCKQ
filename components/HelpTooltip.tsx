@@ -1,8 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { lineHeight } from '../constants/spacing';
 import { useTheme } from '../context/ThemeContext';
+import { ThemedText } from '../components/ThemedText';
 
 // Define glossary of terms with their definitions
 const GLOSSARY: Record<string, { title: string; definition: string }> = {
@@ -121,7 +122,7 @@ export const HelpTooltip = ({
               <Ionicons name="information-circle" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
+            <ThemedText style={[styles.title, { color: theme.text }]}>{title}</ThemedText>
 
             <ScrollView
               style={styles.contentScroll}
@@ -142,21 +143,21 @@ export const HelpTooltip = ({
                       <View style={[styles.bullet, { backgroundColor: theme.primary }]} />
                     </View>
                     <View style={styles.paragraphContent}>
-                      <Text style={[styles.content, { color: theme.text }]}>
+                      <ThemedText style={[styles.content, { color: theme.text }]}>
                         {parts.map((part, partIndex) =>
                           part.isLink ? (
-                            <Text
+                            <ThemedText
                               key={partIndex}
                               style={[styles.linkText, { color: theme.primary }]}
                               onPress={() => handleTermPress(part.term!)}
                             >
                               {part.text}
-                            </Text>
+                            </ThemedText>
                           ) : (
-                            <Text key={partIndex}>{part.text}</Text>
+                            <ThemedText key={partIndex}>{part.text}</ThemedText>
                           )
                         )}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
                 );
@@ -167,7 +168,7 @@ export const HelpTooltip = ({
               style={[styles.closeButton, { backgroundColor: theme.primary }]}
               onPress={() => setShowModal(false)}
             >
-              <Text style={styles.closeButtonText}>Got It</Text>
+              <ThemedText style={styles.closeButtonText}>Got It</ThemedText>
             </Pressable>
           </View>
         </View>
@@ -181,9 +182,9 @@ export const HelpTooltip = ({
               <View style={[styles.glossaryIconContainer, { backgroundColor: theme.primary + '15' }]}>
                 <Ionicons name="book-outline" size={24} color={theme.primary} />
               </View>
-              <Text style={[styles.glossaryTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.glossaryTitle, { color: theme.text }]}>
                 {selectedTerm?.title}
-              </Text>
+              </ThemedText>
               <Pressable
                 onPress={() => setShowGlossary(false)}
                 style={styles.glossaryCloseButton}
@@ -193,9 +194,9 @@ export const HelpTooltip = ({
             </View>
 
             <View style={styles.glossaryContent}>
-              <Text style={[styles.glossaryDefinition, { color: theme.text }]}>
+              <ThemedText style={[styles.glossaryDefinition, { color: theme.text }]}>
                 {selectedTerm?.definition}
-              </Text>
+              </ThemedText>
             </View>
 
             <Pressable
@@ -203,9 +204,9 @@ export const HelpTooltip = ({
               onPress={() => setShowGlossary(false)}
             >
               <Ionicons name="arrow-back" size={16} color={theme.primary} />
-              <Text style={[styles.glossaryBackText, { color: theme.primary }]}>
+              <ThemedText style={[styles.glossaryBackText, { color: theme.primary }]}>
                 Back to Help
-              </Text>
+              </ThemedText>
             </Pressable>
           </View>
         </View>
@@ -245,7 +246,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: '900',
     marginBottom: 20,
     textAlign: 'center',
     letterSpacing: -0.5,
@@ -278,10 +278,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: lineHeight.body * 15,
     textAlign: 'left',
-    fontWeight: '500',
-  },
+    },
   linkText: {
-    fontWeight: '700',
     textDecorationLine: 'underline',
   },
   closeButton: {
@@ -299,7 +297,6 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#FFF',
     fontSize: 16,
-    fontWeight: '700',
     letterSpacing: 0.5,
   },
   
@@ -332,7 +329,6 @@ const styles = StyleSheet.create({
   glossaryTitle: {
     flex: 1,
     fontSize: 18,
-    fontWeight: '900',
     letterSpacing: -0.3,
   },
   glossaryCloseButton: {
@@ -344,8 +340,7 @@ const styles = StyleSheet.create({
   glossaryDefinition: {
     fontSize: 15,
     lineHeight: lineHeight.body * 15,
-    fontWeight: '500',
-  },
+    },
   glossaryBackButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -359,6 +354,6 @@ const styles = StyleSheet.create({
   },
   glossaryBackText: {
     fontSize: 15,
-    fontWeight: '700',
-  },
+    },
 });
+

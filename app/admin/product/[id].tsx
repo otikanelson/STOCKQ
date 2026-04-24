@@ -6,19 +6,18 @@ import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
+    ActivityIndicator,
+    Dimensions,
+    Image,
+    Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { DisabledButton } from "../../../components/DisabledButton";
+import { ThemedText } from '../../../components/ThemedText';
 import { useTheme } from "../../../context/ThemeContext";
 import { useAIPredictions } from "../../../hooks/useAIPredictions";
 import { useFeatureAccess } from "../../../hooks/useFeatureAccess";
@@ -495,14 +494,14 @@ export default function AdminProductDetails() {
     return (
       <View style={[styles.center, { backgroundColor: theme.background }]}>
         <Ionicons name="cube-outline" size={80} color={theme.subtext} />
-        <Text style={[styles.errorText, { color: theme.text }]}>
+        <ThemedText style={[styles.errorText, { color: theme.text }]}>
           Product Not Found
-        </Text>
+        </ThemedText>
         <Pressable
           onPress={() => router.back()}
           style={[styles.button, { backgroundColor: theme.primary }]}
         >
-          <Text style={styles.buttonText}>Go Back</Text>
+          <ThemedText style={styles.buttonText}>Go Back</ThemedText>
         </Pressable>
       </View>
     );
@@ -589,7 +588,7 @@ export default function AdminProductDetails() {
                   ) : (
                     <>
                       <Ionicons name="checkmark" size={18} color="#FFF" />
-                      <Text style={styles.saveBtnText}>Save</Text>
+                      <ThemedText style={styles.saveBtnText}>Save</ThemedText>
                     </>
                   )}
                 </Pressable>
@@ -643,37 +642,37 @@ export default function AdminProductDetails() {
                     { borderColor: theme.border, backgroundColor: theme.background, justifyContent: 'center' },
                   ]}
                 >
-                  <Text style={{ color: editedCategory ? theme.text : theme.subtext }}>
+                  <ThemedText style={{ color: editedCategory ? theme.text : theme.subtext }}>
                     {editedCategory || "Select Category"}
-                  </Text>
+                  </ThemedText>
                   <Ionicons name="chevron-down" size={16} color={theme.subtext} style={{ position: 'absolute', right: 12 }} />
                 </Pressable>
               </>
             ) : (
               <>
-                <Text style={[styles.productName, { color: theme.text }]}>
+                <ThemedText style={[styles.productName, { color: theme.text }]}>
                   {product.name}
-                </Text>
+                </ThemedText>
                 <View style={styles.metaRow}>
                   <View style={[styles.categoryBadge, { backgroundColor: theme.primary + "15" }]}>
-                    <Text style={[styles.categoryText, { color: theme.primary }]} numberOfLines={1}>
+                    <ThemedText style={[styles.categoryText, { color: theme.primary }]} numberOfLines={1}>
                       {product.category || "Uncategorized"}
-                    </Text>
+                    </ThemedText>
                   </View>
                   {product.isPerishable && (
                     <View style={[styles.perishableBadge, { backgroundColor: "#FF9500" + "15" }]}>
                       <Ionicons name="timer-outline" size={10} color="#FF9500" />
-                      <Text style={[styles.perishableText, { color: "#FF9500" }]}>
+                      <ThemedText style={[styles.perishableText, { color: "#FF9500" }]}>
                         Perishable
-                      </Text>
+                      </ThemedText>
                     </View>
                   )}
                 </View>
                 <View style={styles.barcodeRow}>
                   <Ionicons name="barcode-outline" size={14} color={theme.subtext} />
-                  <Text style={[styles.barcodeText, { color: theme.subtext }]}>
+                  <ThemedText style={[styles.barcodeText, { color: theme.subtext }]}>
                     {product.barcode}
-                  </Text>
+                  </ThemedText>
                 </View>
               </>
             )}
@@ -683,21 +682,21 @@ export default function AdminProductDetails() {
         {/* Quick Stats Grid */}
         <View style={styles.statsGrid}>
           <View style={[styles.statCard, { backgroundColor: theme.surface }]}>
-            <Text style={[styles.statValue, { color: theme.primary }]}>
+            <ThemedText style={[styles.statValue, { color: theme.primary }]}>
               {product.totalQuantity}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>
               Total Units
-            </Text>
+            </ThemedText>
           </View>
 
           <View style={[styles.statCard, { backgroundColor: theme.surface }]}>
-            <Text style={[styles.statValue, { color: theme.primary }]}>
+            <ThemedText style={[styles.statValue, { color: theme.primary }]}>
               {product.batches?.length || 0}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>
               Batches
-            </Text>
+            </ThemedText>
           </View>
 
           <View style={[styles.statCard, { backgroundColor: theme.surface }]}>
@@ -710,12 +709,12 @@ export default function AdminProductDetails() {
               disabledReason={editAccess.reason}
               style={styles.statPressable}
             >
-              <Text style={[styles.statValue, { color: theme.primary }]}>
+              <ThemedText style={[styles.statValue, { color: theme.primary }]}>
                 {priceAnalytics?.genericPrice ? `₦${priceAnalytics.genericPrice.toFixed(0)}` : "N/A"}
-              </Text>
-              <Text style={[styles.statLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>
                 Generic Price
-              </Text>
+              </ThemedText>
               <Ionicons name="create-outline" size={12} color={theme.primary} style={styles.editIcon} />
             </DisabledButton>
           </View>
@@ -734,7 +733,7 @@ export default function AdminProductDetails() {
             ]}
           >
             <Ionicons name="globe-outline" size={16} color={theme.primary} />
-            <Text
+            <ThemedText
               style={[
                 styles.statusText,
                 {
@@ -744,7 +743,7 @@ export default function AdminProductDetails() {
               ]}
             >
               GLOBAL REGISTRY PRODUCT (No Inventory)
-            </Text>
+            </ThemedText>
           </View>
         )}
 
@@ -775,7 +774,7 @@ export default function AdminProductDetails() {
               },
             ]}
           />
-          <Text
+          <ThemedText
             style={[
               styles.statusText,
               {
@@ -789,7 +788,7 @@ export default function AdminProductDetails() {
             {product.totalQuantity === 0 ? "OUT OF STOCK"
               : product.totalQuantity < 10 ? "LOW STOCK"
               : "IN STOCK"}
-          </Text>
+          </ThemedText>
         </View>
 
         {/* AI Insights Section - Admin Only */}
@@ -797,24 +796,24 @@ export default function AdminProductDetails() {
           <View style={[styles.section, { backgroundColor: theme.surface }]}>
             <View style={styles.sectionHeader}>
               <Ionicons name="analytics" size={18} color={theme.primary} />
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
                 AI Insights & Analytics
-              </Text>
+              </ThemedText>
             </View>
 
             {/* Risk Score Meter */}
             <View style={[styles.riskMeter, { backgroundColor: theme.background }]}>
               <View style={styles.riskMeterHeader}>
-                <Text style={[styles.riskMeterLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.riskMeterLabel, { color: theme.subtext }]}>
                   Risk Score
-                </Text>
-                <Text style={[styles.riskMeterValue, { 
+                </ThemedText>
+                <ThemedText style={[styles.riskMeterValue, { 
                   color: prediction.metrics.riskScore >= 70 ? '#FF3B30' 
                     : prediction.metrics.riskScore >= 40 ? '#FF9500' 
                     : '#34C759' 
                 }]}>
                   {prediction.metrics.riskScore}/100
-                </Text>
+                </ThemedText>
               </View>
               <View style={[styles.riskMeterBar, { backgroundColor: theme.border }]}>
                 <View 
@@ -829,89 +828,89 @@ export default function AdminProductDetails() {
                   ]} 
                 />
               </View>
-              <Text style={[styles.riskMeterDesc, { color: theme.subtext }]}>
+              <ThemedText style={[styles.riskMeterDesc, { color: theme.subtext }]}>
                 {prediction.metrics.riskScore >= 70 ? 'Critical - Immediate action required' 
                   : prediction.metrics.riskScore >= 40 ? 'Moderate - Monitor closely' 
                   : 'Low - Product is performing well'}
-              </Text>
+              </ThemedText>
             </View>
 
             {/* Key Metrics Grid */}
             <View style={styles.analyticsRow}>
               <View style={[styles.analyticsCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
                 <Ionicons name="speedometer-outline" size={24} color={theme.primary} />
-                <Text style={[styles.analyticsLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.analyticsLabel, { color: theme.subtext }]}>
                   Velocity
-                </Text>
-                <Text style={[styles.analyticsValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.analyticsValue, { color: theme.text }]}>
                   {prediction.metrics.velocity.toFixed(1)}
-                </Text>
-                <Text style={[styles.analyticsSubtext, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.analyticsSubtext, { color: theme.subtext }]}>
                   units/day
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={[styles.analyticsCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
                 <Ionicons name="calendar-outline" size={24} color={theme.primary} />
-                <Text style={[styles.analyticsLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.analyticsLabel, { color: theme.subtext }]}>
                   Days to Stockout
-                </Text>
-                <Text style={[styles.analyticsValue, { 
+                </ThemedText>
+                <ThemedText style={[styles.analyticsValue, { 
                   color: prediction.metrics.daysUntilStockout <= 7 ? '#FF3B30' 
                     : prediction.metrics.daysUntilStockout <= 14 ? '#FF9500' 
                     : theme.text 
                 }]}>
                   {prediction.metrics.daysUntilStockout}
-                </Text>
-                <Text style={[styles.analyticsSubtext, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.analyticsSubtext, { color: theme.subtext }]}>
                   days left
-                </Text>
+                </ThemedText>
               </View>
 
               <View style={[styles.analyticsCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
                 <Ionicons name="trending-up-outline" size={24} color={theme.primary} />
-                <Text style={[styles.analyticsLabel, { color: theme.subtext }]}>
+                <ThemedText style={[styles.analyticsLabel, { color: theme.subtext }]}>
                   Confidence
-                </Text>
-                <Text style={[styles.analyticsValue, { color: theme.text }]}>
+                </ThemedText>
+                <ThemedText style={[styles.analyticsValue, { color: theme.text }]}>
                   {prediction.forecast.confidence === 'high' ? '90+' : prediction.forecast.confidence === 'medium' ? '70-89' : '50-69'}%
-                </Text>
-                <Text style={[styles.analyticsSubtext, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.analyticsSubtext, { color: theme.subtext }]}>
                   {prediction.forecast.confidence}
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
             {/* Demand Forecast */}
             {prediction.forecast && (
               <>
-                <Text style={[styles.subsectionTitle, { color: theme.text }]}>
+                <ThemedText style={[styles.subsectionTitle, { color: theme.text }]}>
                   Demand Forecast
-                </Text>
+                </ThemedText>
                 <View style={styles.predictionsGrid}>
                   <View style={styles.predictionItem}>
-                    <Text style={[styles.predictionValue, { color: theme.primary }]}>
+                    <ThemedText style={[styles.predictionValue, { color: theme.primary }]}>
                       {prediction.forecast.next7Days}
-                    </Text>
-                    <Text style={[styles.predictionLabel, { color: theme.subtext }]}>
+                    </ThemedText>
+                    <ThemedText style={[styles.predictionLabel, { color: theme.subtext }]}>
                       Next 7 Days
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={styles.predictionItem}>
-                    <Text style={[styles.predictionValue, { color: theme.primary }]}>
+                    <ThemedText style={[styles.predictionValue, { color: theme.primary }]}>
                       {prediction.forecast.next14Days}
-                    </Text>
-                    <Text style={[styles.predictionLabel, { color: theme.subtext }]}>
+                    </ThemedText>
+                    <ThemedText style={[styles.predictionLabel, { color: theme.subtext }]}>
                       Next 14 Days
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={styles.predictionItem}>
-                    <Text style={[styles.predictionValue, { color: theme.primary }]}>
+                    <ThemedText style={[styles.predictionValue, { color: theme.primary }]}>
                       {prediction.forecast.next30Days}
-                    </Text>
-                    <Text style={[styles.predictionLabel, { color: theme.subtext }]}>
+                    </ThemedText>
+                    <ThemedText style={[styles.predictionLabel, { color: theme.subtext }]}>
                       Next 30 Days
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               </>
@@ -920,9 +919,9 @@ export default function AdminProductDetails() {
             {/* AI Recommendations */}
             {prediction.recommendations && prediction.recommendations.length > 0 && (
               <>
-                <Text style={[styles.subsectionTitle, { color: theme.text }]}>
+                <ThemedText style={[styles.subsectionTitle, { color: theme.text }]}>
                   AI Recommendations
-                </Text>
+                </ThemedText>
                 {prediction.recommendations.map((rec: any, index: number) => (
                   <View 
                     key={index}
@@ -945,7 +944,7 @@ export default function AdminProductDetails() {
                         : rec.priority === 'medium' ? '#FF9500' 
                         : theme.primary} 
                     />
-                    <Text style={[
+                    <ThemedText style={[
                       styles.alertText, 
                       { 
                         color: rec.priority === 'high' ? '#FF3B30' 
@@ -955,7 +954,7 @@ export default function AdminProductDetails() {
                       }
                     ]}>
                       {rec.message}
-                    </Text>
+                    </ThemedText>
                   </View>
                 ))}
               </>
@@ -965,9 +964,9 @@ export default function AdminProductDetails() {
             {prediction.forecast.confidence === 'low' && (
               <View style={[styles.alertBanner, { backgroundColor: '#FFD60A' + '10', borderColor: '#FFD60A' }]}>
                 <Ionicons name="warning" size={14} color="#FFD60A" />
-                <Text style={[styles.alertText, { color: '#FFD60A', flex: 1 }]}>
+                <ThemedText style={[styles.alertText, { color: '#FFD60A', flex: 1 }]}>
                   Low confidence prediction. More sales data needed for accurate forecasting.
-                </Text>
+                </ThemedText>
               </View>
             )}
           </View>
@@ -976,9 +975,9 @@ export default function AdminProductDetails() {
         {predictionLoading && !isGlobalProduct && (
           <View style={[styles.section, { backgroundColor: theme.surface }]}>
             <ActivityIndicator size="small" color={theme.primary} />
-            <Text style={[styles.loadingText, { color: theme.subtext }]}>
+            <ThemedText style={[styles.loadingText, { color: theme.subtext }]}>
               Loading AI insights...
-            </Text>
+            </ThemedText>
           </View>
         )}
 
@@ -987,9 +986,9 @@ export default function AdminProductDetails() {
           <View style={[styles.section, { backgroundColor: theme.surface }]}>
             <View style={styles.sectionHeader}>
               <Ionicons name="layers-outline" size={18} color={theme.primary} />
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
                 Batch Timeline ({product.batches.length})
-              </Text>
+              </ThemedText>
             </View>
 
             <View style={styles.timeline}>
@@ -1002,13 +1001,13 @@ export default function AdminProductDetails() {
                   
                   <View style={[styles.batchCard, { backgroundColor: theme.background }]}>
                     <View style={styles.batchHeader}>
-                      <Text style={[styles.batchTitle, { color: theme.text }]}>
+                      <ThemedText style={[styles.batchTitle, { color: theme.text }]}>
                         #{batch.batchNumber?.slice(-6) || "N/A"}
-                      </Text>
+                      </ThemedText>
                       <View style={[styles.qtyBadge, { backgroundColor: theme.primary + "15" }]}>
-                        <Text style={[styles.qtyText, { color: theme.primary }]}>
+                        <ThemedText style={[styles.qtyText, { color: theme.primary }]}>
                           {batch.quantity} units
-                        </Text>
+                        </ThemedText>
                       </View>
                     </View>
 
@@ -1016,25 +1015,25 @@ export default function AdminProductDetails() {
                       {batch.expiryDate && batch.expiryDate !== "N/A" && (
                         <View style={styles.detailRow}>
                           <Ionicons name="calendar-outline" size={12} color={theme.subtext} />
-                          <Text style={[styles.detailText, { color: theme.subtext }]}>
+                          <ThemedText style={[styles.detailText, { color: theme.subtext }]}>
                             Expires: {new Date(batch.expiryDate).toLocaleDateString()}
-                          </Text>
+                          </ThemedText>
                         </View>
                       )}
                       {(batch as any).manufacturerDate && (batch as any).manufacturerDate !== "N/A" && (
                         <View style={styles.detailRow}>
                           <Ionicons name="construct-outline" size={12} color={theme.subtext} />
-                          <Text style={[styles.detailText, { color: theme.subtext }]}>
+                          <ThemedText style={[styles.detailText, { color: theme.subtext }]}>
                             Mfg: {new Date((batch as any).manufacturerDate).toLocaleDateString()}
-                          </Text>
+                          </ThemedText>
                         </View>
                       )}
                       {batch.price && batch.price > 0 && (
                         <View style={styles.detailRow}>
                           <Ionicons name="pricetag-outline" size={12} color={theme.subtext} />
-                          <Text style={[styles.detailText, { color: theme.primary }]}>
+                          <ThemedText style={[styles.detailText, { color: theme.primary }]}>
                             ₦{batch.price.toFixed(2)}
-                          </Text>
+                          </ThemedText>
                         </View>
                       )}
                     </View>
@@ -1050,35 +1049,35 @@ export default function AdminProductDetails() {
           <View style={[styles.section, { backgroundColor: theme.surface }]}>
             <View style={styles.sectionHeader}>
               <Ionicons name="pricetag-outline" size={18} color={theme.primary} />
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
                 Price Analytics
-              </Text>
+              </ThemedText>
             </View>
 
             <View style={styles.priceRow}>
-              <Text style={[styles.priceLabel, { color: theme.subtext }]}>
+              <ThemedText style={[styles.priceLabel, { color: theme.subtext }]}>
                 Average Batch Price
-              </Text>
-              <Text style={[styles.priceValue, { color: theme.text }]}>
+              </ThemedText>
+              <ThemedText style={[styles.priceValue, { color: theme.text }]}>
                 ₦{priceAnalytics.avgBatchPrice!.toFixed(2)}
-              </Text>
+              </ThemedText>
             </View>
 
             <View style={styles.priceRow}>
-              <Text style={[styles.priceLabel, { color: theme.subtext }]}>
+              <ThemedText style={[styles.priceLabel, { color: theme.subtext }]}>
                 Price Range
-              </Text>
-              <Text style={[styles.priceValue, { color: theme.text }]}>
+              </ThemedText>
+              <ThemedText style={[styles.priceValue, { color: theme.text }]}>
                 ₦{priceAnalytics.minBatchPrice!.toFixed(2)} - ₦{priceAnalytics.maxBatchPrice!.toFixed(2)}
-              </Text>
+              </ThemedText>
             </View>
 
             {priceAnalytics.priceVariance! > 0 && (
               <View style={[styles.alertBanner, { backgroundColor: "#FFD60A" + "10", borderColor: "#FFD60A" }]}>
                 <Ionicons name="trending-up" size={14} color="#FFD60A" />
-                <Text style={[styles.alertText, { color: "#FFD60A" }]}>
+                <ThemedText style={[styles.alertText, { color: "#FFD60A" }]}>
                   Variance: ₦{priceAnalytics.priceVariance!.toFixed(2)}
-                </Text>
+                </ThemedText>
               </View>
             )}
           </View>
@@ -1095,15 +1094,15 @@ export default function AdminProductDetails() {
               <Ionicons name="pricetag" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Set Generic Price
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               This price applies to the product across all batches
-            </Text>
+            </ThemedText>
 
             <View style={styles.priceInputContainer}>
-              <Text style={[styles.currencySymbol, { color: theme.text }]}>₦</Text>
+              <ThemedText style={[styles.currencySymbol, { color: theme.text }]}>₦</ThemedText>
               <TextInput
                 style={[styles.priceInput, { color: theme.text, borderColor: theme.border }]}
                 value={tempPrice}
@@ -1122,13 +1121,13 @@ export default function AdminProductDetails() {
                   setTempPrice("");
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, fontWeight: "600" }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={handlePriceUpdate}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Update Price</Text>
+                <ThemedText style={{ color: "#FFF", fontWeight: "700" }}>Update Price</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1140,25 +1139,25 @@ export default function AdminProductDetails() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
             <Ionicons name="warning-outline" size={48} color="#FF3B30" />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Delete Product?
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               This will permanently remove the product and all its batches. This action cannot be undone.
-            </Text>
+            </ThemedText>
 
             <View style={styles.modalActions}>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border }]}
                 onPress={() => setShowDeleteWarning(false)}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, fontWeight: "600" }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: "#FF3B30" }]}
                 onPress={handleDelete}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Delete</Text>
+                <ThemedText style={{ color: "#FFF", fontWeight: "700" }}>Delete</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1173,12 +1172,12 @@ export default function AdminProductDetails() {
               <Ionicons name="shield-checkmark" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Confirm Deletion
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               Enter Admin Security PIN to authorize deletion
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[styles.pinInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
@@ -1199,13 +1198,13 @@ export default function AdminProductDetails() {
                   setDeletePin("");
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, fontWeight: "600" }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: "#FF3B30" }]}
                 onPress={handlePinSubmit}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Delete Product</Text>
+                <ThemedText style={{ color: "#FFF", fontWeight: "700" }}>Delete Product</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -1220,12 +1219,12 @@ export default function AdminProductDetails() {
               <Ionicons name="pricetags" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Select Category
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               Choose from admin-created categories
-            </Text>
+            </ThemedText>
 
             <ScrollView style={{ width: '100%', maxHeight: 300 }}>
               {adminCategories.map((category) => (
@@ -1243,9 +1242,9 @@ export default function AdminProductDetails() {
                     },
                   ]}
                 >
-                  <Text style={[styles.categoryOptionText, { color: editedCategory === category ? theme.primary : theme.text }]}>
+                  <ThemedText style={[styles.categoryOptionText, { color: editedCategory === category ? theme.primary : theme.text }]}>
                     {category}
-                  </Text>
+                  </ThemedText>
                   {editedCategory === category && (
                     <Ionicons name="checkmark-circle" size={20} color={theme.primary} />
                   )}
@@ -1257,7 +1256,7 @@ export default function AdminProductDetails() {
               style={[styles.modalBtn, { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border, marginTop: 15 }]}
               onPress={() => setShowCategoryPicker(false)}
             >
-              <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+              <ThemedText style={{ color: theme.text, fontWeight: "600" }}>Cancel</ThemedText>
             </Pressable>
           </View>
         </View>

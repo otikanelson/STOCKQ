@@ -12,9 +12,9 @@ import {
     Animated,
     Pressable,
     StyleSheet,
-    Text,
-    View,
+    View
 } from 'react-native';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 import { useAIPredictions } from '../hooks/useAIPredictions';
 
@@ -98,16 +98,16 @@ export const AIInsightsBadge = () => {
 
           {/* Text */}
           <View style={styles.textContainer}>
-            <Text style={[styles.badgeTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.badgeTitle, { color: theme.text }]}>
               AI Insights
-            </Text>
-            <Text style={[styles.badgeSubtitle, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.badgeSubtitle, { color: theme.subtext }]}>
               {loading
                 ? 'Analyzing inventory...'
                 : urgentCount === 0
                 ? 'Monitoring inventory - will alert when action needed'
                 : `${urgentCount} urgent ${urgentCount === 1 ? 'item' : 'items'}`}
-            </Text>
+            </ThemedText>
           </View>
 
           {/* Count Badge */}
@@ -118,7 +118,7 @@ export const AIInsightsBadge = () => {
                 { backgroundColor: urgencyColor },
               ]}
             >
-              <Text style={styles.countText}>{urgentCount}</Text>
+              <ThemedText style={styles.countText}>{urgentCount}</ThemedText>
             </View>
           )}
 
@@ -173,9 +173,9 @@ export const AIInsightsBadge = () => {
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="small" color={theme.primary} />
-              <Text style={[styles.loadingText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.loadingText, { color: theme.subtext }]}>
                 Loading insights...
-              </Text>
+              </ThemedText>
             </View>
           ) : urgentCount === 0 ? (
             <View style={styles.emptyContainer}>
@@ -184,18 +184,18 @@ export const AIInsightsBadge = () => {
                 size={40}
                 color="#34C759"
               />
-              <Text style={[styles.emptyTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
                 All Clear!
-              </Text>
-              <Text style={[styles.emptySubtitle, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.emptySubtitle, { color: theme.subtext }]}>
                 No urgent items requiring attention
-              </Text>
+              </ThemedText>
             </View>
           ) : (
             <View style={styles.itemsContainer}>
-              <Text style={[styles.expandedTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.expandedTitle, { color: theme.text }]}>
                 Top Urgent Items
-              </Text>
+              </ThemedText>
               {quickInsights?.criticalItems.slice(0, 3).map((item, index) => (
                 <Pressable
                   key={item.productId}
@@ -218,18 +218,18 @@ export const AIInsightsBadge = () => {
 
                   {/* Content */}
                   <View style={styles.itemContent}>
-                    <Text
+                    <ThemedText
                       style={[styles.itemName, { color: theme.text }]}
                       numberOfLines={1}
                     >
                       {item.productName}
-                    </Text>
-                    <Text
+                    </ThemedText>
+                    <ThemedText
                       style={[styles.itemRecommendation, { color: theme.subtext }]}
                       numberOfLines={2}
                     >
                       {item.recommendation}
-                    </Text>
+                    </ThemedText>
                     <View style={styles.itemMeta}>
                       <View style={styles.metaItem}>
                         <Ionicons
@@ -237,14 +237,14 @@ export const AIInsightsBadge = () => {
                           size={12}
                           color={getRiskColor(item.riskScore)}
                         />
-                        <Text
+                        <ThemedText
                           style={[
                             styles.metaText,
                             { color: getRiskColor(item.riskScore) },
                           ]}
                         >
                           Risk: {item.riskScore}/100
-                        </Text>
+                        </ThemedText>
                       </View>
                       {item.daysUntilStockout < 999 && (
                         <View style={styles.metaItem}>
@@ -253,9 +253,9 @@ export const AIInsightsBadge = () => {
                             size={12}
                             color={theme.subtext}
                           />
-                          <Text style={[styles.metaText, { color: theme.subtext }]}>
+                          <ThemedText style={[styles.metaText, { color: theme.subtext }]}>
                             {item.daysUntilStockout}d left
-                          </Text>
+                          </ThemedText>
                         </View>
                       )}
                     </View>
@@ -282,9 +282,9 @@ export const AIInsightsBadge = () => {
                     { backgroundColor: theme.primary + '20' },
                   ]}
                 >
-                  <Text style={[styles.viewAllText, { color: theme.primary }]}>
+                  <ThemedText style={[styles.viewAllText, { color: theme.primary }]}>
                     View All {urgentCount} Items
-                  </Text>
+                  </ThemedText>
                   <Ionicons
                     name="arrow-forward"
                     size={16}
@@ -331,13 +331,11 @@ const styles = StyleSheet.create({
   },
   badgeTitle: {
     fontSize: 14,
-    fontWeight: '800',
     marginBottom: 2,
   },
   badgeSubtitle: {
     fontSize: 11,
-    fontWeight: '600',
-  },
+    },
   countBadge: {
     minWidth: 24,
     height: 24,
@@ -349,8 +347,7 @@ const styles = StyleSheet.create({
   countText: {
     color: '#FFF',
     fontSize: 12,
-    fontWeight: '800',
-  },
+    },
   connectionDot: {
     position: 'absolute',
     top: 8,
@@ -373,8 +370,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 12,
-    fontWeight: '600',
-  },
+    },
   emptyContainer: {
     alignItems: 'center',
     paddingVertical: 30,
@@ -382,12 +378,10 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 16,
-    fontWeight: '800',
     marginTop: 8,
   },
   emptySubtitle: {
     fontSize: 12,
-    fontWeight: '600',
     textAlign: 'center',
   },
   itemsContainer: {
@@ -395,7 +389,6 @@ const styles = StyleSheet.create({
   },
   expandedTitle: {
     fontSize: 14,
-    fontWeight: '800',
     marginBottom: 4,
   },
   insightItem: {
@@ -417,11 +410,9 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 13,
-    fontWeight: '800',
-  },
+    },
   itemRecommendation: {
     fontSize: 11,
-    fontWeight: '500',
     lineHeight: 14,
   },
   itemMeta: {
@@ -436,8 +427,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 10,
-    fontWeight: '700',
-  },
+    },
   viewAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -449,6 +439,6 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     fontSize: 12,
-    fontWeight: '800',
-  },
+    },
 });
+

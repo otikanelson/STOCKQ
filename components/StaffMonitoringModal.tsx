@@ -3,9 +3,9 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
     View
 } from "react-native";
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from "../context/ThemeContext";
 
 interface StaffMember {
@@ -34,24 +34,24 @@ export function StaffMonitoringModal({ visible, staff, onClose }: StaffMonitorin
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
           <View style={styles.modalHeader}>
-            <Text style={[styles.staffName, { color: theme.text }]}>
+            <ThemedText style={[styles.staffName, { color: theme.text }]}>
               {staff.name}
-            </Text>
+            </ThemedText>
             <Pressable onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={theme.subtext} />
             </Pressable>
           </View>
           
           <View style={styles.scrollContent}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Staff Monitoring
-            </Text>
-            <Text style={[styles.infoText, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.infoText, { color: theme.subtext }]}>
               This feature allows you to monitor staff activity without accessing their account directly.
-            </Text>
-            <Text style={[styles.infoText, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.infoText, { color: theme.subtext }]}>
               Status: {staff.isActive ? 'Active' : 'Inactive'}
-            </Text>
+            </ThemedText>
           </View>
         </View>
       </View>
@@ -81,8 +81,7 @@ const styles = StyleSheet.create({
   },
   staffName: {
     fontSize: 18,
-    fontWeight: '700',
-  },
+    },
   closeButton: {
     padding: 8,
   },
@@ -91,7 +90,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
     marginBottom: 12,
   },
   infoText: {

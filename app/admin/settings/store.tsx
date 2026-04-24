@@ -7,10 +7,10 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    Text,
     TextInput,
     View
 } from "react-native";
+import { ThemedText } from '../../../components/ThemedText';
 import Toast from "react-native-toast-message";
 import { useTheme } from "../../../context/ThemeContext";
 
@@ -93,7 +93,7 @@ export default function StoreSettingsScreen() {
     return (
       <View style={{ flex: 1, backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={theme.primary} />
-        <Text style={{ color: theme.text, marginTop: 16, fontSize: 14 }}>Loading store information...</Text>
+        <ThemedText style={{ color: theme.text, marginTop: 16, fontSize: 14 }}>Loading store information...</ThemedText>
       </View>
     );
   }
@@ -113,36 +113,36 @@ export default function StoreSettingsScreen() {
             <Ionicons name="arrow-back" size={24} color={theme.primary} />
           </Pressable>
           <View>
-            <Text style={[styles.headerSub, { color: theme.primary }]}>
+            <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
               ADMIN_SETTINGS
-            </Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>
+            </ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
               STORE
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
         {/* STORE INFORMATION SECTION */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary, marginBottom: 15 }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary, marginBottom: 15 }]}>
             BUSINESS DETAILS
-          </Text>
+          </ThemedText>
 
           <View style={[styles.formCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <Text style={[styles.cardTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.cardTitle, { color: theme.text }]}>
               Store Information
-            </Text>
-            <Text style={[styles.cardDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.cardDesc, { color: theme.subtext }]}>
               Manage business details and contact info
-            </Text>
+            </ThemedText>
 
             {/* Store Name */}
             <View style={styles.inputGroup}>
               <View style={styles.inputLabel}>
                 <Ionicons name="storefront-outline" size={18} color={theme.primary} />
-                <Text style={[styles.labelText, { color: theme.text }]}>
+                <ThemedText style={[styles.labelText, { color: theme.text }]}>
                   Store Name
-                </Text>
+                </ThemedText>
               </View>
               <TextInput
                 style={[
@@ -155,18 +155,18 @@ export default function StoreSettingsScreen() {
                 onChangeText={setStoreName}
                 editable={false}
               />
-              <Text style={[styles.helperText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.helperText, { color: theme.subtext }]}>
                 Store name is set during account creation
-              </Text>
+              </ThemedText>
             </View>
 
             {/* Store Address */}
             <View style={styles.inputGroup}>
               <View style={styles.inputLabel}>
                 <Ionicons name="location-outline" size={18} color={theme.primary} />
-                <Text style={[styles.labelText, { color: theme.text }]}>
+                <ThemedText style={[styles.labelText, { color: theme.text }]}>
                   Address
-                </Text>
+                </ThemedText>
               </View>
               <TextInput
                 style={[
@@ -187,9 +187,9 @@ export default function StoreSettingsScreen() {
             <View style={styles.inputGroup}>
               <View style={styles.inputLabel}>
                 <Ionicons name="call-outline" size={18} color={theme.primary} />
-                <Text style={[styles.labelText, { color: theme.text }]}>
+                <ThemedText style={[styles.labelText, { color: theme.text }]}>
                   Phone Number
-                </Text>
+                </ThemedText>
               </View>
               <TextInput
                 style={[
@@ -208,9 +208,9 @@ export default function StoreSettingsScreen() {
             <View style={styles.inputGroup}>
               <View style={styles.inputLabel}>
                 <Ionicons name="mail-outline" size={18} color={theme.primary} />
-                <Text style={[styles.labelText, { color: theme.text }]}>
+                <ThemedText style={[styles.labelText, { color: theme.text }]}>
                   Email Address
-                </Text>
+                </ThemedText>
               </View>
               <TextInput
                 style={[
@@ -230,9 +230,9 @@ export default function StoreSettingsScreen() {
             <View style={styles.inputGroup}>
               <View style={styles.inputLabel}>
                 <Ionicons name="time-outline" size={18} color={theme.primary} />
-                <Text style={[styles.labelText, { color: theme.text }]}>
+                <ThemedText style={[styles.labelText, { color: theme.text }]}>
                   Business Hours
-                </Text>
+                </ThemedText>
               </View>
               <TextInput
                 style={[
@@ -254,7 +254,7 @@ export default function StoreSettingsScreen() {
               onPress={handleSaveStoreInfo}
             >
               <Ionicons name="checkmark-circle" size={20} color="#FFF" />
-              <Text style={styles.saveBtnText}>SAVE STORE INFORMATION</Text>
+              <ThemedText style={styles.saveBtnText}>SAVE STORE INFORMATION</ThemedText>
             </Pressable>
           </View>
         </View>
@@ -282,12 +282,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerSub: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
-  headerTitle: { fontSize: 25, fontWeight: "900", letterSpacing: -1 },
+  headerSub: { fontSize: 10, letterSpacing: 2 },
+  headerTitle: { fontSize: 25, letterSpacing: -1 },
   section: { marginBottom: 50 },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "800",
     letterSpacing: 1.5,
   },
   formCard: {
@@ -297,7 +296,6 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "800",
     marginBottom: 5,
   },
   cardDesc: {
@@ -315,8 +313,7 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontSize: 14,
-    fontWeight: "700",
-  },
+    },
   helperText: {
     fontSize: 12,
     marginTop: 6,
@@ -329,8 +326,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 15,
-    fontWeight: "600",
-  },
+    },
   multilineInput: {
     height: 80,
     paddingTop: 12,
@@ -349,7 +345,7 @@ const styles = StyleSheet.create({
   saveBtnText: {
     color: "#FFF",
     fontSize: 14,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
 });
+

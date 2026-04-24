@@ -4,15 +4,15 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View
 } from "react-native";
 import { PinInput } from '../../components/PinInput';
+import { ThemedText } from '../../components/ThemedText';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -85,10 +85,10 @@ export default function LoginScreen() {
             {!selectedRole ? (
               <>
                 <Image source={require('../../assets/images/Logo.png')} style={[styles.logoMark, { width: 120, height: 120}]} contentFit="contain" />
-                <Text style={[styles.title, { color: theme.text }]}>Welcome back</Text>
-                <Text style={[styles.subtitle, { color: theme.subtext }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>Welcome back</ThemedText>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
                   Choose your role to continue
-                </Text>
+                </ThemedText>
 
                 <View style={styles.roleButtons}>
                   <Pressable
@@ -102,8 +102,8 @@ export default function LoginScreen() {
                       <Ionicons name="shield-checkmark" size={26} color={theme.primary} />
                     </View>
                     <View style={styles.roleTextWrap}>
-                      <Text style={[styles.roleTitle, { color: theme.text }]}>Admin</Text>
-                      <Text style={[styles.roleDesc, { color: theme.subtext }]}>Full access to all features</Text>
+                      <ThemedText style={[styles.roleTitle, { color: theme.text }]}>Admin</ThemedText>
+                      <ThemedText style={[styles.roleDesc, { color: theme.subtext }]}>Full access to all features</ThemedText>
                     </View>
                     <Ionicons name="chevron-forward" size={18} color={theme.subtext} />
                   </Pressable>
@@ -119,21 +119,21 @@ export default function LoginScreen() {
                       <Ionicons name="people" size={26} color="#F59E0B" />
                     </View>
                     <View style={styles.roleTextWrap}>
-                      <Text style={[styles.roleTitle, { color: theme.text }]}>Staff</Text>
-                      <Text style={[styles.roleDesc, { color: theme.subtext }]}>Manage inventory and sales</Text>
+                      <ThemedText style={[styles.roleTitle, { color: theme.text }]}>Staff</ThemedText>
+                      <ThemedText style={[styles.roleDesc, { color: theme.subtext }]}>Manage inventory and sales</ThemedText>
                     </View>
                     <Ionicons name="chevron-forward" size={18} color={theme.subtext} />
                   </Pressable>
                 </View>
 
                 <Pressable style={styles.setupRow} onPress={() => router.push('/auth/setup' as any)}>
-                  <Text style={[styles.setupText, { color: theme.subtext }]}>First time? </Text>
-                  <Text style={[styles.setupLink, { color: theme.primary }]}>Set up your account</Text>
+                  <ThemedText style={[styles.setupText, { color: theme.subtext }]}>First time? </ThemedText>
+                  <ThemedText style={[styles.setupLink, { color: theme.primary }]}>Set up your account</ThemedText>
                 </Pressable>
 
                 <Pressable style={styles.setupRow} onPress={() => router.push('/auth/staff-register' as any)}>
-                  <Text style={[styles.setupText, { color: theme.subtext }]}>Staff member? </Text>
-                  <Text style={[styles.setupLink, { color: theme.primary }]}>Join a store</Text>
+                  <ThemedText style={[styles.setupText, { color: theme.subtext }]}>Staff member? </ThemedText>
+                  <ThemedText style={[styles.setupLink, { color: theme.primary }]}>Join a store</ThemedText>
                 </Pressable>
               </>
             ) : (
@@ -154,10 +154,10 @@ export default function LoginScreen() {
                   />
                 </View>
 
-                <Text style={[styles.title, { color: theme.text }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
                   {selectedRole === 'admin' ? 'Admin Login' : 'Staff Login'}
-                </Text>
-                <Text style={[styles.subtitle, { color: theme.subtext }]}>Enter your 4-digit PIN</Text>
+                </ThemedText>
+                <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>Enter your 4-digit PIN</ThemedText>
 
                 <View style={styles.pinContainer}>
                   <PinInput
@@ -168,9 +168,9 @@ export default function LoginScreen() {
                     onClear={() => { setPinError(false); setPinKey(prev => prev + 1); }}
                   />
                   {pinError && (
-                    <Text style={[styles.errorText, { color: theme.notification }]}>
+                    <ThemedText style={[styles.errorText, { color: theme.notification }]}>
                       Incorrect PIN. Please try again.
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
               </>
@@ -180,7 +180,7 @@ export default function LoginScreen() {
           {!selectedRole && (
             <View style={styles.footer}>
               <Pressable onPress={() => setShowAuthorLogin(true)}>
-                <Text style={[styles.authorText, { color: theme.subtext }]}>Author</Text>
+                <ThemedText style={[styles.authorText, { color: theme.subtext }]}>Author</ThemedText>
               </Pressable>
             </View>
           )}
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  title: { fontSize: 28, fontWeight: '800', marginBottom: 8, letterSpacing: -0.5 },
+  title: { fontSize: 28, marginBottom: 8, letterSpacing: -0.5 },
   subtitle: { fontSize: 15, marginBottom: 36, textAlign: 'center' },
   roleButtons: { width: '100%', gap: 12, marginBottom: 28 },
   roleCard: {
@@ -230,11 +230,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   roleTextWrap: { flex: 1 },
-  roleTitle: { fontSize: 17, fontWeight: '700', marginBottom: 3 },
+  roleTitle: { fontSize: 17, marginBottom: 3 },
   roleDesc: { fontSize: 13 },
   setupRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12 },
   setupText: { fontSize: 14 },
-  setupLink: { fontSize: 14, fontWeight: '700' },
+  setupLink: { fontSize: 14, },
   backBtn: { alignSelf: 'flex-start', marginBottom: 32 },
   backBtnInner: {
     width: 40,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   pinContainer: { alignItems: 'center', gap: 16, marginTop: 8 },
-  errorText: { fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  errorText: { fontSize: 14, textAlign: 'center' },
   footer: { alignItems: 'center', paddingBottom: 32 },
   authorText: { fontSize: 12, opacity: 0.5 },
 });

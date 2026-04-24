@@ -13,12 +13,12 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { DisabledFeatureOverlay } from "../../components/DisabledFeatureOverlay";
 import { HelpTooltip } from "../../components/HelpTooltip";
+import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
 import { useAnalytics } from "../../hooks/useAnalytics";
@@ -418,12 +418,12 @@ export default function AdminStats() {
           ]}
         >
           <Ionicons name="alert-circle" size={28} color="#FF4444" />
-          <Text style={[styles.riskValue, { color: theme.text }]}>
+          <ThemedText style={[styles.riskValue, { color: theme.text }]}>
             {summary?.highRiskProducts || 0}
-          </Text>
-          <Text style={[styles.riskLabel, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.riskLabel, { color: theme.subtext }]}>
             High Risk
-          </Text>
+          </ThemedText>
         </View>
 
         <View
@@ -437,12 +437,12 @@ export default function AdminStats() {
           ]}
         >
           <Ionicons name="warning" size={28} color="#FF9500" />
-          <Text style={[styles.riskValue, { color: theme.text }]}>
+          <ThemedText style={[styles.riskValue, { color: theme.text }]}>
             {summary?.mediumRiskProducts || 0}
-          </Text>
-          <Text style={[styles.riskLabel, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.riskLabel, { color: theme.subtext }]}>
             Medium Risk
-          </Text>
+          </ThemedText>
         </View>
       </View>
 
@@ -453,36 +453,36 @@ export default function AdminStats() {
           { backgroundColor: theme.surface, borderColor: theme.border },
         ]}
       >
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+        <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
           SALES PERFORMANCE ({selectedPeriod} DAYS)
-        </Text>
+        </ThemedText>
         <View style={styles.summaryRow}>
           <View style={styles.summaryItem}>
             <Ionicons name="cash-outline" size={24} color={theme.primary} />
-            <Text style={[styles.summaryValue, { color: theme.text }]}>
+            <ThemedText style={[styles.summaryValue, { color: theme.text }]}>
               ${(salesTrends?.summary?.totalSales || 0).toLocaleString()}
-            </Text>
-            <Text style={[styles.summaryLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>
               Revenue
-            </Text>
+            </ThemedText>
           </View>
           <View style={styles.summaryItem}>
             <Ionicons name="cube-outline" size={24} color={theme.primary} />
-            <Text style={[styles.summaryValue, { color: theme.text }]}>
+            <ThemedText style={[styles.summaryValue, { color: theme.text }]}>
               {salesTrends?.summary?.totalUnits || 0}
-            </Text>
-            <Text style={[styles.summaryLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>
               Units
-            </Text>
+            </ThemedText>
           </View>
           <View style={styles.summaryItem}>
             <Ionicons name="speedometer-outline" size={24} color={theme.primary} />
-            <Text style={[styles.summaryValue, { color: theme.text }]}>
+            <ThemedText style={[styles.summaryValue, { color: theme.text }]}>
               {(summary?.averageVelocity || 0).toFixed(1)}
-            </Text>
-            <Text style={[styles.summaryLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>
               Velocity
-            </Text>
+            </ThemedText>
           </View>
         </View>
       </View>
@@ -495,9 +495,9 @@ export default function AdminStats() {
             { backgroundColor: theme.surface, borderColor: theme.border },
           ]}
         >
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
             SALES TREND
-          </Text>
+          </ThemedText>
           <View style={styles.chartContainer}>
             {salesTrends.chartData.slice(-7).map((day: any, index: number) => {
               const maxSales = Math.max(...salesTrends.chartData.map((d: any) => d.sales));
@@ -513,9 +513,9 @@ export default function AdminStats() {
                       },
                     ]}
                   />
-                  <Text style={[styles.chartLabel, { color: theme.subtext }]}>
+                  <ThemedText style={[styles.chartLabel, { color: theme.subtext }]}>
                     {new Date(day.date).getDate()}
-                  </Text>
+                  </ThemedText>
                 </View>
               );
             })}
@@ -535,23 +535,23 @@ export default function AdminStats() {
       >
         <View style={styles.insightsHeader}>
           <Ionicons name="bulb" size={20} color={theme.primary} />
-          <Text style={[styles.insightsTitle, { color: theme.primary }]}>
+          <ThemedText style={[styles.insightsTitle, { color: theme.primary }]}>
             AI Recommendations
-          </Text>
+          </ThemedText>
         </View>
-        <Text style={[styles.insightsText, { color: theme.text }]}>
+        <ThemedText style={[styles.insightsText, { color: theme.text }]}>
           • {summary?.highRiskProducts || 0} high risk items need urgent action
-        </Text>
-        <Text style={[styles.insightsText, { color: theme.text }]}>
+        </ThemedText>
+        <ThemedText style={[styles.insightsText, { color: theme.text }]}>
           • {summary?.mediumRiskProducts || 0} medium risk items to monitor
-        </Text>
-        <Text style={[styles.insightsText, { color: theme.text }]}>
+        </ThemedText>
+        <ThemedText style={[styles.insightsText, { color: theme.text }]}>
           • Avg velocity: {(summary?.averageVelocity || 0).toFixed(1)} units/day
-        </Text>
+        </ThemedText>
         {quickInsights && quickInsights.urgentCount > 0 && (
-          <Text style={[styles.insightsText, { color: theme.text }]}>
+          <ThemedText style={[styles.insightsText, { color: theme.text }]}>
             • {quickInsights.urgentCount} urgent items need attention
-          </Text>
+          </ThemedText>
         )}
       </View>
     </>
@@ -563,20 +563,20 @@ export default function AdminStats() {
       {/* High Risk Products */}
       <View style={styles.listSection}>
         <View style={styles.listHeader}>
-          <Text style={[styles.listTitle, { color: theme.text }]}>
+          <ThemedText style={[styles.listTitle, { color: theme.text }]}>
             High Risk Products
-          </Text>
-          <Text style={[styles.listCount, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.listCount, { color: theme.subtext }]}>
             {topRisk.length}
-          </Text>
+          </ThemedText>
         </View>
 
         {topRisk.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="checkmark-circle" size={48} color="#34C759" />
-            <Text style={[styles.emptyText, { color: theme.subtext }]}>
+            <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
               No high risk products
-            </Text>
+            </ThemedText>
           </View>
         ) : (
           topRisk.slice(0, 10).map((item: any) => (
@@ -595,22 +595,22 @@ export default function AdminStats() {
                 ]}
               />
               <View style={styles.productInfo}>
-                <Text style={[styles.productName, { color: theme.text }]}>
+                <ThemedText style={[styles.productName, { color: theme.text }]}>
                   {item.productName}
-                </Text>
-                <Text style={[styles.productMeta, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.productMeta, { color: theme.subtext }]}>
                   Stock: {item.currentStock} • {item.velocity.toFixed(1)}/day
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.riskBadge}>
-                <Text
+                <ThemedText
                   style={[
                     styles.riskScoreText,
                     { color: getRiskColor(item.riskScore) },
                   ]}
                 >
                   {item.riskScore}
-                </Text>
+                </ThemedText>
               </View>
             </Pressable>
           ))
@@ -620,12 +620,12 @@ export default function AdminStats() {
       {/* Top Selling Products */}
       <View style={styles.listSection}>
         <View style={styles.listHeader}>
-          <Text style={[styles.listTitle, { color: theme.text }]}>
+          <ThemedText style={[styles.listTitle, { color: theme.text }]}>
             Top Selling Products
-          </Text>
-          <Text style={[styles.listCount, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.listCount, { color: theme.subtext }]}>
             {topSelling.length}
-          </Text>
+          </ThemedText>
         </View>
 
         {topSelling.slice(0, 10).map((item: any, index: number) => (
@@ -643,17 +643,17 @@ export default function AdminStats() {
                 { backgroundColor: theme.primary + "20" },
               ]}
             >
-              <Text style={[styles.rankText, { color: theme.primary }]}>
+              <ThemedText style={[styles.rankText, { color: theme.primary }]}>
                 #{index + 1}
-              </Text>
+              </ThemedText>
             </View>
             <View style={styles.productInfo}>
-              <Text style={[styles.productName, { color: theme.text }]}>
+              <ThemedText style={[styles.productName, { color: theme.text }]}>
                 {item.productName}
-              </Text>
-              <Text style={[styles.productMeta, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.productMeta, { color: theme.subtext }]}>
                 {item.velocity.toFixed(1)} units/day • {item.trend}
-              </Text>
+              </ThemedText>
             </View>
             <Ionicons name="trending-up" size={20} color={theme.primary} />
           </Pressable>
@@ -667,12 +667,12 @@ export default function AdminStats() {
     <>
       <View style={styles.listSection}>
         <View style={styles.listHeader}>
-          <Text style={[styles.listTitle, { color: theme.text }]}>
+          <ThemedText style={[styles.listTitle, { color: theme.text }]}>
             Category Performance
-          </Text>
-          <Text style={[styles.listCount, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.listCount, { color: theme.subtext }]}>
             {categoryData.length}
-          </Text>
+          </ThemedText>
         </View>
 
         {loadingCategories ? (
@@ -682,9 +682,9 @@ export default function AdminStats() {
         ) : categoryData.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="pie-chart-outline" size={48} color={theme.subtext} />
-            <Text style={[styles.emptyText, { color: theme.subtext }]}>
+            <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
               No category data available
-            </Text>
+            </ThemedText>
           </View>
         ) : (
           categoryData.map((cat: any, index: number) => (
@@ -696,20 +696,20 @@ export default function AdminStats() {
               ]}
             >
               <View style={styles.categoryInfo}>
-                <Text style={[styles.categoryName, { color: theme.text }]}>
+                <ThemedText style={[styles.categoryName, { color: theme.text }]}>
                   {cat.category}
-                </Text>
-                <Text style={[styles.categoryMeta, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.categoryMeta, { color: theme.subtext }]}>
                   ${cat.sales.toLocaleString()} • {cat.units} units
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.categoryBadge}>
-                <Text style={[styles.categoryCount, { color: theme.primary }]}>
+                <ThemedText style={[styles.categoryCount, { color: theme.primary }]}>
                   {cat.transactions}
-                </Text>
-                <Text style={[styles.categoryLabel, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.categoryLabel, { color: theme.subtext }]}>
                   sales
-                </Text>
+                </ThemedText>
               </View>
             </View>
           ))
@@ -729,19 +729,19 @@ export default function AdminStats() {
         >
           <View style={styles.insightsHeader}>
             <Ionicons name="pie-chart" size={20} color="#FF9500" />
-            <Text style={[styles.insightsTitle, { color: "#FF9500" }]}>
+            <ThemedText style={[styles.insightsTitle, { color: "#FF9500" }]}>
               Category Insights
-            </Text>
+            </ThemedText>
           </View>
-          <Text style={[styles.insightsText, { color: theme.text }]}>
+          <ThemedText style={[styles.insightsText, { color: theme.text }]}>
             • Top: {categoryData[0]?.category} (${categoryData[0]?.sales.toLocaleString()})
-          </Text>
-          <Text style={[styles.insightsText, { color: theme.text }]}>
+          </ThemedText>
+          <ThemedText style={[styles.insightsText, { color: theme.text }]}>
             • {categoryData.length} active categories
-          </Text>
-          <Text style={[styles.insightsText, { color: theme.text }]}>
+          </ThemedText>
+          <ThemedText style={[styles.insightsText, { color: theme.text }]}>
             • Diversify inventory across categories
-          </Text>
+          </ThemedText>
         </View>
       )}
     </>
@@ -756,41 +756,41 @@ export default function AdminStats() {
           { backgroundColor: theme.surface, borderColor: theme.border },
         ]}
       >
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+        <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
           PREDICTION ACCURACY
-        </Text>
+        </ThemedText>
         <View style={styles.accuracyRow}>
           <View style={styles.accuracyItem}>
             <Ionicons name="checkmark-circle" size={32} color="#34C759" />
-            <Text style={[styles.accuracyValue, { color: theme.text }]}>
+            <ThemedText style={[styles.accuracyValue, { color: theme.text }]}>
               87%
-            </Text>
-            <Text style={[styles.accuracyLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.accuracyLabel, { color: theme.subtext }]}>
               Overall
-            </Text>
+            </ThemedText>
           </View>
           <View style={styles.accuracyItem}>
             <Ionicons name="analytics" size={32} color={theme.primary} />
-            <Text style={[styles.accuracyValue, { color: theme.text }]}>
+            <ThemedText style={[styles.accuracyValue, { color: theme.text }]}>
               92%
-            </Text>
-            <Text style={[styles.accuracyLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.accuracyLabel, { color: theme.subtext }]}>
               High Conf.
-            </Text>
+            </ThemedText>
           </View>
           <View style={styles.accuracyItem}>
             <Ionicons name="trending-up" size={32} color="#FF9500" />
-            <Text style={[styles.accuracyValue, { color: theme.text }]}>
+            <ThemedText style={[styles.accuracyValue, { color: theme.text }]}>
               +5%
-            </Text>
-            <Text style={[styles.accuracyLabel, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.accuracyLabel, { color: theme.subtext }]}>
               Growth
-            </Text>
+            </ThemedText>
           </View>
         </View>
-        <Text style={[styles.accuracyNote, { color: theme.subtext }]}>
+        <ThemedText style={[styles.accuracyNote, { color: theme.subtext }]}>
           Measured over last {selectedPeriod} days. High confidence predictions (≥80%) show 92% accuracy.
-        </Text>
+        </ThemedText>
       </View>
 
       {/* Accuracy Info */}
@@ -805,19 +805,19 @@ export default function AdminStats() {
       >
         <View style={styles.insightsHeader}>
           <Ionicons name="information-circle" size={20} color="#34C759" />
-          <Text style={[styles.insightsTitle, { color: "#34C759" }]}>
+          <ThemedText style={[styles.insightsTitle, { color: "#34C759" }]}>
             How Accuracy Works
-          </Text>
+          </ThemedText>
         </View>
-        <Text style={[styles.insightsText, { color: theme.text }]}>
+        <ThemedText style={[styles.insightsText, { color: theme.text }]}>
           • Compares predicted vs actual sales
-          </Text>
-        <Text style={[styles.insightsText, { color: theme.text }]}>
+          </ThemedText>
+        <ThemedText style={[styles.insightsText, { color: theme.text }]}>
           • Tracks confidence levels over time
-        </Text>
-        <Text style={[styles.insightsText, { color: theme.text }]}>
+        </ThemedText>
+        <ThemedText style={[styles.insightsText, { color: theme.text }]}>
           • Improves with more data
-        </Text>
+        </ThemedText>
       </View>
     </>
   );
@@ -835,12 +835,12 @@ export default function AdminStats() {
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <View>
-              <Text style={[styles.headerSub, { color: theme.primary }]}>
+              <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
                 AI ANALYTICS
-              </Text>
-              <Text style={[styles.headerTitle, { color: theme.text }]}>
+              </ThemedText>
+              <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
                 Insights
-              </Text>
+              </ThemedText>
             </View>
             <HelpTooltip
               style={{marginTop: 20}}
@@ -951,14 +951,14 @@ export default function AdminStats() {
               },
             ]}
           >
-            <Text
+            <ThemedText
               style={[
                 styles.periodBtnText,
                 { color: selectedPeriod === "7" ? "#FFF" : theme.text },
               ]}
             >
               7 Days
-            </Text>
+            </ThemedText>
           </Pressable>
           <Pressable
             onPress={() => setSelectedPeriod("30")}
@@ -970,14 +970,14 @@ export default function AdminStats() {
               },
             ]}
           >
-            <Text
+            <ThemedText
               style={[
                 styles.periodBtnText,
                 { color: selectedPeriod === "30" ? "#FFF" : theme.text },
               ]}
             >
               30 Days
-            </Text>
+            </ThemedText>
           </Pressable>
         </View>
 
@@ -998,14 +998,14 @@ export default function AdminStats() {
               size={18}
               color={selectedTab === "overview" ? theme.primary : theme.subtext}
             />
-            <Text
+            <ThemedText
               style={[
                 styles.tabText,
                 { color: selectedTab === "overview" ? theme.text : theme.subtext },
               ]}
             >
               Overview
-            </Text>
+            </ThemedText>
           </Pressable>
 
           <Pressable
@@ -1023,14 +1023,14 @@ export default function AdminStats() {
               size={18}
               color={selectedTab === "products" ? theme.primary : theme.subtext}
             />
-            <Text
+            <ThemedText
               style={[
                 styles.tabText,
                 { color: selectedTab === "products" ? theme.text : theme.subtext },
               ]}
             >
               Products
-            </Text>
+            </ThemedText>
           </Pressable>
 
           <Pressable
@@ -1048,14 +1048,14 @@ export default function AdminStats() {
               size={18}
               color={selectedTab === "categories" ? theme.primary : theme.subtext}
             />
-            <Text
+            <ThemedText
               style={[
                 styles.tabText,
                 { color: selectedTab === "categories" ? theme.text : theme.subtext },
               ]}
             >
               Categories
-            </Text>
+            </ThemedText>
           </Pressable>
 
           <Pressable
@@ -1073,14 +1073,14 @@ export default function AdminStats() {
               size={18}
               color={selectedTab === "accuracy" ? theme.primary : theme.subtext}
             />
-            <Text
+            <ThemedText
               style={[
                 styles.tabText,
                 { color: selectedTab === "accuracy" ? theme.text : theme.subtext },
               ]}
             >
               Accuracy
-            </Text>
+            </ThemedText>
           </Pressable>
         </View>
 
@@ -1107,8 +1107,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     marginBottom: 16,
   },
-  headerSub: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
-  headerTitle: { fontSize: 22, fontWeight: "900", letterSpacing: -1 },
+  headerSub: { fontSize: 10, letterSpacing: 2 },
+  headerTitle: { fontSize: 22, letterSpacing: -1 },
   exportButtons: {
     flexDirection: "row",
     gap: 8,
@@ -1150,8 +1150,7 @@ const styles = StyleSheet.create({
   },
   periodBtnText: {
     fontSize: 12,
-    fontWeight: "800",
-  },
+    },
   tabSelector: {
     flexDirection: "row",
     gap: 8,
@@ -1169,8 +1168,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 10,
-    fontWeight: "700",
-  },
+    },
   riskGrid: { flexDirection: "row", gap: 12, marginBottom: 16 },
   riskCard: {
     flex: 1,
@@ -1178,8 +1176,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
   },
-  riskValue: { fontSize: 28, fontWeight: "900", marginTop: 8 },
-  riskLabel: { fontSize: 11, fontWeight: "700", marginTop: 4 },
+  riskValue: { fontSize: 28, marginTop: 8 },
+  riskLabel: { fontSize: 11, marginTop: 4 },
   summaryCard: {
     padding: 18,
     borderRadius: 20,
@@ -1188,7 +1186,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 10,
-    fontWeight: "900",
     letterSpacing: 1.5,
     marginBottom: 12,
   },
@@ -1198,8 +1195,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   summaryItem: { flex: 1, alignItems: "center" },
-  summaryValue: { fontSize: 20, fontWeight: "900", marginTop: 6 },
-  summaryLabel: { fontSize: 9, fontWeight: "600", marginTop: 4, textAlign: "center" },
+  summaryValue: { fontSize: 20, marginTop: 6 },
+  summaryLabel: { fontSize: 9, marginTop: 4, textAlign: "center" },
   chartCard: {
     padding: 18,
     borderRadius: 20,
@@ -1226,7 +1223,6 @@ const styles = StyleSheet.create({
   },
   chartLabel: {
     fontSize: 9,
-    fontWeight: "600",
     marginTop: 4,
   },
   loadingContainer: {
@@ -1240,8 +1236,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 13,
-    fontWeight: "600",
-  },
+    },
   categoryRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -1255,8 +1250,7 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     fontSize: 14,
-    fontWeight: "800",
-  },
+    },
   categoryMeta: {
     fontSize: 11,
     marginTop: 2,
@@ -1266,12 +1260,10 @@ const styles = StyleSheet.create({
   },
   categoryCount: {
     fontSize: 18,
-    fontWeight: "900",
-  },
+    },
   categoryLabel: {
     fontSize: 9,
-    fontWeight: "700",
-  },
+    },
   listSection: { marginBottom: 20 },
   listHeader: {
     flexDirection: "row",
@@ -1279,8 +1271,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  listTitle: { fontSize: 16, fontWeight: "800" },
-  listCount: { fontSize: 11, fontWeight: "600" },
+  listTitle: { fontSize: 16, },
+  listCount: { fontSize: 11, },
   productRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -1291,10 +1283,10 @@ const styles = StyleSheet.create({
   },
   riskIndicator: { width: 4, height: 36, borderRadius: 2, marginRight: 10 },
   productInfo: { flex: 1 },
-  productName: { fontSize: 14, fontWeight: "700" },
+  productName: { fontSize: 14, },
   productMeta: { fontSize: 11, marginTop: 2 },
   riskBadge: { alignItems: "center" },
-  riskScoreText: { fontSize: 18, fontWeight: "900" },
+  riskScoreText: { fontSize: 18, },
   rankBadge: {
     width: 32,
     height: 32,
@@ -1303,7 +1295,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
-  rankText: { fontSize: 13, fontWeight: "900" },
+  rankText: { fontSize: 13, },
   accuracyCard: {
     padding: 18,
     borderRadius: 20,
@@ -1321,18 +1313,15 @@ const styles = StyleSheet.create({
   },
   accuracyValue: {
     fontSize: 22,
-    fontWeight: "900",
     marginTop: 6,
   },
   accuracyLabel: {
     fontSize: 9,
-    fontWeight: "600",
     marginTop: 4,
     textAlign: "center",
   },
   accuracyNote: {
     fontSize: 10,
-    fontWeight: "500",
     lineHeight: 14,
     textAlign: "center",
   },
@@ -1348,6 +1337,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  insightsTitle: { fontSize: 14, fontWeight: "800" },
+  insightsTitle: { fontSize: 14, },
   insightsText: { fontSize: 12, marginBottom: 6, lineHeight: 18 },
 });
+

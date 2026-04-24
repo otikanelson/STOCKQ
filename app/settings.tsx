@@ -5,11 +5,11 @@ import {
     ScrollView,
     StyleSheet,
     Switch,
-    Text,
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { AIStatusIndicator } from "../components/AIStatusIndicator";
+import { ThemedText } from '../components/ThemedText';
 import { margin } from "../constants/spacing";
 import { useTheme } from "../context/ThemeContext";
 import { useTour } from "../context/TourContext";
@@ -29,13 +29,13 @@ export default function SettingsScreen() {
             <Ionicons name={icon} size={20} color={theme.primary} />
           </View>
           <View style={styles.textStack}>
-            <Text style={[styles.settingLabel, { color: theme.text }]}>
+            <ThemedText style={[styles.settingLabel, { color: theme.text }]}>
               {label}
-            </Text>
+            </ThemedText>
             {description && (
-              <Text style={[styles.settingDesc, { color: theme.subtext }]}>
+              <ThemedText style={[styles.settingDesc, { color: theme.subtext }]}>
                 {description}
-              </Text>
+              </ThemedText>
             )}
           </View>
         </View>
@@ -64,19 +64,19 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={[styles.headerSub, { color: theme.primary }]}>
+          <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
             SYSTEM_CONFIGURATION
-          </Text>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>
+          </ThemedText>
+          <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
             SETTINGS
-          </Text>
+          </ThemedText>
         </View>
 
       {/* APPEARANCE SECTION */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+        <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
           APPEARANCE
-        </Text>
+        </ThemedText>
         <SettingRow
           icon="moon-outline"
           label="Dark Mode"
@@ -92,9 +92,9 @@ export default function SettingsScreen() {
 
       {/* ADMINISTRATION SECTION */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+        <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
           SETTINGS CATEGORIES
-        </Text>
+        </ThemedText>
         <SettingRow
           icon="person-circle-outline"
           label="My Profile"
@@ -108,9 +108,9 @@ export default function SettingsScreen() {
 
       {/* HELP & SUPPORT SECTION */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+        <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
           HELP & SUPPORT
-        </Text>
+        </ThemedText>
         
         {/* AI Status Indicator */}
         <AIStatusIndicator onPress={() => router.push("/ai-info" as any)} />
@@ -149,9 +149,9 @@ export default function SettingsScreen() {
 
       <View style={{ height: 10 }} />
 
-        <Text style={styles.versionText}>
+        <ThemedText style={styles.versionText}>
           Build v2.0.5 - Production Environment
-        </Text>
+        </ThemedText>
       </ScrollView>
     </View>
     </View>
@@ -161,12 +161,11 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
   header: { marginTop: 70, marginBottom: margin.section },
-  headerSub: { fontSize: 11, fontWeight: "900", letterSpacing: 2, opacity: 0.7 },
-  headerTitle: { fontSize: 32, fontWeight: "900", letterSpacing: -0.5, marginTop: 4 },
+  headerSub: { fontSize: 11, letterSpacing: 2, opacity: 0.7 },
+  headerTitle: { fontSize: 32, letterSpacing: -0.5, marginTop: 4 },
   section: { marginBottom: margin.section },
   sectionTitle: {
     fontSize: 11,
-    fontWeight: "900",
     letterSpacing: 2,
     marginBottom: 16,
     opacity: 0.6,
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   textStack: { flex: 1 },
-  settingLabel: { fontSize: 17, fontWeight: "700", marginBottom: 2 },
+  settingLabel: { fontSize: 17, marginBottom: 2 },
   settingDesc: { fontSize: 13, marginTop: 2, opacity: 0.7 },
   badge: {
     paddingHorizontal: 10,
@@ -197,7 +196,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
-    fontWeight: "900",
     letterSpacing: 0.5,
   },
   adminBadge: {
@@ -216,3 +214,4 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 });
+

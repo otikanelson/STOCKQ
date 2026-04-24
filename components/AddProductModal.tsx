@@ -6,9 +6,9 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
     View
 } from "react-native";
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from "../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
@@ -45,9 +45,9 @@ export const AddProductModal = ({
         <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               Select Product
-            </Text>
+            </ThemedText>
             <Pressable onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={28} color={theme.text} />
             </Pressable>
@@ -84,16 +84,16 @@ export const AddProductModal = ({
 
                 {/* Product Info */}
                 <View style={styles.productInfo}>
-                  <Text style={[styles.productName, { color: theme.text }]} numberOfLines={1}>
+                  <ThemedText style={[styles.productName, { color: theme.text }]} numberOfLines={1}>
                     {item.name}
-                  </Text>
-                  <Text style={[styles.productDetails, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.productDetails, { color: theme.subtext }]}>
                     {item.category || "Uncategorized"} • Stock: {item.totalQuantity}
-                  </Text>
+                  </ThemedText>
                   {item.barcode && (
-                    <Text style={[styles.productBarcode, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.productBarcode, { color: theme.subtext }]}>
                       {item.barcode}
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
 
@@ -104,9 +104,9 @@ export const AddProductModal = ({
             ListEmptyComponent={
               <View style={styles.emptyState}>
                 <Ionicons name="cube-outline" size={64} color={theme.subtext + "40"} />
-                <Text style={[styles.emptyText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
                   {emptyMessage}
-                </Text>
+                </ThemedText>
               </View>
             }
           />
@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: "900",
     letterSpacing: -0.5,
   },
   closeButton: {
@@ -177,18 +176,15 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 16,
-    fontWeight: "800",
     marginBottom: 4,
     letterSpacing: -0.3,
   },
   productDetails: {
     fontSize: 13,
-    fontWeight: "600",
     marginBottom: 2,
   },
   productBarcode: {
     fontSize: 11,
-    fontWeight: "600",
     fontFamily: "monospace",
   },
   emptyState: {
@@ -197,7 +193,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 15,
-    fontWeight: "700",
     marginTop: 16,
   },
 });
+

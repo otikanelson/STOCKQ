@@ -2,7 +2,7 @@
   "expo": {
     "name": "Insightory",
     "slug": "stockq",
-    "version": "8.4.3",
+    "version": "11.5.4",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
     "backgroundColor": "#0D1B4B",
@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/images/icon.png"
       },
       "package": "com.son_the_nel.Inventory",
-      "versionCode": 8,
+      "versionCode": 11,
       "permissions": [
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE",
@@ -41,13 +41,24 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#0D1B4B",
+          "backgroundColor": "#FFFFFF",
           "dark": {
-            "backgroundColor": "#0D1B4B"
+            "backgroundColor": "#FFFFFF"
           }
         }
       ],
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/qurova-light.ttf",
+            "./assets/fonts/qurova-regular.ttf",
+            "./assets/fonts/qurova-medium.ttf",
+            "./assets/fonts/qurova-semibold.ttf",
+            "./assets/fonts/qurova-bold.ttf"
+          ]
+        }
+      ],
       [
         "expo-image-picker",
         {
@@ -68,7 +79,6 @@
     },
     "runtimeVersion": {
       "policy": "appVersion"
-    },
-    "owner": "neil2022"
+    }
   }
 }

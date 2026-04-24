@@ -1,6 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+﻿import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { ThemedText } from '../components/ThemedText';
 
 interface DisabledFeatureOverlayProps {
   reason: string;
@@ -22,10 +23,10 @@ export const DisabledFeatureOverlay: React.FC<DisabledFeatureOverlayProps> = ({
             color="#FFF" 
           />
         </View>
-        <Text style={styles.title}>
+        <ThemedText style={styles.title}>
           ACCESS DENIED
-        </Text>
-        <Text style={styles.message}>{reason}</Text>
+        </ThemedText>
+        <ThemedText style={styles.message}>{reason}</ThemedText>
       </View>
     </View>
   );
@@ -54,7 +55,6 @@ const styles = StyleSheet.create({
   title: {
     color: '#FFF',
     fontSize: 20,
-    fontWeight: '900',
     marginBottom: 12,
     textAlign: 'center',
     letterSpacing: 1,
@@ -62,8 +62,8 @@ const styles = StyleSheet.create({
   message: {
     color: 'rgba(255,255,255,0.95)',
     fontSize: 15,
-    fontWeight: '600',
     textAlign: 'center',
     lineHeight: 22,
   },
 });
+

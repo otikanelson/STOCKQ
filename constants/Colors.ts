@@ -1,7 +1,7 @@
 // constants/Colors.ts — Modern redesign
 export const Colors = {
   light: {
-    background: '#F0F2FF',
+    background: '#f1f1f1ff',
     tabSurface: '#FFFFFF',
     surface: '#FFFFFF',
     surfaceElevated: '#F7F8FF',

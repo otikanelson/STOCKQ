@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { useRouter } from "expo-router";
 import * as Sharing from 'expo-sharing';
 import { useEffect, useState } from "react";
+import { ThemedText } from '../../../components/ThemedText';
 import {
     ActivityIndicator,
     Platform,
@@ -12,7 +13,7 @@ import {
     ScrollView,
     StyleSheet,
     Switch,
-    Text,
+    TextInput,
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -294,13 +295,13 @@ export default function DataSettingsScreen() {
             <Ionicons name={icon} size={20} color={theme.primary} />
           </View>
           <View style={styles.textStack}>
-            <Text style={[styles.settingLabel, { color: theme.text }]}>
+            <ThemedText style={[styles.settingLabel, { color: theme.text }]}>
               {label}
-            </Text>
+            </ThemedText>
             {description && (
-              <Text style={[styles.settingDesc, { color: theme.subtext }]}>
+              <ThemedText style={[styles.settingDesc, { color: theme.subtext }]}>
                 {description}
-              </Text>
+              </ThemedText>
             )}
           </View>
         </View>
@@ -334,20 +335,20 @@ export default function DataSettingsScreen() {
             <Ionicons name="arrow-back" size={24} color={theme.primary} />
           </Pressable>
           <View>
-            <Text style={[styles.headerSub, { color: theme.primary }]}>
+            <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
               ADMIN_SETTINGS
-            </Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>
+            </ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
               DATA
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
         {/* DATA MANAGEMENT SECTION */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary, marginBottom: 15 }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary, marginBottom: 15 }]}>
             DATA EXPORT
-          </Text>
+          </ThemedText>
 
           <View style={[styles.settingsContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <SettingRow
@@ -430,12 +431,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerSub: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
-  headerTitle: { fontSize: 25, fontWeight: "900", letterSpacing: -1 },
+  headerSub: { fontSize: 10, letterSpacing: 2 },
+  headerTitle: { fontSize: 25, letterSpacing: -1 },
   section: { marginBottom: 50 },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "800",
     letterSpacing: 1.5,
   },
   settingsContainer: {
@@ -460,6 +460,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   textStack: { flex: 1 },
-  settingLabel: { fontSize: 16, fontWeight: "600" },
+  settingLabel: { fontSize: 16, },
   settingDesc: { fontSize: 12, marginTop: 2 },
 });
+

@@ -10,12 +10,11 @@ import {
     Pressable,
     RefreshControl,
     StyleSheet,
-    Text,
-    TextInput,
     View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { HelpTooltip } from "../../components/HelpTooltip";
+import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { useProducts } from "../../hooks/useProducts";
 
@@ -205,13 +204,13 @@ export default function AdminInventory() {
       <View style={{ flex: 1, backgroundColor: theme.background }}>
         <View style={styles.container}>
         <View style={styles.topSection}>
-          <Text style={[styles.subtitle, { color: theme.primary }]}>
+          <ThemedText style={[styles.subtitle, { color: theme.primary }]}>
             ADMIN PANEL
-          </Text>
+          </ThemedText>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               Inventory
-            </Text>
+            </ThemedText>
             <HelpTooltip
               style={{marginBottom: 20}}
               title="Admin Inventory"
@@ -308,7 +307,7 @@ export default function AdminInventory() {
                 },
               ]}
             >
-              <Text
+              <ThemedText
                 style={[
                   styles.tabText,
                   {
@@ -318,7 +317,7 @@ export default function AdminInventory() {
                 ]}
               >
                 Inventory Stock
-              </Text>
+              </ThemedText>
             </Pressable>
             <Pressable
               onPress={() => setActiveTab("registry")}
@@ -329,7 +328,7 @@ export default function AdminInventory() {
                 },
               ]}
             >
-              <Text
+              <ThemedText
                 style={[
                   styles.tabText,
                   {
@@ -339,20 +338,20 @@ export default function AdminInventory() {
                 ]}
               >
                 Global Registry
-              </Text>
+              </ThemedText>
             </Pressable>
           </View>
 
           <View style={styles.countRow}>
-            <Text style={{ color: theme.text, fontWeight: "800" }}>
-              <Text style={[styles.countText, { color: theme.subtext }]}>
+            <ThemedText style={{ color: theme.text, }}>
+              <ThemedText style={[styles.countText, { color: theme.subtext }]}>
                 {sortedProducts.length}
-              </Text>{" "}
+              </ThemedText>{" "}
               Products
-            </Text>
-            <Text style={[styles.sortLabel, { color: theme.primary }]}>
+            </ThemedText>
+            <ThemedText style={[styles.sortLabel, { color: theme.primary }]}>
               Sort: {sortField.toUpperCase()}
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
@@ -396,12 +395,12 @@ export default function AdminInventory() {
                   
                   <View style={{ flex: 2, marginLeft: riskColor && riskScore > 30 && activeTab === "inventory" ? 8 : 0 }}>
                     <View style={styles.listNameRow}>
-                      <Text
+                      <ThemedText
                         style={[styles.listName, { color: theme.text }]}
                         numberOfLines={1}
                       >
                         {item.name}
-                      </Text>
+                      </ThemedText>
                       {/* Velocity Indicator */}
                       {velocityIndicator && activeTab === "inventory" && (
                         <Ionicons 
@@ -412,23 +411,23 @@ export default function AdminInventory() {
                         />
                       )}
                     </View>
-                    <Text
+                    <ThemedText
                       style={[styles.listSubtitle, { color: theme.subtext }]}
                     >
                       {item.barcode || "No SKU"}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={styles.listPill}>
-                    <Text
+                    <ThemedText
                       style={[styles.listCategory, { color: theme.subtext }]}
                     >
                       {item.category || "General"}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={{ flex: 1, alignItems: "flex-end" }}>
                     {sortField === "risk" && activeTab === "inventory" ? (
                       productAnalytics && riskScore > 0 ? (
-                        <Text
+                        <ThemedText
                           style={[
                             styles.listQty,
                             {
@@ -437,9 +436,9 @@ export default function AdminInventory() {
                           ]}
                         >
                           Risk: {Math.round(riskScore)}
-                        </Text>
+                        </ThemedText>
                       ) : (
-                        <Text
+                        <ThemedText
                           style={[
                             styles.listQty,
                             {
@@ -448,11 +447,11 @@ export default function AdminInventory() {
                           ]}
                         >
                           —
-                        </Text>
+                        </ThemedText>
                       )
                     ) : sortField === "velocity" && activeTab === "inventory" ? (
                       productAnalytics && velocity > 0 ? (
-                        <Text
+                        <ThemedText
                           style={[
                             styles.listQty,
                             {
@@ -461,9 +460,9 @@ export default function AdminInventory() {
                           ]}
                         >
                           {velocity.toFixed(1)}/day
-                        </Text>
+                        </ThemedText>
                       ) : (
-                        <Text
+                        <ThemedText
                           style={[
                             styles.listQty,
                             {
@@ -472,10 +471,10 @@ export default function AdminInventory() {
                           ]}
                         >
                           —
-                        </Text>
+                        </ThemedText>
                       )
                     ) : (
-                      <Text
+                      <ThemedText
                         style={[
                           styles.listQty,
                           {
@@ -492,7 +491,7 @@ export default function AdminInventory() {
                           : inLocalInventory 
                           ? `${products.find((p) => p.barcode === item.barcode)?.totalQuantity || 0} units`
                           : "—"}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                 </Pressable>
@@ -560,40 +559,41 @@ export default function AdminInventory() {
                   </View>
                   <View style={{ flex: 1 }}>
                     <View style={styles.nameRow}>
-                      <Text
+                      <ThemedText
                         style={[styles.name, { color: theme.text }]}
                         numberOfLines={1}
                       >
                         {item.name}
-                      </Text>
+                      </ThemedText>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <ThemedText style={[styles.category, { color: theme.subtext }]}>
+                        {item.category || "General"}
+                      </ThemedText>
                       {/* Velocity Indicator */}
                       {velocityIndicator && activeTab === "inventory" && (
                         <Ionicons 
                           name={velocityIndicator.icon} 
-                          size={14} 
+                          size={12} 
                           color={velocityIndicator.color}
-                          style={{ marginLeft: 6 }}
                         />
                       )}
                     </View>
-                    <Text style={[styles.category, { color: theme.subtext }]}>
-                      {item.category || "General"}
-                    </Text>
                     {activeTab === "registry" && (
                       <View style={styles.statusRow}>
                         {inLocalInventory ? (
                           <View style={[styles.statusBadge, { backgroundColor: theme.primary + "20" }]}>
                             <Ionicons name="checkmark-circle" size={12} color={theme.primary} />
-                            <Text style={[styles.statusText, { color: theme.primary }]}>
+                            <ThemedText style={[styles.statusText, { color: theme.primary }]}>
                               In Stock
-                            </Text>
+                            </ThemedText>
                           </View>
                         ) : (
                           <View style={[styles.statusBadge, { backgroundColor: "#FF9500" + "20" }]}>
                             <Ionicons name="alert-circle" size={12} color="#FF9500" />
-                            <Text style={[styles.statusText, { color: "#FF9500" }]}>
+                            <ThemedText style={[styles.statusText, { color: "#FF9500" }]}>
                               No Stock
-                            </Text>
+                            </ThemedText>
                           </View>
                         )}
                       </View>
@@ -603,7 +603,7 @@ export default function AdminInventory() {
                     {sortField === "risk" && activeTab === "inventory" ? (
                       productAnalytics && riskScore > 0 ? (
                         <>
-                          <Text
+                          <ThemedText
                             style={[
                               styles.qtyValue,
                               {
@@ -612,14 +612,14 @@ export default function AdminInventory() {
                             ]}
                           >
                             {Math.round(riskScore)}
-                          </Text>
-                          <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                          </ThemedText>
+                          <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                             RISK
-                          </Text>
+                          </ThemedText>
                         </>
                       ) : (
                         <>
-                          <Text
+                          <ThemedText
                             style={[
                               styles.qtyValue,
                               {
@@ -628,16 +628,16 @@ export default function AdminInventory() {
                             ]}
                           >
                             —
-                          </Text>
-                          <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                          </ThemedText>
+                          <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                             RISK
-                          </Text>
+                          </ThemedText>
                         </>
                       )
                     ) : sortField === "velocity" && activeTab === "inventory" ? (
                       productAnalytics && velocity > 0 ? (
                         <>
-                          <Text
+                          <ThemedText
                             style={[
                               styles.qtyValue,
                               {
@@ -646,14 +646,14 @@ export default function AdminInventory() {
                             ]}
                           >
                             {velocity.toFixed(1)}
-                          </Text>
-                          <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                          </ThemedText>
+                          <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                             /DAY
-                          </Text>
+                          </ThemedText>
                         </>
                       ) : (
                         <>
-                          <Text
+                          <ThemedText
                             style={[
                               styles.qtyValue,
                               {
@@ -662,15 +662,15 @@ export default function AdminInventory() {
                             ]}
                           >
                             —
-                          </Text>
-                          <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                          </ThemedText>
+                          <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                             /DAY
-                          </Text>
+                          </ThemedText>
                         </>
                       )
                     ) : (
                       <>
-                        <Text
+                        <ThemedText
                           style={[
                             styles.qtyValue,
                             {
@@ -687,10 +687,10 @@ export default function AdminInventory() {
                             : inLocalInventory 
                             ? products.find((p) => p.barcode === item.barcode)?.totalQuantity || 0
                             : "—"}
-                        </Text>
-                        <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                        </ThemedText>
+                        <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                           {activeTab === "inventory" ? "QTY" : "REG"}
-                        </Text>
+                        </ThemedText>
                       </>
                     )}
                   </View>
@@ -705,9 +705,9 @@ export default function AdminInventory() {
                 size={48}
                 color={theme.subtext}
               />
-              <Text style={[styles.emptyText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
                 No products found
-              </Text>
+              </ThemedText>
             </View>
           }
         />
@@ -720,8 +720,8 @@ export default function AdminInventory() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: 60 },
   topSection: { paddingHorizontal: 20, marginBottom: 10 },
-  subtitle: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
-  title: { fontSize: 25, fontWeight: "900", letterSpacing: -1, marginBottom: 20 },
+  subtitle: { fontSize: 10, letterSpacing: 2 },
+  title: { fontSize: 25, letterSpacing: -1, marginBottom: 20 },
   searchRow: { flexDirection: "row", gap: 10, marginBottom: 15 },
   searchBar: {
     flex: 1,
@@ -758,14 +758,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: "transparent",
   },
-  tabText: { fontSize: 14, fontWeight: "800" },
+  tabText: { fontSize: 14, },
   countRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
   },
-  countText: { fontSize: 13, fontWeight: "600" },
-  sortLabel: { fontSize: 11, fontWeight: "800" },
+  countText: { fontSize: 13, },
+  sortLabel: { fontSize: 11, },
   listPadding: { paddingHorizontal: 20, paddingBottom: 100 },
   itemCard: { 
     borderRadius: 20, 
@@ -783,23 +783,25 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     zIndex: 10,
   },
-  cardMain: { flexDirection: "row", alignItems: "center" },
+  cardMain: { flexDirection: "row", alignItems: "center", gap: 12 },
   imageContainer: {
     width: 60,
     height: 60,
     borderRadius: 12,
-    marginRight: 12,
     backgroundColor: "#e6e6e620",
     justifyContent: "center",
     alignItems: "center",
+    flexShrink: 0,
   },
   image: { width: "100%", height: "100%", borderRadius: 12 },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+    minWidth: 0,
   },
-  name: { fontSize: 16, fontWeight: "800" },
-  category: { fontSize: 12, fontWeight: "600", marginTop: 2 },
+  name: { fontSize: 16, flex: 1, minWidth: 0 },
+  category: { fontSize: 12, marginTop: 2 },
   statusRow: {
     flexDirection: "row",
     marginTop: 6,
@@ -814,12 +816,11 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 10,
-    fontWeight: "800",
     textTransform: "uppercase",
   },
-  qtyBox: { alignItems: "center", minWidth: 40 },
-  qtyValue: { fontSize: 20, fontWeight: "900" },
-  qtyLabel: { fontSize: 9, fontWeight: "700" },
+  qtyBox: { alignItems: "center", width: 50, flexShrink: 0 },
+  qtyValue: { fontSize: 20, },
+  qtyLabel: { fontSize: 9, },
   emptyContainer: {
     alignItems: "center",
     paddingVertical: 60,
@@ -827,8 +828,7 @@ const styles = StyleSheet.create({
   emptyText: {
     marginTop: 12,
     fontSize: 14,
-    fontWeight: "600",
-  },
+    },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -846,7 +846,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  listName: { fontSize: 14, fontWeight: "700" },
+  listName: { fontSize: 14, },
   listSubtitle: { fontSize: 11 },
   listPill: {
     backgroundColor: "#f0f0f010",
@@ -854,8 +854,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 6,
   },
-  listCategory: { fontSize: 10, fontWeight: "700" },
-  listQty: { fontSize: 14, fontWeight: "800" },
+  listCategory: { fontSize: 10, },
+  listQty: { fontSize: 14, },
   columnWrapper: {
     justifyContent: 'space-between',
     paddingHorizontal: 4,

@@ -6,9 +6,9 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
     View
 } from 'react-native';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -239,12 +239,12 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
           )}
 
           {/* Content */}
-          <Text style={[styles.tooltipTitle, { color: theme.text }]}>
+          <ThemedText style={[styles.tooltipTitle, { color: theme.text }]}>
             {step.title}
-          </Text>
-          <Text style={[styles.tooltipDescription, { color: theme.subtext }]}>
+          </ThemedText>
+          <ThemedText style={[styles.tooltipDescription, { color: theme.subtext }]}>
             {step.description}
-          </Text>
+          </ThemedText>
 
           {/* Progress indicator */}
           <View style={styles.progressContainer}>
@@ -265,9 +265,9 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
           {/* Navigation buttons */}
           <View style={styles.buttonContainer}>
             <Pressable onPress={handleSkip} style={styles.skipButton}>
-              <Text style={[styles.skipText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.skipText, { color: theme.subtext }]}>
                 Skip Tour
-              </Text>
+              </ThemedText>
             </Pressable>
 
             <View style={styles.navButtons}>
@@ -292,7 +292,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
                 ]}
               >
                 {currentStep === steps.length - 1 ? (
-                  <Text style={styles.doneText}>Done</Text>
+                  <ThemedText style={styles.doneText}>Done</ThemedText>
                 ) : (
                   <Ionicons name="chevron-forward" size={20} color="#FFF" />
                 )}
@@ -301,9 +301,9 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
           </View>
 
           {/* Step counter */}
-          <Text style={[styles.stepCounter, { color: theme.subtext }]}>
+          <ThemedText style={[styles.stepCounter, { color: theme.subtext }]}>
             {currentStep + 1} of {steps.length}
-          </Text>
+          </ThemedText>
         </Animated.View>
       </Animated.View>
     </Modal>
@@ -371,7 +371,6 @@ const styles = StyleSheet.create({
   },
   tooltipTitle: {
     fontSize: 20,
-    fontWeight: '800',
     marginBottom: 8,
   },
   tooltipDescription: {
@@ -400,8 +399,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 14,
-    fontWeight: '600',
-  },
+    },
   navButtons: {
     flexDirection: 'row',
     gap: 10,
@@ -421,11 +419,10 @@ const styles = StyleSheet.create({
   doneText: {
     color: '#FFF',
     fontSize: 14,
-    fontWeight: '700',
-  },
+    },
   stepCounter: {
     fontSize: 12,
     textAlign: 'center',
-    fontWeight: '600',
-  },
+    },
 });
+

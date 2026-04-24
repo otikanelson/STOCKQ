@@ -1,4 +1,4 @@
-import { HelpTooltip } from "@/components/HelpTooltip";
+﻿import { HelpTooltip } from "@/components/HelpTooltip";
 import { ProductCard } from "@/components/ProductCard";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -15,10 +15,10 @@ import {
     Pressable,
     RefreshControl,
     StyleSheet,
-    Text,
     TextInput,
     View
 } from "react-native";
+import { ThemedText } from '../../components/ThemedText';
 
 export default function InventoryScreen() {
   const router = useRouter();
@@ -127,9 +127,9 @@ export default function InventoryScreen() {
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={styles.container}>
         <View style={styles.topSection}>
-          <Text style={[styles.subtitle, { color: theme.primary }]}>STOCK MANAGEMENT</Text>
+          <ThemedText style={[styles.subtitle, { color: theme.primary }]}>STOCK MANAGEMENT</ThemedText>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={[styles.title, { color: theme.text }]}>Inventory</Text>
+            <ThemedText style={[styles.title, { color: theme.text }]}>Inventory</ThemedText>
             <HelpTooltip
               title="Inventory Management"
               content={[
@@ -215,15 +215,15 @@ export default function InventoryScreen() {
           </View>
 
           <View style={styles.countRow}>
-            <Text style={{ color: theme.text, fontWeight: "800" }}>
-              <Text style={[styles.countText, { color: theme.subtext }]}>
+            <ThemedText style={{ color: theme.text, }}>
+              <ThemedText style={[styles.countText, { color: theme.subtext }]}>
                 {sortedProducts.length}
-              </Text>{" "}
+              </ThemedText>{" "}
               Products
-            </Text>
-            <Text style={[styles.sortLabel, { color: theme.primary }]}>
+            </ThemedText>
+            <ThemedText style={[styles.sortLabel, { color: theme.primary }]}>
               Sort: {sortField.toUpperCase()}
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
@@ -264,12 +264,12 @@ export default function InventoryScreen() {
                   
                   <View style={{ flex: 2, marginLeft: riskColor && riskScore > 30 ? 8 : 0 }}>
                     <View style={styles.listNameRow}>
-                      <Text
+                      <ThemedText
                         style={[styles.listName, { color: theme.text }]}
                         numberOfLines={1}
                       >
                         {item.name}
-                      </Text>
+                      </ThemedText>
                       {/* Velocity Indicator */}
                       {velocityIndicator && (
                         <Ionicons 
@@ -280,22 +280,22 @@ export default function InventoryScreen() {
                         />
                       )}
                     </View>
-                    <Text
+                    <ThemedText
                       style={[styles.listSubtitle, { color: theme.subtext }]}
                     >
                       {item.barcode || "No SKU"}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={styles.listPill}>
-                    <Text
+                    <ThemedText
                       style={[styles.listCategory, { color: theme.subtext }]}
                     >
                       {item.category || "General"}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={{ flex: 1, alignItems: "flex-end" }}>
                     {sortField === "risk" && productAnalytics ? (
-                      <Text
+                      <ThemedText
                         style={[
                           styles.listQty,
                           {
@@ -304,9 +304,9 @@ export default function InventoryScreen() {
                         ]}
                       >
                         Risk: {Math.round(riskScore)}
-                      </Text>
+                      </ThemedText>
                     ) : sortField === "velocity" && productAnalytics ? (
-                      <Text
+                      <ThemedText
                         style={[
                           styles.listQty,
                           {
@@ -315,9 +315,9 @@ export default function InventoryScreen() {
                         ]}
                       >
                         {velocity.toFixed(1)}/day
-                      </Text>
+                      </ThemedText>
                     ) : (
-                      <Text
+                      <ThemedText
                         style={[
                           styles.listQty,
                           {
@@ -329,7 +329,7 @@ export default function InventoryScreen() {
                         ]}
                       >
                         {item.totalQuantity} units
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                 </Pressable>
@@ -385,12 +385,12 @@ export default function InventoryScreen() {
                   </View>
                   <View style={{ flex: 1 }}>
                     <View style={styles.cardNameRow}>
-                      <Text
+                      <ThemedText
                         style={[styles.name, { color: theme.text }]}
                         numberOfLines={1}
                       >
                         {item.name}
-                      </Text>
+                      </ThemedText>
                       {/* Velocity Indicator */}
                       {velocityIndicator && (
                         <Ionicons 
@@ -401,14 +401,14 @@ export default function InventoryScreen() {
                         />
                       )}
                     </View>
-                    <Text style={[styles.category, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.category, { color: theme.subtext }]}>
                       {item.category || "General"}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={styles.qtyBox}>
                     {sortField === "risk" && productAnalytics ? (
                       <>
-                        <Text
+                        <ThemedText
                           style={[
                             styles.qtyValue,
                             {
@@ -417,14 +417,14 @@ export default function InventoryScreen() {
                           ]}
                         >
                           {Math.round(riskScore)}
-                        </Text>
-                        <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                        </ThemedText>
+                        <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                           RISK
-                        </Text>
+                        </ThemedText>
                       </>
                     ) : sortField === "velocity" && productAnalytics ? (
                       <>
-                        <Text
+                        <ThemedText
                           style={[
                             styles.qtyValue,
                             {
@@ -433,14 +433,14 @@ export default function InventoryScreen() {
                           ]}
                         >
                           {velocity.toFixed(1)}
-                        </Text>
-                        <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                        </ThemedText>
+                        <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                           /DAY
-                        </Text>
+                        </ThemedText>
                       </>
                     ) : (
                       <>
-                        <Text
+                        <ThemedText
                           style={[
                             styles.qtyValue,
                             {
@@ -452,10 +452,10 @@ export default function InventoryScreen() {
                           ]}
                         >
                           {item.totalQuantity}
-                        </Text>
-                        <Text style={[styles.qtyLabel, { color: theme.subtext }]}>
+                        </ThemedText>
+                        <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
                           QTY
-                        </Text>
+                        </ThemedText>
                       </>
                     )}
                   </View>
@@ -472,9 +472,9 @@ export default function InventoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: 60 },
   topSection: { paddingHorizontal: 20, marginBottom: 10 },
-  subtitle: { fontSize: 10, fontWeight: '700', letterSpacing: 2 },
-  title: { fontSize: 26, fontWeight: '800', letterSpacing: -0.5 },
-  searchRow: { flexDirection: "row", gap: 10, marginBottom: 15 },
+  subtitle: { fontSize: 10, letterSpacing: 2 },
+  title: { fontSize: 26, letterSpacing: -0.5 },
+  searchRow: { flexDirection: "row", gap: 10, margin: 15 },
   searchBar: {
     flex: 1,
     flexDirection: "row",
@@ -503,8 +503,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
   },
-  countText: { fontSize: 13, fontWeight: "600" },
-  sortLabel: { fontSize: 11, fontWeight: "800" },
+  countText: { fontSize: 13, },
+  sortLabel: { fontSize: 11, },
   listPadding: { paddingHorizontal: 20, paddingBottom: 100 },
   itemCard: { borderRadius: 20, borderWidth: 1, marginBottom: 12, padding: 16 },
   cardMain: { flexDirection: "row", alignItems: "center" },
@@ -518,11 +518,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: { width: "100%", height: "100%" },
-  name: { fontSize: 16, fontWeight: "800" },
-  category: { fontSize: 12, fontWeight: "600" },
+  name: { fontSize: 16, },
+  category: { fontSize: 12, },
   qtyBox: { alignItems: "center", minWidth: 40 },
-  qtyValue: { fontSize: 20, fontWeight: "900" },
-  qtyLabel: { fontSize: 9, fontWeight: "700" },
+  qtyValue: { fontSize: 20, },
+  qtyLabel: { fontSize: 9, },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  listName: { fontSize: 14, fontWeight: "700" },
+  listName: { fontSize: 14, },
   listSubtitle: { fontSize: 11 },
   listPill: {
     backgroundColor: "#f0f0f010",
@@ -548,8 +548,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 6,
   },
-  listCategory: { fontSize: 10, fontWeight: "700" },
-  listQty: { fontSize: 14, fontWeight: "800" },
+  listCategory: { fontSize: 10, },
+  listQty: { fontSize: 14, },
   cardRiskDot: {
     position: 'absolute',
     top: 12,

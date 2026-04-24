@@ -1,6 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+﻿import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
 import { Colors } from '../constants/Colors';
+import { ThemedText } from '../components/ThemedText';
 
 export const toastConfig = (isDark: boolean) => {
   const theme = isDark ? Colors.dark : Colors.light;
@@ -12,13 +13,13 @@ export const toastConfig = (isDark: boolean) => {
           <Ionicons name="checkmark-circle" size={24} color="#10B981" />
         </View>
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+          <ThemedText style={[styles.title, { color: theme.text }]} numberOfLines={1}>
             {props.text1}
-          </Text>
+          </ThemedText>
           {props.text2 && (
-            <Text style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
+            <ThemedText style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
               {props.text2}
-            </Text>
+            </ThemedText>
           )}
         </View>
       </View>
@@ -30,13 +31,13 @@ export const toastConfig = (isDark: boolean) => {
           <Ionicons name="close-circle" size={24} color="#EF4444" />
         </View>
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+          <ThemedText style={[styles.title, { color: theme.text }]} numberOfLines={1}>
             {props.text1}
-          </Text>
+          </ThemedText>
           {props.text2 && (
-            <Text style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
+            <ThemedText style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
               {props.text2}
-            </Text>
+            </ThemedText>
           )}
         </View>
       </View>
@@ -48,13 +49,13 @@ export const toastConfig = (isDark: boolean) => {
           <Ionicons name="information-circle" size={24} color={theme.primary} />
         </View>
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+          <ThemedText style={[styles.title, { color: theme.text }]} numberOfLines={1}>
             {props.text1}
-          </Text>
+          </ThemedText>
           {props.text2 && (
-            <Text style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
+            <ThemedText style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
               {props.text2}
-            </Text>
+            </ThemedText>
           )}
         </View>
       </View>
@@ -66,13 +67,13 @@ export const toastConfig = (isDark: boolean) => {
           <Ionicons name="warning" size={24} color="#F59E0B" />
         </View>
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+          <ThemedText style={[styles.title, { color: theme.text }]} numberOfLines={1}>
             {props.text1}
-          </Text>
+          </ThemedText>
           {props.text2 && (
-            <Text style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
+            <ThemedText style={[styles.message, { color: theme.subtext }]} numberOfLines={2}>
               {props.text2}
-            </Text>
+            </ThemedText>
           )}
         </View>
       </View>
@@ -109,12 +110,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    fontWeight: '700',
     marginBottom: 2,
   },
   message: {
     fontSize: 13,
-    fontWeight: '400',
     lineHeight: 18,
   },
 });
+

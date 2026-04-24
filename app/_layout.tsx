@@ -9,6 +9,7 @@ import { TourOverlay } from '../components/TourOverlay';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { TourProvider } from '../context/TourContext';
+import { useFonts } from '../hooks/useFonts';
 // Import axios configuration to set up interceptors
 import '../utils/axiosConfig';
 
@@ -187,6 +188,7 @@ function ThemedToast() {
 
 export default function RootLayout() {
   const [showSplash, setShowSplash] = useState(true);
+  const fontsLoaded = useFonts();
 
   return (
     <ErrorBoundary>

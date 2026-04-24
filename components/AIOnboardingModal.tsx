@@ -6,9 +6,9 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    Text,
-    View,
+    View
 } from 'react-native';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -45,14 +45,14 @@ export const AIOnboardingModal: React.FC<AIOnboardingModalProps> = ({
             </View>
 
             {/* Title */}
-            <Text style={[styles.title, { color: theme.text }]}>
+            <ThemedText style={[styles.title, { color: theme.text }]}>
               Welcome to AI-Powered Predictions
-            </Text>
+            </ThemedText>
 
             {/* Subtitle */}
-            <Text style={[styles.subtitle, { color: theme.subtext }]}>
+            <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
               Insightory uses artificial intelligence to help you make smarter inventory decisions
-            </Text>
+            </ThemedText>
 
             {/* Features */}
             <View style={styles.featuresContainer}>
@@ -78,35 +78,35 @@ export const AIOnboardingModal: React.FC<AIOnboardingModalProps> = ({
 
             {/* Requirements */}
             <View style={[styles.requirementsBox, { backgroundColor: theme.background, borderColor: theme.border }]}>
-              <Text style={[styles.requirementsTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.requirementsTitle, { color: theme.text }]}>
                 To activate AI predictions:
-              </Text>
+              </ThemedText>
               <View style={styles.requirementItem}>
                 <Ionicons name="checkmark-circle" size={20} color={theme.primary} />
-                <Text style={[styles.requirementText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.requirementText, { color: theme.subtext }]}>
                   Add at least 10 products to inventory
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.requirementItem}>
                 <Ionicons name="checkmark-circle" size={20} color={theme.primary} />
-                <Text style={[styles.requirementText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.requirementText, { color: theme.subtext }]}>
                   Record at least 20 sales transactions
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.requirementItem}>
                 <Ionicons name="checkmark-circle" size={20} color={theme.primary} />
-                <Text style={[styles.requirementText, { color: theme.subtext }]}>
+                <ThemedText style={[styles.requirementText, { color: theme.subtext }]}>
                   Wait 7-14 days for optimal accuracy
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
             {/* Privacy Note */}
             <View style={styles.privacyNote}>
               <Ionicons name="shield-checkmark" size={16} color={theme.subtext} />
-              <Text style={[styles.privacyText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.privacyText, { color: theme.subtext }]}>
                 Your data stays on your server. We don't collect or share any information.
-              </Text>
+              </ThemedText>
             </View>
 
             {/* Actions */}
@@ -115,15 +115,15 @@ export const AIOnboardingModal: React.FC<AIOnboardingModalProps> = ({
                 style={[styles.secondaryButton, { borderColor: theme.border }]}
                 onPress={onLearnMore}
               >
-                <Text style={[styles.secondaryButtonText, { color: theme.text }]}>
+                <ThemedText style={[styles.secondaryButtonText, { color: theme.text }]}>
                   Learn More
-                </Text>
+                </ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.primaryButton, { backgroundColor: theme.primary }]}
                 onPress={onClose}
               >
-                <Text style={styles.primaryButtonText}>Got It!</Text>
+                <ThemedText style={styles.primaryButtonText}>Got It!</ThemedText>
               </Pressable>
             </View>
           </ScrollView>
@@ -146,10 +146,10 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ icon, title, description, the
       <Ionicons name={icon} size={24} color={theme.primary} />
     </View>
     <View style={styles.featureText}>
-      <Text style={[styles.featureTitle, { color: theme.text }]}>{title}</Text>
-      <Text style={[styles.featureDescription, { color: theme.subtext }]}>
+      <ThemedText style={[styles.featureTitle, { color: theme.text }]}>{title}</ThemedText>
+      <ThemedText style={[styles.featureDescription, { color: theme.subtext }]}>
         {description}
-      </Text>
+      </ThemedText>
     </View>
   </View>
 );
@@ -182,7 +182,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '900',
     textAlign: 'center',
     marginBottom: 12,
   },
@@ -213,7 +212,6 @@ const styles = StyleSheet.create({
   },
   featureTitle: {
     fontSize: 16,
-    fontWeight: '700',
     marginBottom: 4,
   },
   featureDescription: {
@@ -228,7 +226,6 @@ const styles = StyleSheet.create({
   },
   requirementsTitle: {
     fontSize: 15,
-    fontWeight: '700',
     marginBottom: 12,
   },
   requirementItem: {
@@ -266,8 +263,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#FFF',
     fontSize: 16,
-    fontWeight: '700',
-  },
+    },
   secondaryButton: {
     flex: 1,
     paddingVertical: 16,
@@ -277,6 +273,6 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     fontSize: 16,
-    fontWeight: '700',
-  },
+    },
 });
+

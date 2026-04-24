@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -8,10 +8,10 @@ import {
     Pressable,
     RefreshControl,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import { HelpTooltip } from "../../components/HelpTooltip";
+import { ThemedText } from '../../components/ThemedText';
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useAIPredictions } from "../../hooks/useAIPredictions";
@@ -196,9 +196,9 @@ export default function FEFOScreen() {
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View style={styles.headerArea}>
-            <Text style={[styles.systemTag, { color: theme.primary }]}>
+            <ThemedText style={[styles.systemTag, { color: theme.primary }]}>
               EXPIRY_MANAGEMENT
-            </Text>
+            </ThemedText>
             <View
               style={{
                 flexDirection: "row",
@@ -207,9 +207,9 @@ export default function FEFOScreen() {
               }}
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={[styles.title, { color: theme.text }]}>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
                   PRIORITY_QUEUE
-                </Text>
+                </ThemedText>
                 <HelpTooltip
                   title="FEFO System"
                   content={[
@@ -240,14 +240,14 @@ export default function FEFOScreen() {
                   size={10}
                   color={sortByAI ? '#FFF' : theme.primary}
                 />
-                <Text
+                <ThemedText
                   style={[
                     styles.filterToggleText,
                     { color: sortByAI ? '#FFF' : theme.text },
                   ]}
                 >
                   {sortByAI ? 'AI_RISK' : 'EXPIRY'}
-                </Text>
+                </ThemedText>
               </Pressable>
 
               <Pressable
@@ -266,26 +266,26 @@ export default function FEFOScreen() {
                   size={10}
                   color={viewByProduct ? "#FFF" : theme.primary}
                 />
-                <Text
+                <ThemedText
                   style={[
                     styles.filterToggleText,
                     { color: viewByProduct ? "#FFF" : theme.text },
                   ]}
                 >
                   {viewByProduct ? "BY_PRODUCT" : "BY_BATCH"}
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
             </View>
 
             <View style={[styles.statsStrip, { borderColor: theme.border }]}>
-              <Text style={[styles.statsText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.statsText, { color: theme.subtext }]}>
                 MONITORING{" "}
-                <Text style={{ color: theme.text, fontWeight: "900" }}>
+                <ThemedText style={{ color: theme.text, }}>
                   {priorityQueue.length}
-                </Text>{" "}
+                </ThemedText>{" "}
                 {viewByProduct ? "UNIQUE_ITEMS" : "ACTIVE_BATCHES"}
-              </Text>
+              </ThemedText>
             </View>
           </View>
         }
@@ -310,37 +310,37 @@ export default function FEFOScreen() {
               <View style={styles.mainInfo}>
                 <View style={styles.topLine}>
                   <View style={styles.batchIdContainer}>
-                    <Text style={[styles.batchId, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.batchId, { color: theme.subtext }]}>
                       {viewByProduct ?
                         "SOONEST_EXPIRY"
                       : `BATCH_#${item.batchNumber?.slice(-7).toUpperCase() || "MANUAL"}`
                       }
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={styles.rightInfo}>
                     {sortByAI && item.riskScore > 0 ? (
                       <>
-                        <Text style={[styles.daysCounter, { color: statusColor }]}>
+                        <ThemedText style={[styles.daysCounter, { color: statusColor }]}>
                           RISK_{item.riskScore}/100
-                        </Text>
-                        <Text style={[styles.priorityScore, { color: theme.subtext }]}>
+                        </ThemedText>
+                        <ThemedText style={[styles.priorityScore, { color: theme.subtext }]}>
                           {formatTimeRemaining(item.daysLeft)}
-                        </Text>
+                        </ThemedText>
                       </>
                     ) : (
-                      <Text style={[styles.daysCounter, { color: statusColor }]}>
+                      <ThemedText style={[styles.daysCounter, { color: statusColor }]}>
                         {formatTimeRemaining(item.daysLeft)}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                 </View>
 
-                <Text
+                <ThemedText
                   style={[styles.name, { color: theme.text }]}
                   numberOfLines={1}
                 >
                   {item.parentName.toUpperCase()}
-                </Text>
+                </ThemedText>
 
                 <View style={styles.bottomLine}>
                   <View style={styles.tag}>
@@ -349,9 +349,9 @@ export default function FEFOScreen() {
                       size={10}
                       color={theme.primary}
                     />
-                    <Text style={[styles.tagText, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.tagText, { color: theme.subtext }]}>
                       {viewByProduct ? "Multi-Batch" : `${item.quantity} units`}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={styles.tag}>
                     <Ionicons
@@ -359,24 +359,24 @@ export default function FEFOScreen() {
                       size={10}
                       color={theme.primary}
                     />
-                    <Text style={[styles.tagText, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.tagText, { color: theme.subtext }]}>
                       {new Date(item.expiryDate).toLocaleDateString()}
-                    </Text>
+                    </ThemedText>
                   </View>
                   {sortByAI && item.prediction?.recommendations?.[0] && (
                     <View style={[styles.riskBadge, { backgroundColor: statusColor }]}>
-                      <Text style={styles.riskBadgeText}>
+                      <ThemedText style={styles.riskBadgeText}>
                         {item.prediction.recommendations[0].priority.toUpperCase()}
-                      </Text>
+                      </ThemedText>
                     </View>
                   )}
                 </View>
               </View>
 
               <View style={styles.rankContainer}>
-                <Text style={[styles.rankText, { color: theme.border }]}>
+                <ThemedText style={[styles.rankText, { color: theme.border }]}>
                   {index + 1}
-                </Text>
+                </ThemedText>
                 {loadingPredictions && sortByAI && (
                   <ActivityIndicator size="small" color={theme.primary} style={{ marginTop: 4 }} />
                 )}
@@ -392,14 +392,14 @@ export default function FEFOScreen() {
                 size={48}
                 color={theme.subtext + "40"}
               />
-              <Text style={[styles.emptyText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
                 ALL_SYSTEMS_STABLE
-              </Text>
-              <Text
+              </ThemedText>
+              <ThemedText
                 style={{ color: theme.subtext, fontSize: 12, marginTop: 5 }}
               >
                 No expiring items detected in current registry
-              </Text>
+              </ThemedText>
             </View>
           : null
         }
@@ -418,8 +418,8 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 5,
   },
-  systemTag: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
-  title: { fontSize: 20, fontWeight: "900", letterSpacing: -1 },
+  systemTag: { fontSize: 10, letterSpacing: 2 },
+  title: { fontSize: 20, letterSpacing: -1 },
   controlsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -438,7 +438,6 @@ const styles = StyleSheet.create({
   },
   filterToggleText: {
     fontSize: 10,
-    fontWeight: "800",
     letterSpacing: 1,
   },
   statsStrip: {
@@ -448,7 +447,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: "dashed",
   },
-  statsText: { fontSize: 11, fontWeight: "600" },
+  statsText: { fontSize: 11, },
   technicalRow: {
     flexDirection: "row",
     borderRadius: 16,
@@ -469,16 +468,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  batchId: { fontSize: 10, fontWeight: "800", fontFamily: "monospace" },
+  batchId: { fontSize: 10, fontFamily: "monospace" },
   rightInfo: {
     alignItems: "flex-end",
   },
-  daysCounter: { fontSize: 10, fontWeight: "900" },
-  priorityScore: { fontSize: 8, fontWeight: "800", marginTop: 2 },
-  name: { fontSize: 18, fontWeight: "800", marginBottom: 8 },
+  daysCounter: { fontSize: 10, },
+  priorityScore: { fontSize: 8, marginTop: 2 },
+  name: { fontSize: 18, marginBottom: 8 },
   bottomLine: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
   tag: { flexDirection: "row", alignItems: "center", gap: 4 },
-  tagText: { fontSize: 10, fontWeight: "700" },
+  tagText: { fontSize: 10, },
   rankContainer: {
     width: 50,
     justifyContent: "center",
@@ -486,7 +485,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderLeftColor: "rgba(150,150,150,0.1)",
   },
-  rankText: { fontSize: 24, fontWeight: "900" },
+  rankText: { fontSize: 24, },
   riskBadge: {
     paddingHorizontal: 4,
     paddingVertical: 2,
@@ -496,13 +495,12 @@ const styles = StyleSheet.create({
   riskBadgeText: {
     color: "#FFF",
     fontSize: 8,
-    fontWeight: "800",
-  },
+    },
   emptyContainer: { alignItems: "center", marginTop: 100 },
   emptyText: {
     marginTop: 15,
     fontSize: 16,
-    fontWeight: "900",
     letterSpacing: 1,
   },
 });
+

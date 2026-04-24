@@ -8,18 +8,19 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
-    TextInput,
     View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { AdminTourOverlay } from "../../components/AdminTourOverlay";
+import { ThemedText } from '../../components/ThemedText';
 import { AdminTourProvider } from "../../context/AdminTourContext";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function AdminLayout() {
   const { theme } = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [showSetupModal, setShowSetupModal] = useState(false);
@@ -229,12 +230,12 @@ export default function AdminLayout() {
               <View style={[styles.iconBox, { backgroundColor: theme.primary + "15" }]}>
                 <Ionicons name="shield-checkmark" size={40} color={theme.primary} />
               </View>
-              <Text style={[styles.modalTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
                 Admin Access Required
-              </Text>
-              <Text style={[styles.modalSubtext, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.modalSubtext, { color: theme.subtext }]}>
                 Enter the admin Security PIN to continue
-              </Text>
+              </ThemedText>
               <TextInput
                 style={[
                   styles.pinInput,
@@ -254,13 +255,13 @@ export default function AdminLayout() {
                   style={[styles.modalBtn, { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border }]}
                   onPress={handleCancel}
                 >
-                  <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                  <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
                 </Pressable>
                 <Pressable
                   style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                   onPress={handlePinSubmit}
                 >
-                  <Text style={{ color: "#FFF", fontWeight: "700" }}>Verify PIN</Text>
+                  <ThemedText style={{ color: "#FFF", }}>Verify PIN</ThemedText>
                 </Pressable>
               </View>
             </View>
@@ -275,15 +276,14 @@ export default function AdminLayout() {
             tabBarHideOnKeyboard: true,
             tabBarLabelStyle: {
               fontSize: 10,
-              fontWeight: "700",
               letterSpacing: 0.3,
             },
             tabBarStyle: {
               backgroundColor: theme.tabSurface,
               borderTopWidth: 1,
               borderTopColor: theme.border,
-              height: 68,
-              paddingBottom: 10,
+              height: 68 + insets.bottom,
+              paddingBottom: 10 + insets.bottom,
               paddingTop: 8,
               elevation: 0,
               shadowOpacity: 0,
@@ -440,12 +440,12 @@ export default function AdminLayout() {
             <View style={[styles.iconBox, { backgroundColor: theme.primary + "15" }]}>
               <Ionicons name="shield-checkmark" size={40} color={theme.primary} />
             </View>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Set Security PIN
-            </Text>
-            <Text style={[styles.modalSubtext, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalSubtext, { color: theme.subtext }]}>
               Create a 4-digit Security PIN for sensitive admin operations
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[
@@ -480,19 +480,19 @@ export default function AdminLayout() {
                 style={[styles.modalBtn, { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border }]}
                 onPress={handleSkipSetup}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Skip</Text>
+                <ThemedText style={{ color: theme.text, }}>Skip</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={handleFirstTimeSetup}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>Create PIN</Text>
+                <ThemedText style={{ color: "#FFF", }}>Create PIN</ThemedText>
               </Pressable>
             </View>
 
-            <Text style={[styles.warningText, { color: theme.subtext }]}>
+            <ThemedText style={[styles.warningText, { color: theme.subtext }]}>
               ⚠️ You can set this up later in Settings
-            </Text>
+            </ThemedText>
           </View>
         </View>
       </Modal>
@@ -531,7 +531,6 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 22,
-    fontWeight: "900",
     marginBottom: 10,
     textAlign: "center",
   },
@@ -550,8 +549,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
     fontSize: 18,
-    fontWeight: "600",
-  },
+    },
   modalActions: {
     flexDirection: "row",
     gap: 12,
@@ -569,6 +567,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 15,
     textAlign: "center",
-    fontWeight: "600",
-  },
+    },
 });

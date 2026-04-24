@@ -25,28 +25,33 @@ export function SplashScreenAnimation({ onFinish }: Props) {
   const bgOpacity = useSharedValue(1);
 
   useEffect(() => {
-    // 1. Slide in from right → center (400ms)
-    translateX.value = withTiming(0, {
-      duration: 400,
-      easing: Easing.out(Easing.cubic),
-    }, () => {
-      // 2. Brief pause, then zoom out + fade (500ms)
-      scale.value = withDelay(
-        200,
-        withTiming(6, { duration: 500, easing: Easing.in(Easing.cubic) })
-      );
-      opacity.value = withDelay(
-        300,
-        withTiming(0, { duration: 400, easing: Easing.in(Easing.quad) })
-      );
-      // 3. Fade out background slightly after icon fades
-      bgOpacity.value = withDelay(
-        500,
-        withTiming(0, { duration: 300 }, () => {
-          runOnJS(onFinish)();
-        })
-      );
-    });
+    // Delay the entire animation by 3.2 seconds to let native splash screen finish
+    const timer = setTimeout(() => {
+      // 1. Slide in from right → center (400ms)
+      translateX.value = withTiming(0, {
+        duration: 400,
+        easing: Easing.out(Easing.cubic),
+      }, () => {
+        // 2. Brief pause, then zoom out + fade (500ms)
+        scale.value = withDelay(
+          200,
+          withTiming(6, { duration: 500, easing: Easing.in(Easing.cubic) })
+        );
+        opacity.value = withDelay(
+          300,
+          withTiming(0, { duration: 400, easing: Easing.in(Easing.quad) })
+        );
+        // 3. Fade out background slightly after icon fades
+        bgOpacity.value = withDelay(
+          500,
+          withTiming(0, { duration: 300 }, () => {
+            runOnJS(onFinish)();
+          })
+        );
+      });
+    }, 3200);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const iconStyle = useAnimatedStyle(() => ({

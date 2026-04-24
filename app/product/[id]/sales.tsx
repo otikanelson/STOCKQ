@@ -9,10 +9,10 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    Text,
     View
 } from "react-native";
 import { useTheme } from "../../../context/ThemeContext";
+import { ThemedText } from '../../../components/ThemedText';
 
 interface SaleRecord {
   _id: string;
@@ -107,7 +107,7 @@ export default function ProductSalesDetails() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={[styles.loadingText, { color: theme.text }]}>Loading sales data...</Text>
+          <ThemedText style={[styles.loadingText, { color: theme.text }]}>Loading sales data...</ThemedText>
         </View>
       </View>
     );
@@ -135,12 +135,12 @@ export default function ProductSalesDetails() {
           </Pressable>
           
           <View style={styles.headerInfo}>
-            <Text style={[styles.headerLabel, { color: theme.primary }]}>
+            <ThemedText style={[styles.headerLabel, { color: theme.primary }]}>
               SALES_ANALYTICS
-            </Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>
+            </ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
               Sales History
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
@@ -165,15 +165,15 @@ export default function ProductSalesDetails() {
               </View>
               
               <View style={styles.productInfo}>
-                <Text style={[styles.productName, { color: theme.text }]}>
+                <ThemedText style={[styles.productName, { color: theme.text }]}>
                   {product.name}
-                </Text>
-                <Text style={[styles.productCategory, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.productCategory, { color: theme.subtext }]}>
                   {product.category}
-                </Text>
-                <Text style={[styles.productStock, { color: theme.primary }]}>
+                </ThemedText>
+                <ThemedText style={[styles.productStock, { color: theme.primary }]}>
                   Current Stock: {product.totalQuantity} units
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -186,48 +186,48 @@ export default function ProductSalesDetails() {
             { backgroundColor: theme.surface, borderColor: theme.border },
           ]}
         >
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
             SALES SUMMARY
-          </Text>
+          </ThemedText>
           
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
               <Ionicons name="cash-outline" size={24} color={theme.primary} />
-              <Text style={[styles.summaryValue, { color: theme.text }]}>
+              <ThemedText style={[styles.summaryValue, { color: theme.text }]}>
                 ₦{getTotalSales().toLocaleString()}
-              </Text>
-              <Text style={[styles.summaryLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>
                 Total Revenue
-              </Text>
+              </ThemedText>
             </View>
             
             <View style={styles.summaryItem}>
               <Ionicons name="cube-outline" size={24} color={theme.primary} />
-              <Text style={[styles.summaryValue, { color: theme.text }]}>
+              <ThemedText style={[styles.summaryValue, { color: theme.text }]}>
                 {getTotalUnitsSold()}
-              </Text>
-              <Text style={[styles.summaryLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>
                 Units Sold
-              </Text>
+              </ThemedText>
             </View>
             
             <View style={styles.summaryItem}>
               <Ionicons name="receipt-outline" size={24} color={theme.primary} />
-              <Text style={[styles.summaryValue, { color: theme.text }]}>
+              <ThemedText style={[styles.summaryValue, { color: theme.text }]}>
                 {salesHistory.length}
-              </Text>
-              <Text style={[styles.summaryLabel, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.summaryLabel, { color: theme.subtext }]}>
                 Transactions
-              </Text>
+              </ThemedText>
             </View>
           </View>
         </View>
 
         {/* Sales History */}
         <View style={styles.historySection}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
             TRANSACTION HISTORY
-          </Text>
+          </ThemedText>
           
           {salesHistory.length === 0 ? (
             <View
@@ -237,12 +237,12 @@ export default function ProductSalesDetails() {
               ]}
             >
               <Ionicons name="receipt-outline" size={64} color={theme.subtext + "40"} />
-              <Text style={[styles.emptyText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
                 No sales recorded yet
-              </Text>
-              <Text style={[styles.emptyHint, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.emptyHint, { color: theme.subtext }]}>
                 Sales will appear here once transactions are made
-              </Text>
+              </ThemedText>
             </View>
           ) : (
             salesHistory.map((sale, index) => (
@@ -255,34 +255,34 @@ export default function ProductSalesDetails() {
               >
                 <View style={styles.saleHeader}>
                   <View style={styles.saleInfo}>
-                    <Text style={[styles.saleDate, { color: theme.text }]}>
+                    <ThemedText style={[styles.saleDate, { color: theme.text }]}>
                       {formatDate(sale.saleDate)}
-                    </Text>
-                    <Text style={[styles.saleMethod, { color: theme.subtext }]}>
+                    </ThemedText>
+                    <ThemedText style={[styles.saleMethod, { color: theme.subtext }]}>
                       Payment: {sale.paymentMethod.toUpperCase()}
-                    </Text>
+                    </ThemedText>
                   </View>
                   
                   <View style={styles.saleAmount}>
-                    <Text style={[styles.salePrice, { color: theme.primary }]}>
+                    <ThemedText style={[styles.salePrice, { color: theme.primary }]}>
                       ₦{sale.totalAmount.toLocaleString()}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
                 
                 <View style={styles.saleDetails}>
                   <View style={styles.saleMetric}>
                     <Ionicons name="cube-outline" size={16} color={theme.subtext} />
-                    <Text style={[styles.saleMetricText, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.saleMetricText, { color: theme.subtext }]}>
                       {sale.quantitySold} units
-                    </Text>
+                    </ThemedText>
                   </View>
                   
                   <View style={styles.saleMetric}>
                     <Ionicons name="pricetag-outline" size={16} color={theme.subtext} />
-                    <Text style={[styles.saleMetricText, { color: theme.subtext }]}>
+                    <ThemedText style={[styles.saleMetricText, { color: theme.subtext }]}>
                       ₦{sale.priceAtSale.toFixed(2)} per unit
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               </View>

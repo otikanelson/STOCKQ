@@ -5,9 +5,9 @@ import {
     Modal,
     Pressable,
     StyleSheet,
-    Text,
-    View,
+    View
 } from 'react-native';
+import { ThemedText } from '../components/ThemedText';
 import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -38,20 +38,20 @@ export const HelpTooltipIntroModal: React.FC<HelpTooltipIntroModalProps> = ({
           </View>
 
           {/* Title */}
-          <Text style={[styles.title, { color: theme.text }]}>
+          <ThemedText style={[styles.title, { color: theme.text }]}>
             Need Help?
-          </Text>
+          </ThemedText>
 
           {/* Description */}
-          <Text style={[styles.description, { color: theme.subtext }]}>
+          <ThemedText style={[styles.description, { color: theme.subtext }]}>
             Look for the help icon throughout the app for quick explanations and tips.
-          </Text>
+          </ThemedText>
 
           {/* Example */}
           <View style={[styles.exampleBox, { backgroundColor: theme.background, borderColor: theme.border }]}>
-            <Text style={[styles.exampleLabel, { color: theme.subtext }]}>
+            <ThemedText style={[styles.exampleLabel, { color: theme.subtext }]}>
               Tap this icon for help:
-            </Text>
+            </ThemedText>
             <View style={styles.exampleIcon}>
               <Ionicons name="help-circle-outline" size={28} color={theme.primary} />
             </View>
@@ -62,7 +62,7 @@ export const HelpTooltipIntroModal: React.FC<HelpTooltipIntroModalProps> = ({
             style={[styles.button, { backgroundColor: theme.primary }]}
             onPress={onClose}
           >
-            <Text style={styles.buttonText}>Got It!</Text>
+            <ThemedText style={styles.buttonText}>Got It!</ThemedText>
           </Pressable>
         </View>
       </View>
@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: '900',
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -129,6 +128,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFF',
     fontSize: 16,
-    fontWeight: '700',
-  },
+    },
 });
+

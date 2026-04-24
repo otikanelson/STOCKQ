@@ -10,10 +10,10 @@ import {
     ScrollView,
     StyleSheet,
     Switch,
-    Text,
     TextInput,
     View
 } from "react-native";
+import { ThemedText } from '../../../components/ThemedText';
 import Toast from "react-native-toast-message";
 import { DisabledButton } from "../../../components/DisabledButton";
 import { HelpTooltip } from "../../../components/HelpTooltip";
@@ -529,21 +529,21 @@ export default function AlertSettingsScreen() {
             <Ionicons name="arrow-back" size={24} color={theme.primary} />
           </Pressable>
           <View>
-            <Text style={[styles.headerSub, { color: theme.primary }]}>
+            <ThemedText style={[styles.headerSub, { color: theme.primary }]}>
               ADMIN_SETTINGS
-            </Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>
+            </ThemedText>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
               ALERTS
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
         {/* ALERT LEVELS SECTION */}
         <View style={styles.section}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 15 }}>
-            <Text style={[styles.sectionTitle, { color: theme.primary, marginBottom: 0 }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.primary, marginBottom: 0 }]}>
               ALERT LEVELS
-            </Text>
+            </ThemedText>
             <HelpTooltip
               title="Alert Levels"
               content={[
@@ -566,24 +566,24 @@ export default function AlertSettingsScreen() {
               { backgroundColor: theme.surface, borderColor: theme.border },
             ]}
           >
-            <Text style={[styles.cardTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.cardTitle, { color: theme.text }]}>
               Global Expiry Alert Levels
-            </Text>
-            <Text style={[styles.cardDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.cardDesc, { color: theme.subtext }]}>
               Default alert levels for all products
-            </Text>
+            </ThemedText>
 
             {/* Critical Alert */}
             <View style={styles.thresholdRow}>
               <View style={styles.thresholdInfo}>
                 <View style={[styles.thresholdDot, { backgroundColor: "#FF3B30" }]} />
                 <View style={styles.thresholdTextContainer}>
-                  <Text style={[styles.thresholdLabel, { color: theme.text }]}>
+                  <ThemedText style={[styles.thresholdLabel, { color: theme.text }]}>
                     Critical Alert
-                  </Text>
-                  <Text style={[styles.thresholdDesc, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.thresholdDesc, { color: theme.subtext }]}>
                     Immediate action required
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
               <View style={styles.thresholdInput}>
@@ -598,9 +598,9 @@ export default function AlertSettingsScreen() {
                     setThresholds({ ...thresholds, critical: parseInt(val) || 0 })
                   }
                 />
-                <Text style={[styles.thresholdUnit, { color: theme.subtext }]}>
+                <ThemedText style={[styles.thresholdUnit, { color: theme.subtext }]}>
                   days
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
@@ -609,12 +609,12 @@ export default function AlertSettingsScreen() {
               <View style={styles.thresholdInfo}>
                 <View style={[styles.thresholdDot, { backgroundColor: "#FF9500" }]} />
                 <View style={styles.thresholdTextContainer}>
-                  <Text style={[styles.thresholdLabel, { color: theme.text }]}>
+                  <ThemedText style={[styles.thresholdLabel, { color: theme.text }]}>
                     High Urgency
-                  </Text>
-                  <Text style={[styles.thresholdDesc, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.thresholdDesc, { color: theme.subtext }]}>
                     Prioritize for sale
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
               <View style={styles.thresholdInput}>
@@ -629,9 +629,9 @@ export default function AlertSettingsScreen() {
                     setThresholds({ ...thresholds, highUrgency: parseInt(val) || 0 })
                   }
                 />
-                <Text style={[styles.thresholdUnit, { color: theme.subtext }]}>
+                <ThemedText style={[styles.thresholdUnit, { color: theme.subtext }]}>
                   days
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
@@ -640,12 +640,12 @@ export default function AlertSettingsScreen() {
               <View style={styles.thresholdInfo}>
                 <View style={[styles.thresholdDot, { backgroundColor: "#FFD60A" }]} />
                 <View style={styles.thresholdTextContainer}>
-                  <Text style={[styles.thresholdLabel, { color: theme.text }]}>
+                  <ThemedText style={[styles.thresholdLabel, { color: theme.text }]}>
                     Early Warning
-                  </Text>
-                  <Text style={[styles.thresholdDesc, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.thresholdDesc, { color: theme.subtext }]}>
                     Plan ahead
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
               <View style={styles.thresholdInput}>
@@ -660,9 +660,9 @@ export default function AlertSettingsScreen() {
                     setThresholds({ ...thresholds, earlyWarning: parseInt(val) || 0 })
                   }
                 />
-                <Text style={[styles.thresholdUnit, { color: theme.subtext }]}>
+                <ThemedText style={[styles.thresholdUnit, { color: theme.subtext }]}>
                   days
-                </Text>
+                </ThemedText>
               </View>
             </View>
 
@@ -670,7 +670,7 @@ export default function AlertSettingsScreen() {
               style={[styles.saveBtn, { backgroundColor: theme.primary }]}
               onPress={handleSaveThresholds}
             >
-              <Text style={styles.saveBtnText}>SAVE GLOBAL ALERT LEVELS</Text>
+              <ThemedText style={styles.saveBtnText}>SAVE GLOBAL ALERT LEVELS</ThemedText>
             </Pressable>
           </View>
         </View>
@@ -682,9 +682,9 @@ export default function AlertSettingsScreen() {
             style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={[styles.sectionTitle, { color: theme.primary, marginBottom: 0 }]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.primary, marginBottom: 0 }]}>
                 CATEGORY MANAGEMENT
-              </Text>
+              </ThemedText>
               <HelpTooltip
                 title="Category Management"
                 content={[
@@ -712,7 +712,7 @@ export default function AlertSettingsScreen() {
               textStyle={{ color: '#FFF' }}
             >
               <Ionicons name="add" size={20} color="#FFF" />
-              <Text style={styles.addCategoryText}>NEW</Text>
+              <ThemedText style={styles.addCategoryText}>NEW</ThemedText>
             </DisabledButton>
           </Pressable>
 
@@ -721,12 +721,12 @@ export default function AlertSettingsScreen() {
               {categories.length === 0 ? (
                 <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                   <Ionicons name="pricetags-outline" size={48} color={theme.subtext} />
-                  <Text style={[styles.emptyStateText, { color: theme.text }]}>
+                  <ThemedText style={[styles.emptyStateText, { color: theme.text }]}>
                     No Categories Yet
-                  </Text>
-                  <Text style={[styles.emptyStateDesc, { color: theme.subtext }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.emptyStateDesc, { color: theme.subtext }]}>
                     Create categories to organize products
-                  </Text>
+                  </ThemedText>
                 </View>
               ) : (
                 <View style={styles.categoryGrid}>
@@ -743,9 +743,9 @@ export default function AlertSettingsScreen() {
                       onPress={() => openEditCategoryModal(category)}
                     >
                       <View style={styles.categoryCardHeader}>
-                        <Text style={[styles.categoryCardName, { color: theme.text }]}>
+                        <ThemedText style={[styles.categoryCardName, { color: theme.text }]}>
                           {category.name}
-                        </Text>
+                        </ThemedText>
                         {category.customAlertThresholds?.enabled && (
                           <View style={[styles.customBadge, { backgroundColor: theme.primary + '20' }]}>
                             <Ionicons name="settings" size={12} color={theme.primary} />
@@ -753,13 +753,13 @@ export default function AlertSettingsScreen() {
                         )}
                       </View>
                       {category.customAlertThresholds?.enabled && (
-                        <Text style={[styles.categoryCardThresholds, { color: theme.subtext }]}>
+                        <ThemedText style={[styles.categoryCardThresholds, { color: theme.subtext }]}>
                           {category.customAlertThresholds.critical}/{category.customAlertThresholds.highUrgency}/{category.customAlertThresholds.earlyWarning} days
-                        </Text>
+                        </ThemedText>
                       )}
-                      <Text style={[styles.categoryCardCount, { color: theme.subtext }]}>
+                      <ThemedText style={[styles.categoryCardCount, { color: theme.subtext }]}>
                         {category.productCount || 0} products
-                      </Text>
+                      </ThemedText>
                     </Pressable>
                   ))}
                 </View>
@@ -779,17 +779,17 @@ export default function AlertSettingsScreen() {
               <Ionicons name="pricetags" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               {isCreatingCategory ? "Create Category" : "Edit Category"}
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               {isCreatingCategory 
                 ? "Create a new category for your products"
                 : selectedCategory?.productCount > 0
                   ? `This category has ${selectedCategory.productCount} product(s)`
                   : "Update category name and alert levels"
               }
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[styles.categoryInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
@@ -801,9 +801,9 @@ export default function AlertSettingsScreen() {
 
             {/* Custom Alert Levels Toggle */}
             <View style={[styles.thresholdToggle, { borderColor: theme.border }]}>
-              <Text style={[styles.thresholdToggleLabel, { color: theme.text }]}>
+              <ThemedText style={[styles.thresholdToggleLabel, { color: theme.text }]}>
                 Custom Alert Levels
-              </Text>
+              </ThemedText>
               <Switch
                 value={categoryThresholdsEnabled}
                 onValueChange={setCategoryThresholdsEnabled}
@@ -815,7 +815,7 @@ export default function AlertSettingsScreen() {
             {categoryThresholdsEnabled && (
               <View style={[styles.thresholdsContainer, { backgroundColor: theme.background, borderColor: theme.border }]}>
                 <View style={styles.thresholdInputRow}>
-                  <Text style={[styles.thresholdInputLabel, { color: theme.text }]}>Critical</Text>
+                  <ThemedText style={[styles.thresholdInputLabel, { color: theme.text }]}>Critical</ThemedText>
                   <View style={styles.thresholdInputGroup}>
                     <TextInput
                       style={[
@@ -828,12 +828,12 @@ export default function AlertSettingsScreen() {
                         setCategoryThresholds({ ...categoryThresholds, critical: parseInt(val) || 0 })
                       }
                     />
-                    <Text style={[styles.thresholdUnit, { color: theme.subtext }]}>days</Text>
+                    <ThemedText style={[styles.thresholdUnit, { color: theme.subtext }]}>days</ThemedText>
                   </View>
                 </View>
 
                 <View style={styles.thresholdInputRow}>
-                  <Text style={[styles.thresholdInputLabel, { color: theme.text }]}>High Urgency</Text>
+                  <ThemedText style={[styles.thresholdInputLabel, { color: theme.text }]}>High Urgency</ThemedText>
                   <View style={styles.thresholdInputGroup}>
                     <TextInput
                       style={[
@@ -846,12 +846,12 @@ export default function AlertSettingsScreen() {
                         setCategoryThresholds({ ...categoryThresholds, highUrgency: parseInt(val) || 0 })
                       }
                     />
-                    <Text style={[styles.thresholdUnit, { color: theme.subtext }]}>days</Text>
+                    <ThemedText style={[styles.thresholdUnit, { color: theme.subtext }]}>days</ThemedText>
                   </View>
                 </View>
 
                 <View style={styles.thresholdInputRow}>
-                  <Text style={[styles.thresholdInputLabel, { color: theme.text }]}>Early Warning</Text>
+                  <ThemedText style={[styles.thresholdInputLabel, { color: theme.text }]}>Early Warning</ThemedText>
                   <View style={styles.thresholdInputGroup}>
                     <TextInput
                       style={[
@@ -864,7 +864,7 @@ export default function AlertSettingsScreen() {
                         setCategoryThresholds({ ...categoryThresholds, earlyWarning: parseInt(val) || 0 })
                       }
                     />
-                    <Text style={[styles.thresholdUnit, { color: theme.subtext }]}>days</Text>
+                    <ThemedText style={[styles.thresholdUnit, { color: theme.subtext }]}>days</ThemedText>
                   </View>
                 </View>
               </View>
@@ -875,15 +875,15 @@ export default function AlertSettingsScreen() {
                 style={[styles.modalBtn, { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border }]}
                 onPress={() => setCategoryModalVisible(false)}
               >
-                <Text style={{ color: theme.text, fontWeight: "600" }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: theme.primary }]}
                 onPress={handleSaveCategory}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700" }}>
+                <ThemedText style={{ color: "#FFF", }}>
                   {isCreatingCategory ? "CREATE CATEGORY" : "SAVE CHANGES"}
-                </Text>
+                </ThemedText>
               </Pressable>
             </View>
 
@@ -893,12 +893,12 @@ export default function AlertSettingsScreen() {
                 onPress={handleDeleteCategory}
               >
                 <Ionicons name="trash-outline" size={18} color="#FF4444" />
-                <Text style={[styles.deleteBtnText, { color: '#FF4444' }]}>
+                <ThemedText style={[styles.deleteBtnText, { color: '#FF4444' }]}>
                   {selectedCategory?.productCount > 0 
                     ? `Delete & Reassign ${selectedCategory.productCount} Product(s)`
                     : 'Delete Category'
                   }
-                </Text>
+                </ThemedText>
               </Pressable>
             )}
           </View>
@@ -918,26 +918,26 @@ export default function AlertSettingsScreen() {
                 <Ionicons name="warning" size={32} color="#FF4444" />
               </View>
 
-              <Text style={[styles.modalTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
                 Reassign Products
-              </Text>
-              <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
                 {selectedCategory?.name} has {productsToReassign.length} product(s). 
                 Reassign them to other categories before deletion.
-              </Text>
+              </ThemedText>
 
               {/* Debug Info - Shows current assignment status */}
               <View style={[styles.debugInfo, { backgroundColor: theme.background, borderColor: theme.border }]}>
-                <Text style={[styles.debugText, { color: theme.text }]}>
+                <ThemedText style={[styles.debugText, { color: theme.text }]}>
                   Assigned: {Object.keys(productReassignments).filter(key => productReassignments[key]).length} / {productsToReassign.length}
-                </Text>
+                </ThemedText>
               </View>
 
               {/* Reassign All Button */}
               <View style={[styles.reassignAllContainer, { backgroundColor: theme.background, borderColor: theme.border }]}>
-                <Text style={[styles.reassignAllLabel, { color: theme.text }]}>
+                <ThemedText style={[styles.reassignAllLabel, { color: theme.text }]}>
                   Reassign all products to:
-                </Text>
+                </ThemedText>
                 <View style={styles.reassignAllButtons}>
                   {categories
                     .filter((cat) => cat._id !== selectedCategory?._id)
@@ -950,9 +950,9 @@ export default function AlertSettingsScreen() {
                         ]}
                         onPress={() => handleReassignAllProducts(category._id, category.name)}
                       >
-                        <Text style={[styles.reassignAllBtnText, { color: theme.primary }]}>
+                        <ThemedText style={[styles.reassignAllBtnText, { color: theme.primary }]}>
                           {category.name}
-                        </Text>
+                        </ThemedText>
                       </Pressable>
                     ))}
                 </View>
@@ -960,9 +960,9 @@ export default function AlertSettingsScreen() {
 
               {/* Individual Product Reassignments */}
               <View style={styles.productsContainer}>
-                <Text style={[styles.productsHeader, { color: theme.text }]}>
+                <ThemedText style={[styles.productsHeader, { color: theme.text }]}>
                   Individual Assignments
-                </Text>
+                </ThemedText>
                 {productsToReassign.map((product) => (
                   <View
                     key={product._id}
@@ -972,12 +972,12 @@ export default function AlertSettingsScreen() {
                     ]}
                   >
                     <View style={styles.productInfo}>
-                      <Text style={[styles.productName, { color: theme.text }]} numberOfLines={1}>
+                      <ThemedText style={[styles.productName, { color: theme.text }]} numberOfLines={1}>
                         {product.name} {product.isGlobal && '(Global)'}
-                      </Text>
-                      <Text style={[styles.productBarcode, { color: theme.subtext }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.productBarcode, { color: theme.subtext }]}>
                         {product.barcode}
-                      </Text>
+                      </ThemedText>
                     </View>
 
                     <View style={styles.categoryButtons}>
@@ -1010,7 +1010,7 @@ export default function AlertSettingsScreen() {
                                 setProductReassignments(newReassignments);
                               }}
                             >
-                              <Text
+                              <ThemedText
                                 style={[
                                   styles.categoryBtnText,
                                   {
@@ -1022,7 +1022,7 @@ export default function AlertSettingsScreen() {
                                 ]}
                               >
                                 {category.name}
-                              </Text>
+                              </ThemedText>
                             </Pressable>
                           );
                         })}
@@ -1045,7 +1045,7 @@ export default function AlertSettingsScreen() {
                   }}
                   disabled={deletingCategory}
                 >
-                  <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
+                  <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
                 </Pressable>
                 <Pressable
                   style={[styles.modalBtn, { backgroundColor: '#FF4444' }]}
@@ -1053,9 +1053,9 @@ export default function AlertSettingsScreen() {
                   disabled={deletingCategory}
                 >
                   {deletingCategory ? (
-                    <Text style={{ color: '#FFF', fontWeight: '700' }}>Deleting...</Text>
+                    <ThemedText style={{ color: '#FFF', }}>Deleting...</ThemedText>
                   ) : (
-                    <Text style={{ color: '#FFF', fontWeight: '700' }}>CONFIRM DELETION</Text>
+                    <ThemedText style={{ color: '#FFF', }}>CONFIRM DELETION</ThemedText>
                   )}
                 </Pressable>
               </View>
@@ -1084,12 +1084,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerSub: { fontSize: 10, fontWeight: "900", letterSpacing: 2 },
-  headerTitle: { fontSize: 25, fontWeight: "900", letterSpacing: -1 },
+  headerSub: { fontSize: 10, letterSpacing: 2 },
+  headerTitle: { fontSize: 25, letterSpacing: -1 },
   section: { marginBottom: 50 },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "800",
     letterSpacing: 1.5,
   },
   configCard: {
@@ -1099,7 +1098,6 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "800",
     marginBottom: 5,
   },
   cardDesc: {
@@ -1130,8 +1128,7 @@ const styles = StyleSheet.create({
   },
   thresholdLabel: {
     fontSize: 15,
-    fontWeight: "700",
-  },
+    },
   thresholdDesc: {
     fontSize: 12,
     marginTop: 2,
@@ -1149,12 +1146,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     textAlign: "center",
     fontSize: 16,
-    fontWeight: "700",
-  },
+    },
   thresholdUnit: {
     fontSize: 13,
-    fontWeight: "600",
-  },
+    },
   saveBtn: {
     marginTop: 20,
     height: 50,
@@ -1165,7 +1160,6 @@ const styles = StyleSheet.create({
   saveBtnText: {
     color: "#FFF",
     fontSize: 14,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
   addCategoryBtn: {
@@ -1179,7 +1173,6 @@ const styles = StyleSheet.create({
   addCategoryText: {
     color: "#FFF",
     fontSize: 11,
-    fontWeight: "800",
     letterSpacing: 0.5,
   },
   emptyState: {
@@ -1190,7 +1183,6 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 18,
-    fontWeight: "700",
     marginTop: 15,
   },
   emptyStateDesc: {
@@ -1218,7 +1210,6 @@ const styles = StyleSheet.create({
   },
   categoryCardName: {
     fontSize: 16,
-    fontWeight: "700",
     flex: 1,
   },
   customBadge: {
@@ -1230,13 +1221,11 @@ const styles = StyleSheet.create({
   },
   categoryCardThresholds: {
     fontSize: 12,
-    fontWeight: "600",
     marginBottom: 4,
   },
   categoryCardCount: {
     fontSize: 11,
-    fontWeight: "600",
-  },
+    },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.85)",
@@ -1258,7 +1247,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  modalTitle: { fontSize: 22, fontWeight: "900", marginBottom: 10, textAlign: "center" },
+  modalTitle: { fontSize: 22, marginBottom: 10, textAlign: "center" },
   modalDesc: { fontSize: 14, textAlign: "center", marginBottom: 25, lineHeight: 20 },
   categoryInput: {
     width: "100%",
@@ -1268,8 +1257,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 15,
     fontSize: 16,
-    fontWeight: "600",
-  },
+    },
   thresholdToggle: {
     width: "100%",
     flexDirection: "row",
@@ -1283,8 +1271,7 @@ const styles = StyleSheet.create({
   },
   thresholdToggleLabel: {
     fontSize: 15,
-    fontWeight: "700",
-  },
+    },
   thresholdsContainer: {
     width: "100%",
     padding: 16,
@@ -1300,8 +1287,7 @@ const styles = StyleSheet.create({
   },
   thresholdInputLabel: {
     fontSize: 14,
-    fontWeight: "600",
-  },
+    },
   thresholdInputGroup: {
     flexDirection: "row",
     alignItems: "center",
@@ -1315,8 +1301,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     textAlign: "center",
     fontSize: 15,
-    fontWeight: "700",
-  },
+    },
   modalActions: { flexDirection: "row", gap: 12, marginTop: 10, width: "100%" },
   modalBtn: {
     flex: 1,
@@ -1338,8 +1323,7 @@ const styles = StyleSheet.create({
   },
   deleteBtnText: {
     fontSize: 15,
-    fontWeight: "700",
-  },
+    },
   reassignModalScroll: {
     flex: 1,
     width: '100%',
@@ -1366,8 +1350,7 @@ const styles = StyleSheet.create({
   },
   debugText: {
     fontSize: 13,
-    fontWeight: '700',
-  },
+    },
   reassignAllContainer: {
     width: '100%',
     padding: 16,
@@ -1377,7 +1360,6 @@ const styles = StyleSheet.create({
   },
   reassignAllLabel: {
     fontSize: 14,
-    fontWeight: '700',
     marginBottom: 12,
   },
   reassignAllButtons: {
@@ -1393,15 +1375,13 @@ const styles = StyleSheet.create({
   },
   reassignAllBtnText: {
     fontSize: 13,
-    fontWeight: '700',
-  },
+    },
   productsContainer: {
     width: '100%',
     marginBottom: 20,
   },
   productsHeader: {
     fontSize: 14,
-    fontWeight: '800',
     marginBottom: 12,
     letterSpacing: 0.5,
   },
@@ -1416,13 +1396,11 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 15,
-    fontWeight: '700',
     marginBottom: 4,
   },
   productBarcode: {
     fontSize: 12,
-    fontWeight: '600',
-  },
+    },
   categoryButtons: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1436,6 +1414,6 @@ const styles = StyleSheet.create({
   },
   categoryBtnText: {
     fontSize: 12,
-    fontWeight: '700',
-  },
+    },
 });
+

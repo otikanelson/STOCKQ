@@ -10,10 +10,10 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    Text,
     TextInput,
     View
 } from "react-native";
+import { ThemedText } from '../../../components/ThemedText';
 import Toast from 'react-native-toast-message';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
@@ -269,7 +269,7 @@ export default function AdminProfileScreen() {
             <Pressable onPress={() => router.push('/admin/settings')} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color={theme.text} />
             </Pressable>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>Profile</Text>
+            <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Profile</ThemedText>
           <View style={{ width: 40 }} />
         </View>
 
@@ -279,30 +279,30 @@ export default function AdminProfileScreen() {
             <Ionicons name="person" size={48} color="#FF3B30" />
           </View>
 
-          <Text style={[styles.userName, { color: theme.text }]}>
+          <ThemedText style={[styles.userName, { color: theme.text }]}>
             {user?.name || 'User'}
-          </Text>
+          </ThemedText>
 
           <View style={[styles.roleBadge, { backgroundColor: '#FF3B30' + '20' }]}>
             <Ionicons name="shield-checkmark" size={16} color="#FF3B30" />
-            <Text style={[styles.roleText, { color: '#FF3B30' }]}>Administrator</Text>
+            <ThemedText style={[styles.roleText, { color: '#FF3B30' }]}>Administrator</ThemedText>
           </View>
 
-          <Text style={[styles.userId, { color: theme.subtext }]}>
+          <ThemedText style={[styles.userId, { color: theme.subtext }]}>
             ID: {user?.id || 'N/A'}
-          </Text>
+          </ThemedText>
           
           <View style={[styles.storeInfo, { backgroundColor: theme.primary + '10', borderColor: theme.primary + '30' }]}>
             <Ionicons name="storefront" size={16} color={theme.primary} />
-            <Text style={[styles.storeText, { color: theme.text }]}>
+            <ThemedText style={[styles.storeText, { color: theme.text }]}>
               {user?.storeName || 'Store'}
-            </Text>
+            </ThemedText>
           </View>
         </View>
 
         {/* Account Settings */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>ACCOUNT SETTINGS</Text>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>ACCOUNT SETTINGS</ThemedText>
 
           <Pressable
             style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}
@@ -312,8 +312,8 @@ export default function AdminProfileScreen() {
               <Ionicons name="key-outline" size={22} color={theme.primary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.settingLabel, { color: theme.text }]}>Change Login PIN</Text>
-              <Text style={[styles.settingDesc, { color: theme.subtext }]}>Update your 4-digit login code</Text>
+              <ThemedText style={[styles.settingLabel, { color: theme.text }]}>Change Login PIN</ThemedText>
+              <ThemedText style={[styles.settingDesc, { color: theme.subtext }]}>Update your 4-digit login code</ThemedText>
             </View>
             <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
           </Pressable>
@@ -326,8 +326,8 @@ export default function AdminProfileScreen() {
               <Ionicons name="shield-checkmark-outline" size={22} color={theme.primary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.settingLabel, { color: theme.text }]}>Security Settings</Text>
-              <Text style={[styles.settingDesc, { color: theme.subtext }]}>Manage Security PIN and access controls</Text>
+              <ThemedText style={[styles.settingLabel, { color: theme.text }]}>Security Settings</ThemedText>
+              <ThemedText style={[styles.settingDesc, { color: theme.subtext }]}>Manage Security PIN and access controls</ThemedText>
             </View>
             <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
           </Pressable>
@@ -335,7 +335,7 @@ export default function AdminProfileScreen() {
 
         {/* Permissions */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>ADMIN PERMISSIONS</Text>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>ADMIN PERMISSIONS</ThemedText>
 
           <View style={[styles.permissionsCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <PermissionItem icon="checkmark-circle" label="Full system access" granted theme={theme} />
@@ -351,22 +351,22 @@ export default function AdminProfileScreen() {
         {role === 'admin' && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.primary }]}>STAFF MEMBERS</Text>
+            <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>STAFF MEMBERS</ThemedText>
             <Pressable
               onPress={() => router.push('/auth/staff-register')}
               style={[styles.addStaffBtn, { backgroundColor: theme.primary }]}
             >
               <Ionicons name="person-add" size={18} color="#FFF" />
-              <Text style={styles.addStaffBtnText}>Add Staff</Text>
+              <ThemedText style={styles.addStaffBtnText}>Add Staff</ThemedText>
             </Pressable>
           </View>
 
           {loadingStaff ? (
             <View style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <ActivityIndicator size="small" color={theme.primary} />
-              <Text style={[styles.settingDesc, { color: theme.subtext, marginLeft: 12 }]}>
+              <ThemedText style={[styles.settingDesc, { color: theme.subtext, marginLeft: 12 }]}>
                 Loading staff members...
-              </Text>
+              </ThemedText>
             </View>
           ) : staffMembers.length > 0 ? (
             staffMembers.map((staff) => (
@@ -377,10 +377,10 @@ export default function AdminProfileScreen() {
                   </View>
                   
                   <View style={styles.staffDetails}>
-                    <Text style={[styles.staffName, { color: theme.text }]}>{staff.name}</Text>
+                    <ThemedText style={[styles.staffName, { color: theme.text }]}>{staff.name}</ThemedText>
                     <View style={styles.staffMetaRow}>
                       <View style={[styles.staffRoleBadge, { backgroundColor: '#007AFF' + '15' }]}>
-                        <Text style={[styles.staffRoleText, { color: '#007AFF' }]}>Staff Member</Text>
+                        <ThemedText style={[styles.staffRoleText, { color: '#007AFF' }]}>Staff Member</ThemedText>
                       </View>
                       <View style={[
                         styles.staffStatusBadge, 
@@ -390,18 +390,18 @@ export default function AdminProfileScreen() {
                           styles.statusDot, 
                           { backgroundColor: staff.isActive ? '#34C759' : '#FF3B30' }
                         ]} />
-                        <Text style={[
+                        <ThemedText style={[
                           styles.staffStatusText, 
                           { color: staff.isActive ? '#34C759' : '#FF3B30' }
                         ]}>
                           {staff.isActive ? 'Active' : 'Inactive'}
-                        </Text>
+                        </ThemedText>
                       </View>
                     </View>
                     {staff.lastLogin && (
-                      <Text style={[styles.staffLastLogin, { color: theme.subtext }]}>
+                      <ThemedText style={[styles.staffLastLogin, { color: theme.subtext }]}>
                         Last login: {new Date(staff.lastLogin).toLocaleDateString()}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                 </View>
@@ -412,7 +412,7 @@ export default function AdminProfileScreen() {
                     style={[styles.actionButton, styles.permissionsBtn, { backgroundColor: theme.primary + '15' }]}
                   >
                     <Ionicons name="settings-outline" size={18} color={theme.primary} />
-                    <Text style={[styles.actionButtonText, { color: theme.primary }]}>Permissions</Text>
+                    <ThemedText style={[styles.actionButtonText, { color: theme.primary }]}>Permissions</ThemedText>
                   </Pressable>
                   
                   <Pressable
@@ -420,7 +420,7 @@ export default function AdminProfileScreen() {
                     style={[styles.actionButton, styles.monitorBtn, { backgroundColor: '#FF9500' + '15' }]}
                   >
                     <Ionicons name="analytics-outline" size={18} color="#FF9500" />
-                    <Text style={[styles.actionButtonText, { color: '#FF9500' }]}>Monitor</Text>
+                    <ThemedText style={[styles.actionButtonText, { color: '#FF9500' }]}>Monitor</ThemedText>
                   </Pressable>
                   
                   <Pressable
@@ -428,7 +428,7 @@ export default function AdminProfileScreen() {
                     style={[styles.actionButton, styles.staffDeleteBtn, { backgroundColor: '#FF3B30' + '15' }]}
                   >
                     <Ionicons name="trash-outline" size={18} color="#FF3B30" />
-                    <Text style={[styles.actionButtonText, { color: '#FF3B30' }]}>Delete</Text>
+                    <ThemedText style={[styles.actionButtonText, { color: '#FF3B30' }]}>Delete</ThemedText>
                   </Pressable>
                 </View>
               </View>
@@ -436,12 +436,12 @@ export default function AdminProfileScreen() {
           ) : (
             <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="people-outline" size={40} color={theme.subtext} />
-              <Text style={[styles.emptyStateText, { color: theme.subtext }]}>
+              <ThemedText style={[styles.emptyStateText, { color: theme.subtext }]}>
                 No staff members yet
-              </Text>
-              <Text style={[styles.emptyStateDesc, { color: theme.subtext }]}>
+              </ThemedText>
+              <ThemedText style={[styles.emptyStateDesc, { color: theme.subtext }]}>
                 Staff members will appear here once added
-              </Text>
+              </ThemedText>
             </View>
           )}
         </View>
@@ -453,7 +453,7 @@ export default function AdminProfileScreen() {
           onPress={handleLogout}
         >
           <Ionicons name="log-out-outline" size={22} color="#FF4444" />
-          <Text style={styles.logoutText}>Logout from Admin</Text>
+          <ThemedText style={styles.logoutText}>Logout from Admin</ThemedText>
         </Pressable>
 
         {/* Delete Account Button */}
@@ -462,7 +462,7 @@ export default function AdminProfileScreen() {
           onPress={() => setShowDeleteModal(true)}
         >
           <Ionicons name="trash-outline" size={22} color="#FF3B30" />
-          <Text style={[styles.deleteAccountText, { color: '#FF3B30' }]}>Delete Account & Store Permanently</Text>
+          <ThemedText style={[styles.deleteAccountText, { color: '#FF3B30' }]}>Delete Account & Store Permanently</ThemedText>
         </Pressable>
 
         <View style={{ height: 50 }} />
@@ -476,10 +476,10 @@ export default function AdminProfileScreen() {
               <Ionicons name="key" size={32} color={theme.primary} />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Update Login PIN</Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Update Login PIN</ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               Enter your current Login PIN and choose a new 4-digit code
-            </Text>
+            </ThemedText>
 
             <TextInput
               style={[
@@ -536,10 +536,10 @@ export default function AdminProfileScreen() {
                   setConfirmPin('');
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable style={[styles.modalBtn, { backgroundColor: theme.primary }]} onPress={handleUpdatePin}>
-                <Text style={{ color: '#FFF', fontWeight: '700' }}>Update PIN</Text>
+                <ThemedText style={{ color: '#FFF', }}>Update PIN</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -554,12 +554,12 @@ export default function AdminProfileScreen() {
               <Ionicons name="warning" size={32} color="#FF3B30" />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
               Delete Staff Member?
-            </Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            </ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               Are you sure you want to remove {staffToDelete?.name}? This action cannot be undone.
-            </Text>
+            </ThemedText>
 
             <View style={styles.modalActions}>
               <Pressable
@@ -573,7 +573,7 @@ export default function AdminProfileScreen() {
                 }}
                 disabled={deletingStaff}
               >
-                <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: '#FF3B30' }]}
@@ -583,7 +583,7 @@ export default function AdminProfileScreen() {
                 {deletingStaff ? (
                   <ActivityIndicator color="#FFF" size="small" />
                 ) : (
-                  <Text style={{ color: '#FFF', fontWeight: '700' }}>Delete</Text>
+                  <ThemedText style={{ color: '#FFF', }}>Delete</ThemedText>
                 )}
               </Pressable>
             </View>
@@ -599,16 +599,16 @@ export default function AdminProfileScreen() {
               <Ionicons name="warning" size={32} color="#FF3B30" />
             </View>
 
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Delete Account & Store?</Text>
-            <Text style={[styles.modalDesc, { color: theme.subtext }]}>
+            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Delete Account & Store?</ThemedText>
+            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
               This will permanently delete your admin account, store, all staff members, and all inventory data. This action cannot be undone.
-            </Text>
+            </ThemedText>
 
             <View style={[styles.warningBox, { backgroundColor: '#FF3B30' + '10', borderColor: '#FF3B30' }]}>
               <Ionicons name="alert-circle" size={18} color="#FF3B30" />
-              <Text style={[styles.warningText, { color: theme.text }]}>
+              <ThemedText style={[styles.warningText, { color: theme.text }]}>
                 All staff accounts and inventory will be deleted
-              </Text>
+              </ThemedText>
             </View>
 
             <TextInput
@@ -636,13 +636,13 @@ export default function AdminProfileScreen() {
                   setDeleteSecurityPin('');
                 }}
               >
-                <Text style={{ color: theme.text, fontWeight: '600' }}>Cancel</Text>
+                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
               </Pressable>
               <Pressable 
                 style={[styles.modalBtn, { backgroundColor: '#FF3B30' }]} 
                 onPress={handleDeleteAccount}
               >
-                <Text style={{ color: '#FFF', fontWeight: '700' }}>Delete Everything</Text>
+                <ThemedText style={{ color: '#FFF', }}>Delete Everything</ThemedText>
               </Pressable>
             </View>
           </View>
@@ -654,9 +654,9 @@ export default function AdminProfileScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: theme.text }]}>
+              <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
                 Staff Monitoring
-              </Text>
+              </ThemedText>
               <Pressable onPress={() => {
                 setShowStaffMonitoringModal(false);
                 setStaffToMonitor(null);
@@ -667,15 +667,15 @@ export default function AdminProfileScreen() {
             
             {staffToMonitor && (
               <View style={styles.staffInfo}>
-                <Text style={[styles.staffName, { color: theme.text }]}>
+                <ThemedText style={[styles.staffName, { color: theme.text }]}>
                   {staffToMonitor.name}
-                </Text>
-                <Text style={[styles.staffStatus, { color: staffToMonitor.isActive ? '#34C759' : '#FF3B30' }]}>
+                </ThemedText>
+                <ThemedText style={[styles.staffStatus, { color: staffToMonitor.isActive ? '#34C759' : '#FF3B30' }]}>
                   Status: {staffToMonitor.isActive ? 'Active' : 'Inactive'}
-                </Text>
-                <Text style={[styles.infoText, { color: theme.subtext }]}>
+                </ThemedText>
+                <ThemedText style={[styles.infoText, { color: theme.subtext }]}>
                   This feature allows you to monitor staff activity without accessing their account directly.
-                </Text>
+                </ThemedText>
               </View>
             )}
           </View>
@@ -696,7 +696,7 @@ interface PermissionItemProps {
 const PermissionItem: React.FC<PermissionItemProps> = ({ icon, label, granted, theme }) => (
   <View style={styles.permissionItem}>
     <Ionicons name={icon} size={18} color={granted ? '#34C759' : '#FF3B30'} />
-    <Text style={[styles.permissionLabel, { color: granted ? theme.text : theme.subtext }]}>{label}</Text>
+    <ThemedText style={[styles.permissionLabel, { color: granted ? theme.text : theme.subtext }]}>{label}</ThemedText>
   </View>
 );
 
@@ -721,8 +721,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '900',
-  },
+    },
   profileCard: {
     padding: 30,
     borderRadius: 24,
@@ -740,7 +739,6 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 24,
-    fontWeight: '900',
     marginBottom: 10,
   },
   roleBadge: {
@@ -754,12 +752,10 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: 13,
-    fontWeight: '800',
     letterSpacing: 0.5,
   },
   userId: {
     fontSize: 12,
-    fontWeight: '600',
     marginBottom: 10,
   },
   storeInfo: {
@@ -773,8 +769,7 @@ const styles = StyleSheet.create({
   },
   storeText: {
     fontSize: 12,
-    fontWeight: '700',
-  },
+    },
   section: {
     marginBottom: 30,
   },
@@ -786,7 +781,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: '800',
     letterSpacing: 1.5,
   },
   addStaffBtn: {
@@ -800,8 +794,7 @@ const styles = StyleSheet.create({
   addStaffBtnText: {
     color: '#FFF',
     fontSize: 13,
-    fontWeight: '700',
-  },
+    },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -820,13 +813,11 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     fontSize: 16,
-    fontWeight: '700',
     marginBottom: 2,
   },
   settingDesc: {
     fontSize: 12,
-    fontWeight: '500',
-  },
+    },
   permissionsCard: {
     padding: 20,
     borderRadius: 16,
@@ -840,8 +831,7 @@ const styles = StyleSheet.create({
   },
   permissionLabel: {
     fontSize: 14,
-    fontWeight: '600',
-  },
+    },
   staffCard: {
     padding: 20,
     borderRadius: 20,
@@ -866,7 +856,6 @@ const styles = StyleSheet.create({
   },
   staffName: {
     fontSize: 18,
-    fontWeight: '800',
     marginBottom: 8,
   },
   staffMetaRow: {
@@ -882,7 +871,6 @@ const styles = StyleSheet.create({
   },
   staffRoleText: {
     fontSize: 11,
-    fontWeight: '700',
     textTransform: 'uppercase',
   },
   staffStatusBadge: {
@@ -900,12 +888,10 @@ const styles = StyleSheet.create({
   },
   staffStatusText: {
     fontSize: 11,
-    fontWeight: '600',
-  },
+    },
   staffLastLogin: {
     fontSize: 12,
-    fontWeight: '500',
-  },
+    },
   staffActions: {
     flexDirection: 'row',
     gap: 8,
@@ -922,8 +908,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: 10,
-    fontWeight: '700',
-  },
+    },
   permissionsBtn: {
     // Specific styles for permissions button if needed
   },
@@ -941,13 +926,11 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    fontWeight: '700',
     marginTop: 16,
     marginBottom: 6,
   },
   emptyStateDesc: {
     fontSize: 12,
-    fontWeight: '500',
     textAlign: 'center',
   },
   logoutBtn: {
@@ -963,7 +946,6 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: '#FF4444',
-    fontWeight: '900',
     fontSize: 14,
   },
   deleteAccountBtn: {
@@ -977,7 +959,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   deleteAccountText: {
-    fontWeight: '900',
     fontSize: 14,
   },
   warningBox: {
@@ -993,7 +974,6 @@ const styles = StyleSheet.create({
   warningText: {
     flex: 1,
     fontSize: 12,
-    fontWeight: '600',
     lineHeight: 16,
   },
   modalOverlay: {
@@ -1020,7 +1000,6 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 22,
-    fontWeight: '900',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -1039,8 +1018,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
     fontSize: 15,
-    fontWeight: '600',
-  },
+    },
   modalActions: {
     flexDirection: 'row',
     gap: 12,
@@ -1092,7 +1070,6 @@ const styles = StyleSheet.create({
   },
   permLabel: {
     fontSize: 14,
-    fontWeight: '700',
     marginBottom: 2,
   },
   permDesc: {
@@ -1108,7 +1085,6 @@ const styles = StyleSheet.create({
   },
   staffStatus: {
     fontSize: 14,
-    fontWeight: '500',
     marginBottom: 12,
   },
   infoText: {
@@ -1116,3 +1092,4 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
+
