@@ -8,19 +8,19 @@ import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  BackHandler,
-  FlatList,
-  Image,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  TextInput,
-  View
+    ActivityIndicator,
+    BackHandler,
+    FlatList,
+    Image,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    TextInput,
+    View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import AdminSecurityPINWarning from "../../components/AdminSecurityPINWarning";
@@ -416,13 +416,30 @@ export default function AddProducts() {
     return result.isValid;
   };
 
+  const formatDateInput = (value: string): string => {
+    // Strip everything except digits and hyphens
+    const digitsOnly = value.replace(/[^\d]/g, '');
+    
+    // Auto-insert hyphens: YYYY-MM-DD
+    if (digitsOnly.length <= 4) {
+      return digitsOnly;
+    } else if (digitsOnly.length <= 6) {
+      return `${digitsOnly.slice(0, 4)}-${digitsOnly.slice(4)}`;
+    } else {
+      return `${digitsOnly.slice(0, 4)}-${digitsOnly.slice(4, 6)}-${digitsOnly.slice(6, 8)}`;
+    }
+  };
+
   const handleFieldChange = (field: string, value: string) => {
     // For name field, allow spaces while typing, only collapse multiple spaces
+    // For date fields, auto-format with hyphens
     // For other fields, keep the sanitization
     let sanitizedValue = value;
     if (field === 'name') {
       // Only collapse multiple consecutive spaces, don't trim while typing
       sanitizedValue = value.replace(/\s{2,}/g, ' ');
+    } else if (field === 'expiryDate' || field === 'manufacturerDate') {
+      sanitizedValue = formatDateInput(value);
     } else {
       // For other fields, trim and collapse spaces
       sanitizedValue = value.trim().replace(/\s+/g, ' ');

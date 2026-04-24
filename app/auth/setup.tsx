@@ -738,6 +738,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     paddingVertical: 16,
+    marginVertical: 10,
     borderRadius: 16,
   },
   continueText: {

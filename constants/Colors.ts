@@ -1,12 +1,12 @@
 // constants/Colors.ts — Modern redesign
 export const Colors = {
   light: {
-    background: '#f1f1f1ff',
+    background: '#f0f0f0ff',
     tabSurface: '#FFFFFF',
     surface: '#FFFFFF',
     surfaceElevated: '#F7F8FF',
     text: '#0D0F1A',
-    subtext: '#6B7280',
+    subtext: '#4d4d4dff',
     primary: '#5B4FE8',
     primaryLight: '#EEF0FF',
     secondary: '#10B981',

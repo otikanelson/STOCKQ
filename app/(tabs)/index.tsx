@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { Href, useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   Pressable,
   RefreshControl,
@@ -13,7 +13,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from "../../components/ThemedText";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useAIPredictions } from "../../hooks/useAIPredictions";
 import { useAlerts } from "../../hooks/useAlerts";
+import { useAnalytics } from "../../hooks/useAnalytics";
 import { useProducts } from "../../hooks/useProducts";
 
 const CARD_COLORS = {
@@ -38,8 +40,14 @@ export default function DashboardScreen() {
 
   const { inventoryStats, loading: productsLoading, refresh: refreshProducts } = useProducts();
   const { summary, loading: alertsLoading, refresh: refreshAlerts } = useAlerts();
+  const { dashboardData, loading: analyticsLoading, refresh: refreshAnalytics } = useAnalytics();
+  const { quickInsights, loading: aiLoading } = useAIPredictions({ enableWebSocket: true, autoFetch: true });
 
-  const isLoading = productsLoading || alertsLoading;
+  const isLoading = productsLoading || alertsLoading || analyticsLoading;
+
+  // AI Insights dropdown state - default to collapsed if no data
+  const hasAIData = dashboardData?.summary || quickInsights;
+  const [aiInsightsExpanded, setAiInsightsExpanded] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -47,15 +55,16 @@ export default function DashboardScreen() {
       if (isAuthenticated) {
         refreshProducts();
         refreshAlerts();
+        refreshAnalytics();
       }
-    }, [refreshProducts, refreshAlerts, isAuthenticated])
+    }, [refreshProducts, refreshAlerts, refreshAnalytics, isAuthenticated])
   );
 
   const onRefresh = useCallback(async () => {
     if (isAuthenticated) {
-      await Promise.all([refreshProducts(), refreshAlerts()]);
+      await Promise.all([refreshProducts(), refreshAlerts(), refreshAnalytics()]);
     }
-  }, [refreshProducts, refreshAlerts, isAuthenticated]);
+  }, [refreshProducts, refreshAlerts, refreshAnalytics, isAuthenticated]);
 
   const cards = isDark ? CARD_COLORS_DARK : CARD_COLORS;
   const urgentAlerts = (summary?.expired ?? 0) + (summary?.critical ?? 0);
@@ -169,7 +178,7 @@ export default function DashboardScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
-          { paddingTop: insets.top + 20, paddingBottom: 100 },
+          { paddingTop: insets.top + 20, paddingBottom: 40 },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -305,6 +314,185 @@ export default function DashboardScreen() {
             </View>
           </>
         )}
+
+        {/* AI Insights Section */}
+        <ThemedText style={[styles.sectionLabel, { color: theme.subtext }]}>
+          AI INSIGHTS
+        </ThemedText>
+
+        <View style={[styles.listCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <Pressable
+            style={styles.listRow}
+            onPress={() => setAiInsightsExpanded(!aiInsightsExpanded)}
+          >
+            <View style={[styles.rowIconBox, { backgroundColor: theme.primary + "18" }]}>
+              <Ionicons name="analytics-outline" size={20} color={theme.primary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <ThemedText style={[styles.rowLabel, { color: theme.text }]}>
+                Analytics Overview
+              </ThemedText>
+              <ThemedText style={[styles.rowDesc, { color: theme.subtext }]}>
+                {dashboardData?.summary ? 
+                  `${dashboardData.summary.highRiskProducts || 0} high risk • ${dashboardData.summary.topSellingProducts?.length || 0} trending` :
+                  "No data available"
+                }
+              </ThemedText>
+            </View>
+            <Ionicons 
+              name={aiInsightsExpanded ? "chevron-up" : "chevron-down"} 
+              size={18} 
+              color={theme.subtext} 
+            />
+          </Pressable>
+
+          {aiInsightsExpanded && (
+            <View style={[styles.aiInsightsContent, { borderTopColor: theme.border }]}>
+              {/* Risk Overview */}
+              <View style={styles.aiSection}>
+                <ThemedText style={[styles.aiSectionTitle, { color: theme.text }]}>
+                  Risk Analysis
+                </ThemedText>
+                <View style={styles.aiMetricsRow}>
+                  <AIMetricCard
+                    label="High Risk"
+                    value={dashboardData?.summary?.highRiskProducts || 0}
+                    color="#FF4444"
+                    icon="alert-circle"
+                    theme={theme}
+                  />
+                  <AIMetricCard
+                    label="Medium Risk"
+                    value={dashboardData?.summary?.mediumRiskProducts || 0}
+                    color="#FF9500"
+                    icon="warning"
+                    theme={theme}
+                  />
+                  <AIMetricCard
+                    label="Low Risk"
+                    value={dashboardData?.summary?.lowRiskProducts || 0}
+                    color="#34C759"
+                    icon="checkmark-circle"
+                    theme={theme}
+                  />
+                </View>
+              </View>
+
+              {/* Sales Performance */}
+              <View style={styles.aiSection}>
+                <ThemedText style={[styles.aiSectionTitle, { color: theme.text }]}>
+                  Sales Performance
+                </ThemedText>
+                <View style={styles.aiMetricsRow}>
+                  <AIMetricCard
+                    label="Total Sales"
+                    value={`$${(dashboardData?.summary?.totalSales || 0).toLocaleString()}`}
+                    color={theme.primary}
+                    icon="cash"
+                    theme={theme}
+                  />
+                  <AIMetricCard
+                    label="Units Sold"
+                    value={dashboardData?.summary?.totalUnitsSold || 0}
+                    color={theme.primary}
+                    icon="cube"
+                    theme={theme}
+                  />
+                  <AIMetricCard
+                    label="Avg Velocity"
+                    value={`${(dashboardData?.summary?.averageVelocity || 0).toFixed(1)}/day`}
+                    color={theme.primary}
+                    icon="speedometer"
+                    theme={theme}
+                  />
+                </View>
+              </View>
+
+              {/* Quick Insights */}
+              {quickInsights && (
+                <View style={styles.aiSection}>
+                  <ThemedText style={[styles.aiSectionTitle, { color: theme.text }]}>
+                    AI Recommendations
+                  </ThemedText>
+                  <View style={[styles.aiRecommendations, { backgroundColor: theme.primary + "10", borderColor: theme.primary + "30" }]}>
+                    <View style={styles.aiRecommendationRow}>
+                      <Ionicons name="bulb" size={16} color={theme.primary} />
+                      <ThemedText style={[styles.aiRecommendationText, { color: theme.text }]}>
+                        {quickInsights.urgentCount > 0 
+                          ? `${quickInsights.urgentCount} items need urgent attention`
+                          : "All products are performing well"
+                        }
+                      </ThemedText>
+                    </View>
+                    {quickInsights.criticalItems?.length > 0 && (
+                      <View style={styles.aiRecommendationRow}>
+                        <Ionicons name="trending-up" size={16} color={theme.primary} />
+                        <ThemedText style={[styles.aiRecommendationText, { color: theme.text }]}>
+                          {quickInsights.criticalItems.length} critical items analyzed
+                        </ThemedText>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              )}
+
+              {/* View Full Report Button */}
+              <Pressable
+                style={[styles.aiViewMoreBtn, { backgroundColor: theme.primary }]}
+                onPress={() => router.push("/admin/stats" as Href)}
+              >
+                <ThemedText style={styles.aiViewMoreText}>View Full AI Report</ThemedText>
+                <Ionicons name="arrow-forward" size={16} color="#FFF" />
+              </Pressable>
+            </View>
+          )}
+        </View>
+
+        {/* AI Info Section */}
+        <View style={[styles.aiInfoSection, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <View style={styles.aiInfoHeader}>
+            <Ionicons name="information-circle" size={20} color={theme.primary} />
+            <ThemedText style={[styles.aiInfoTitle, { color: theme.text }]}>
+              About AI Predictions
+            </ThemedText>
+          </View>
+          
+          <ThemedText style={[styles.aiInfoText, { color: theme.subtext }]}>
+            Insightory uses AI to analyze your sales patterns and predict demand, risk scores, and optimal inventory levels. 
+            The system learns from your transaction history to provide accurate forecasts and actionable recommendations.
+          </ThemedText>
+
+          <View style={styles.aiInfoFeatures}>
+            <View style={styles.aiInfoFeature}>
+              <Ionicons name="trending-up" size={14} color={theme.primary} />
+              <ThemedText style={[styles.aiInfoFeatureText, { color: theme.subtext }]}>
+                Demand forecasting (7-30 days)
+              </ThemedText>
+            </View>
+            <View style={styles.aiInfoFeature}>
+              <Ionicons name="alert-circle" size={14} color={theme.primary} />
+              <ThemedText style={[styles.aiInfoFeatureText, { color: theme.subtext }]}>
+                Risk scoring for waste prevention
+              </ThemedText>
+            </View>
+            <View style={styles.aiInfoFeature}>
+              <Ionicons name="bulb" size={14} color={theme.primary} />
+              <ThemedText style={[styles.aiInfoFeatureText, { color: theme.subtext }]}>
+                Smart recommendations & alerts
+              </ThemedText>
+            </View>
+          </View>
+
+          <Pressable
+            style={[styles.aiInfoLearnMore, { borderColor: theme.border }]}
+            onPress={() => router.push("/ai-info" as Href)}
+          >
+            <ThemedText style={[styles.aiInfoLearnMoreText, { color: theme.primary }]}>
+              Learn More About AI Predictions
+            </ThemedText>
+            <Ionicons name="arrow-forward" size={14} color={theme.primary} />
+          </Pressable>
+        </View>
       </ScrollView>
     </View>
   );
@@ -326,6 +514,30 @@ function StatPill({ label, value, icon, theme, highlight }: StatPillProps) {
         {value}
       </ThemedText>
       <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>{label}</ThemedText>
+    </View>
+  );
+}
+
+interface AIMetricCardProps {
+  label: string;
+  value: string | number;
+  color: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  theme: any;
+}
+
+function AIMetricCard({ label, value, color, icon, theme }: AIMetricCardProps) {
+  return (
+    <View style={[styles.aiMetricCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
+      <View style={[styles.aiMetricIcon, { backgroundColor: color + "20" }]}>
+        <Ionicons name={icon} size={16} color={color} />
+      </View>
+      <ThemedText style={[styles.aiMetricValue, { color: theme.text }]}>
+        {value}
+      </ThemedText>
+      <ThemedText style={[styles.aiMetricLabel, { color: theme.subtext }]}>
+        {label}
+      </ThemedText>
     </View>
   );
 }
@@ -357,4 +569,30 @@ const styles = StyleSheet.create({
   rowDesc: { fontSize: 12 },
   badge: { minWidth: 22, height: 22, borderRadius: 11, justifyContent: "center", alignItems: "center", paddingHorizontal: 6 },
   badgeText: { color: "#FFF", fontSize: 11 },
+
+  // AI Insights styles
+  aiInsightsContent: { paddingTop: 16, borderTopWidth: 1 },
+  aiSection: { marginBottom: 20, padding: 10, },
+  aiSectionTitle: { fontSize: 14, marginBottom: 12, letterSpacing: 0.3 },
+  aiMetricsRow: { flexDirection: "row", gap: 8 },
+  aiMetricCard: { flex: 1, padding: 12, borderRadius: 12, borderWidth: 1, alignItems: "center", minHeight: 80 },
+  aiMetricIcon: { width: 32, height: 32, borderRadius: 8, justifyContent: "center", alignItems: "center", marginBottom: 8 },
+  aiMetricValue: { fontSize: 16, marginBottom: 2 },
+  aiMetricLabel: { fontSize: 10, textAlign: "center" },
+  aiRecommendations: { padding: 12, borderRadius: 12, borderWidth: 1 },
+  aiRecommendationRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 },
+  aiRecommendationText: { fontSize: 13, flex: 1 },
+  aiViewMoreBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, borderRadius: 12, marginVertical: 8, marginHorizontal: 15, },
+  aiViewMoreText: { color: "#FFF", fontSize: 14 },
+
+  // AI Info section styles
+  aiInfoSection: { padding: 16, borderRadius: 16, borderWidth: 1 },
+  aiInfoHeader: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 12 },
+  aiInfoTitle: { fontSize: 15 },
+  aiInfoText: { fontSize: 13, lineHeight: 20, marginBottom: 16 },
+  aiInfoFeatures: { gap: 8, marginBottom: 16 },
+  aiInfoFeature: { flexDirection: "row", alignItems: "center", gap: 8 },
+  aiInfoFeatureText: { fontSize: 12 },
+  aiInfoLearnMore: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, padding: 12, borderRadius: 10, borderWidth: 1 },
+  aiInfoLearnMoreText: { fontSize: 13 },
 });

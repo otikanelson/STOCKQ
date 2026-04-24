@@ -1,5 +1,4 @@
-﻿import { HelpTooltip } from "@/components/HelpTooltip";
-import { ProductCard } from "@/components/ProductCard";
+﻿import { ProductCard } from "@/components/ProductCard";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
@@ -14,6 +13,7 @@ import {
   Image,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   TextInput,
   View
@@ -124,109 +124,84 @@ export default function InventoryScreen() {
   }, [filteredProducts, sortField, analytics]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <View style={styles.container}>
-        <View style={styles.topSection}>
-          <ThemedText style={[styles.subtitle, { color: theme.primary }]}>STOCK MANAGEMENT</ThemedText>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <ThemedText style={[styles.title, { color: theme.text }]}>Inventory</ThemedText>
-            <HelpTooltip
-              title="Inventory Management"
-              content={[
-                "Search: Find products by name, category, or barcode. Use the barcode icon to scan and search.",
-                "Sort Options: Cycle through NAME, QUANTITY, RISK (AI-predicted waste risk), and VELOCITY (sales speed).",
-                "View Modes: Switch between card view (detailed) and list view (compact).",
-                "Risk Indicators: Red dots show high-risk items. Flash icon = fast-moving, hourglass = slow-moving."
-              ]}
-              icon="help-circle-outline"
-              iconSize={18}
-              iconColor={theme.primary}
-            />
-          </View>
-
-          <View style={styles.searchRow}>
-            <View
-              style={[
-                styles.searchBar,
-                { backgroundColor: theme.surface, borderColor: theme.border },
-              ]}
-            >
-              <Ionicons name="search" size={18} color={theme.subtext} />
-              <TextInput
-                placeholder="Search inventory..."
-                placeholderTextColor={theme.subtext}
-                style={[styles.searchInput, { color: theme.text }]}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              <Pressable
-                onPress={() =>
-                  router.push({
-                    pathname: "/scan",
-                    params: { initialTab: "lookup" },
-                  })
-                }
-                style={styles.barcodeIcon}
-              >
-                <Ionicons
-                  name="barcode-outline"
-                  size={24}
-                  color={theme.primary}
-                />
-              </Pressable>
-            </View>
-
-            <Pressable
-              style={[
-                styles.sortBtn,
-                { backgroundColor: theme.surface, borderColor: theme.border },
-              ]}
-              onPress={cycleSortField}
-            >
-              <Ionicons 
-                name={
-                  sortField === "risk" ? "alert-circle" :
-                  sortField === "velocity" ? "speedometer" :
-                  "swap-vertical"
-                } 
-                size={20} 
-                color={theme.primary} 
+    <View style={{ flex: 1, backgroundColor: theme.primary }}>
+      {/* Blue Header */}
+      <View style={[styles.blueHeader, { backgroundColor: theme.primary }]}>
+        <View style={styles.headerTop}>
+          <ThemedText style={styles.headerTitle}>Inventory List</ThemedText>
+          <View style={styles.headerIcons}>
+            <Pressable style={styles.headerIconBtn} onPress={cycleSortField}>
+              <Ionicons
+                name={sortField === "risk" ? "alert-circle" : sortField === "velocity" ? "speedometer" : "list"}
+                size={20}
+                color="#FFF"
               />
             </Pressable>
-
             <Pressable
-              style={[
-                styles.sortBtn,
-                { backgroundColor: theme.surface, borderColor: theme.border },
-              ]}
+              style={styles.headerIconBtn}
               onPress={() => {
                 const modes: Array<"card" | "list" | "rect"> = ["card", "list", "rect"];
-                const currentIndex = modes.indexOf(displayMode);
-                const nextIndex = (currentIndex + 1) % modes.length;
+                const nextIndex = (modes.indexOf(displayMode) + 1) % modes.length;
                 setDisplayMode(modes[nextIndex]);
               }}
             >
               <Ionicons
                 name={displayMode === "card" ? "list" : displayMode === "list" ? "grid-outline" : "grid"}
                 size={20}
-                color={theme.primary}
+                color="#FFF"
               />
             </Pressable>
           </View>
-
-          <View style={styles.countRow}>
-            <ThemedText style={{ color: theme.text, }}>
-              <ThemedText style={[styles.countText, { color: theme.subtext }]}>
-                {sortedProducts.length}
-              </ThemedText>{" "}
-              Products
-            </ThemedText>
-            <ThemedText style={[styles.sortLabel, { color: theme.primary }]}>
-              Sort: {sortField.toUpperCase()}
-            </ThemedText>
-          </View>
         </View>
 
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={18} color="#999" style={{ marginLeft: 4 }} />
+          <TextInput
+            placeholder="Search the products"
+            placeholderTextColor="#999"
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <Pressable
+            onPress={() => router.push({ pathname: "/scan", params: { initialTab: "lookup" } })}
+            style={styles.barcodeBtn}
+          >
+            <Ionicons name="barcode-outline" size={22} color={theme.primary} />
+          </Pressable>
+        </View>
+
+        {/* Category Pills */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.pillsRow}
+        >
+          <Pressable
+            onPress={() => setSearchQuery("")}
+            style={[styles.pill, searchQuery === "" && styles.pillActive]}
+          >
+            <ThemedText style={[styles.pillText, searchQuery === "" && styles.pillTextActive]}>
+              All ({products.length})
+            </ThemedText>
+          </Pressable>
+          {Array.from(new Set(products.map(p => p.category || "Uncategorized"))).slice(0, 6).map((cat) => (
+            <Pressable
+              key={cat}
+              onPress={() => setSearchQuery(cat)}
+              style={[styles.pill, searchQuery === cat && styles.pillActive]}
+            >
+              <ThemedText style={[styles.pillText, searchQuery === cat && styles.pillTextActive]}>
+                {cat} ({products.filter(p => (p.category || "Uncategorized") === cat).length})
+              </ThemedText>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* List */}
+      <View style={[styles.listContainer, { backgroundColor: theme.background }]}>
         <FlatList
           data={sortedProducts}
           keyExtractor={(item) => item._id}
@@ -237,14 +212,11 @@ export default function InventoryScreen() {
           refreshControl={
             <RefreshControl
               refreshing={loading}
-              onRefresh={async () => {
-                await refresh();
-                await fetchAnalytics();
-              }}
+              onRefresh={async () => { await refresh(); await fetchAnalytics(); }}
               tintColor={theme.primary}
             />
           }
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             const productAnalytics = analytics[item._id];
             const riskScore = productAnalytics?.riskScore || 0;
             const velocity = productAnalytics?.velocity || 0;
@@ -257,314 +229,280 @@ export default function InventoryScreen() {
                   onPress={() => router.push(`/product/${item._id}` as Href)}
                   style={[styles.listItem, { borderBottomColor: theme.border }]}
                 >
-                  {/* Risk Dot */}
                   {riskColor && riskScore > 30 && (
                     <View style={[styles.listRiskDot, { backgroundColor: riskColor }]} />
                   )}
-                  
                   <View style={{ flex: 2, marginLeft: riskColor && riskScore > 30 ? 8 : 0 }}>
                     <View style={styles.listNameRow}>
-                      <ThemedText
-                        style={[styles.listName, { color: theme.text }]}
-                        numberOfLines={1}
-                      >
+                      <ThemedText style={[styles.listName, { color: theme.text }]} numberOfLines={1}>
                         {item.name}
                       </ThemedText>
-                      {/* Velocity Indicator */}
                       {velocityIndicator && (
-                        <Ionicons 
-                          name={velocityIndicator.icon} 
-                          size={12} 
-                          color={velocityIndicator.color}
-                          style={{ marginLeft: 6 }}
-                        />
+                        <Ionicons name={velocityIndicator.icon} size={12} color={velocityIndicator.color} style={{ marginLeft: 6 }} />
                       )}
                     </View>
-                    <ThemedText
-                      style={[styles.listSubtitle, { color: theme.subtext }]}
-                    >
+                    <ThemedText style={[styles.listSubtitle, { color: theme.subtext }]}>
                       {item.barcode || "No SKU"}
                     </ThemedText>
                   </View>
                   <View style={styles.listPill}>
-                    <ThemedText
-                      style={[styles.listCategory, { color: theme.subtext }]}
-                    >
+                    <ThemedText style={[styles.listCategory, { color: theme.subtext }]}>
                       {item.category || "General"}
                     </ThemedText>
                   </View>
                   <View style={{ flex: 1, alignItems: "flex-end" }}>
-                    {sortField === "risk" && productAnalytics ? (
-                      <ThemedText
-                        style={[
-                          styles.listQty,
-                          {
-                            color: riskColor || theme.text,
-                          },
-                        ]}
-                      >
-                        Risk: {Math.round(riskScore)}
-                      </ThemedText>
-                    ) : sortField === "velocity" && productAnalytics ? (
-                      <ThemedText
-                        style={[
-                          styles.listQty,
-                          {
-                            color: velocityIndicator?.color || theme.text,
-                          },
-                        ]}
-                      >
-                        {velocity.toFixed(1)}/day
-                      </ThemedText>
-                    ) : (
-                      <ThemedText
-                        style={[
-                          styles.listQty,
-                          {
-                            color:
-                              item.totalQuantity < 10
-                                ? theme.notification
-                                : theme.text,
-                          },
-                        ]}
-                      >
-                        {item.totalQuantity} units
-                      </ThemedText>
-                    )}
+                    <ThemedText style={[styles.listQty, { color: item.totalQuantity < 10 ? theme.notification : theme.text }]}>
+                      {item.totalQuantity} units
+                    </ThemedText>
                   </View>
                 </Pressable>
               );
             }
-            
+
             if (displayMode === "rect") {
-              // Rectangular card view (like dashboard)
-              const prediction = productAnalytics ? {
-                metrics: {
-                  riskScore,
-                  velocity
-                }
-              } : null;
-              
-              return (
-                <ProductCard 
-                  item={item}
-                  prediction={prediction as any}
-                  sortField={sortField as any}
-                />
-              );
+              const prediction = productAnalytics ? { metrics: { riskScore, velocity } } : null;
+              return <ProductCard item={item} prediction={prediction as any} sortField={sortField as any} />;
             }
-            
+
+            // Card mode — new design
             return (
               <Pressable
                 onPress={() => router.push(`/product/${item._id}` as Href)}
-                style={[
-                  styles.itemCard,
-                  { backgroundColor: theme.surface, borderColor: theme.border },
-                ]}
+                style={[styles.productCard, { backgroundColor: theme.surface }]}
               >
-                {/* Risk Dot - Card Mode */}
                 {riskColor && riskScore > 30 && (
                   <View style={[styles.cardRiskDot, { backgroundColor: riskColor }]} />
                 )}
-                
-                <View style={styles.cardMain}>
-                  <View style={styles.imageContainer}>
-                    {item.imageUrl && item.imageUrl !== "cube" && item.imageUrl !== "" ? (
-                      <Image
-                        source={{ uri: item.imageUrl }}
-                        style={styles.image}
-                        resizeMode="contain"
-                      />
-                    ) : (
-                      <Ionicons
-                        name="cube-outline"
-                        size={30}
-                        color={isDark ? "#ffffff20" : "#00000010"}
-                      />
-                    )}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <View style={styles.cardNameRow}>
-                      <ThemedText
-                        style={[styles.name, { color: theme.text }]}
-                        numberOfLines={1}
-                      >
-                        {item.name}
-                      </ThemedText>
-                      {/* Velocity Indicator */}
-                      {velocityIndicator && (
-                        <Ionicons 
-                          name={velocityIndicator.icon} 
-                          size={14} 
-                          color={velocityIndicator.color}
-                          style={{ marginLeft: 6 }}
-                        />
-                      )}
-                    </View>
-                    <ThemedText style={[styles.category, { color: theme.subtext }]}>
-                      {item.category || "General"}
-                    </ThemedText>
-                  </View>
-                  <View style={styles.qtyBox}>
-                    {sortField === "risk" && productAnalytics ? (
-                      <>
-                        <ThemedText
-                          style={[
-                            styles.qtyValue,
-                            {
-                              color: riskColor || theme.primary,
-                            },
-                          ]}
-                        >
-                          {Math.round(riskScore)}
-                        </ThemedText>
-                        <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
-                          RISK
-                        </ThemedText>
-                      </>
-                    ) : sortField === "velocity" && productAnalytics ? (
-                      <>
-                        <ThemedText
-                          style={[
-                            styles.qtyValue,
-                            {
-                              color: velocityIndicator?.color || theme.primary,
-                            },
-                          ]}
-                        >
-                          {velocity.toFixed(1)}
-                        </ThemedText>
-                        <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
-                          /DAY
-                        </ThemedText>
-                      </>
-                    ) : (
-                      <>
-                        <ThemedText
-                          style={[
-                            styles.qtyValue,
-                            {
-                              color:
-                                item.totalQuantity < 10
-                                  ? theme.notification
-                                  : theme.primary,
-                            },
-                          ]}
-                        >
-                          {item.totalQuantity}
-                        </ThemedText>
-                        <ThemedText style={[styles.qtyLabel, { color: theme.subtext }]}>
-                          QTY
-                        </ThemedText>
-                      </>
-                    )}
-                  </View>
+                <View style={styles.cardNumberBadge}>
+                  <ThemedText style={[styles.cardNumber, { color: theme.subtext }]}>
+                    #{String(index + 1).padStart(2, "0")}
+                  </ThemedText>
+                  <ThemedText style={[styles.cardPrice, { color: theme.text }]}>
+                    {item.genericPrice ? `₦${item.genericPrice}` : ""}
+                  </ThemedText>
                 </View>
+                <View style={[styles.cardImageBox, { backgroundColor: theme.background }]}>
+                  {item.imageUrl && item.imageUrl !== "cube" && item.imageUrl !== "" ? (
+                    <Image source={{ uri: item.imageUrl }} style={styles.cardImage} resizeMode="contain" />
+                  ) : (
+                    <Ionicons name="cube-outline" size={40} color={theme.subtext + "60"} />
+                  )}
+                </View>
+                <ThemedText style={[styles.cardName, { color: theme.text }]} numberOfLines={1}>
+                  {item.name}
+                </ThemedText>
+                <ThemedText style={[styles.cardBarcode, { color: theme.subtext }]} numberOfLines={1}>
+                  Code: {item.barcode || "N/A"}
+                </ThemedText>
+                <ThemedText style={[styles.cardMeta, { color: theme.subtext }]} numberOfLines={1}>
+                  Qty: {item.totalQuantity} units
+                </ThemedText>
               </Pressable>
             );
           }}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="archive-outline" size={48} color={theme.subtext} />
+              <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>No products found</ThemedText>
+            </View>
+          }
         />
       </View>
+
+      {/* Floating Add Button */}
+      <Pressable
+        onPress={() => router.push("/(tabs)/add-products" as Href)}
+        style={[styles.fab, { backgroundColor: theme.primary }]}
+      >
+        <Ionicons name="add" size={30} color="#FFF" />
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 60 },
-  topSection: { paddingHorizontal: 20, marginBottom: 10 },
-  subtitle: { fontSize: 10, letterSpacing: 2 },
-  title: { fontSize: 26, letterSpacing: -0.5 },
-  searchRow: { flexDirection: "row", gap: 10, marginVertical: 15 },
-  searchBar: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    height: 50,
-    borderRadius: 16,
-    borderWidth: 1,
+  blueHeader: {
+    paddingTop: 55,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
   },
-  searchInput: { flex: 1, marginLeft: 10, fontSize: 13 },
-  barcodeIcon: {
-    paddingLeft: 10,
-    borderLeftWidth: 1,
-    borderLeftColor: "rgba(150,150,150,0.2)",
-  },
-  sortBtn: {
-    width: 45,
-    height: 50,
-    borderRadius: 16,
-    borderWidth: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  countRow: {
+  headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    alignItems: "center",
+    marginBottom: 16,
   },
-  countText: { fontSize: 13, },
-  sortLabel: { fontSize: 11, },
-  listPadding: { paddingHorizontal: 20, paddingBottom: 100 },
-  itemCard: { borderRadius: 20, borderWidth: 1, marginBottom: 12, padding: 16 },
-  cardMain: { flexDirection: "row", alignItems: "center" },
-  imageContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 12,
-    marginRight: 12,
-    backgroundColor: "#e6e6e620",
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: "900",
+    color: "#FFF",
+    letterSpacing: -0.5,
+  },
+  headerIcons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  headerIconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.2)",
     justifyContent: "center",
     alignItems: "center",
   },
-  image: { width: "100%", height: "100%" },
-  name: { fontSize: 16, },
-  category: { fontSize: 12, },
-  qtyBox: { alignItems: "center", minWidth: 40 },
-  qtyValue: { fontSize: 20, },
-  qtyLabel: { fontSize: 9, },
-  listItem: {
+  searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    position: 'relative',
+    backgroundColor: "#FFF",
+    borderRadius: 30,
+    paddingHorizontal: 14,
+    height: 48,
+    marginBottom: 14,
+    gap: 8,
   },
-  listRiskDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 8,
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: "#333",
   },
-  listNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  barcodeBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  listName: { fontSize: 14, },
-  listSubtitle: { fontSize: 11 },
-  listPill: {
-    backgroundColor: "#f0f0f010",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+  pillsRow: {
+    flexDirection: "row",
+    gap: 8,
+    paddingBottom: 4,
   },
-  listCategory: { fontSize: 10, },
-  listQty: { fontSize: 14, },
+  pill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.4)",
+  },
+  pillActive: {
+    backgroundColor: "#FFF",
+    borderColor: "#FFF",
+  },
+  pillText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "rgba(255,255,255,0.9)",
+  },
+  pillTextActive: {
+    color: "#1a6fd4",
+  },
+  listContainer: {
+    flex: 1,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  listPadding: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 120 },
+  columnWrapper: { justifyContent: "space-between", paddingHorizontal: 0 },
+
+  // New card design
+  productCard: {
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardNumberBadge: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  cardNumber: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  cardPrice: {
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  cardImageBox: {
+    width: "100%",
+    height: 110,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  cardImage: {
+    width: "100%",
+    height: "100%",
+  },
+  cardName: {
+    fontSize: 14,
+    fontWeight: "800",
+    marginBottom: 3,
+  },
+  cardBarcode: {
+    fontSize: 11,
+    marginBottom: 2,
+  },
+  cardMeta: {
+    fontSize: 11,
+  },
   cardRiskDot: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
+    position: "absolute",
+    top: 10,
+    right: 10,
     width: 8,
     height: 8,
     borderRadius: 4,
     zIndex: 10,
   },
-  cardNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+
+  // List mode
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
   },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    paddingHorizontal: 4,
+  listRiskDot: { width: 8, height: 8, borderRadius: 4 },
+  listNameRow: { flexDirection: "row", alignItems: "center" },
+  listName: { fontSize: 14, fontWeight: "700" },
+  listSubtitle: { fontSize: 11, marginTop: 2 },
+  listPill: {
+    backgroundColor: "rgba(150,150,150,0.1)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginHorizontal: 8,
+  },
+  listCategory: { fontSize: 10 },
+  listQty: { fontSize: 13, fontWeight: "700" },
+
+  emptyContainer: { alignItems: "center", paddingVertical: 60 },
+  emptyText: { marginTop: 12, fontSize: 14 },
+
+  // FAB
+  fab: {
+    position: "absolute",
+    bottom: 10,
+    right: 24,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });

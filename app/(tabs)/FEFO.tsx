@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   systemTag: { fontSize: 10, letterSpacing: 2 },
-  title: { fontSize: 20, letterSpacing: -1 },
+  title: { fontSize: 22, fontWeight: 500, letterSpacing: -1 },
   controlsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -437,8 +437,9 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   filterToggleText: {
-    fontSize: 10,
+    fontSize: 7,
     letterSpacing: 1,
+    fontWeight: 500,
   },
   statsStrip: {
     marginTop: 10,
