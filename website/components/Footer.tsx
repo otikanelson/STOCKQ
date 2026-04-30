@@ -1,5 +1,5 @@
 'use client';
-import Image from 'next/image';
+import NavLogo from './NavLogo';
 
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -14,9 +14,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-5 cursor-pointer" onClick={scrollToTop}>
-              <div className="relative w-9 h-9">
-                <Image src="/images/Logo.png" alt="Insightory" fill className="object-contain" />
-              </div>
+              <NavLogo size={9} />
               <span className="font-bold text-xl tracking-tight" style={{ color: 'var(--text)' }}>
                 Insight<span className="gradient-text">ory</span>
               </span>
