@@ -95,7 +95,7 @@ export default function Hero() {
             onClick={(e) => { e.preventDefault(); document.querySelector('#download')?.scrollIntoView({ behavior: 'smooth' }); }}
             className="flex items-center gap-3 px-8 py-4 rounded-2xl text-base font-bold glass border transition-all duration-300"
             style={{ color: 'var(--text)', borderColor: 'var(--border)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 40%, transparent)')}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--accent2) 60%, transparent)')}
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M3.18 23.76c.3.17.64.22.99.14l12.12-6.99-2.54-2.54-10.57 9.39zM.5 1.26C.19 1.6 0 2.1 0 2.73v18.54c0 .63.19 1.13.5 1.47l.08.07 10.39-10.39v-.24L.58 1.19.5 1.26zM20.1 10.53l-2.9-1.67-2.85 2.85 2.85 2.85 2.92-1.68c.83-.48.83-1.27-.02-1.35zM4.17.24L16.29 7.23l-2.54 2.54L3.18.38C3.53.3 3.87.07 4.17.24z"/>

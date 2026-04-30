@@ -53,6 +53,7 @@
   --border:          #1E2240;
   --card:            #111527;
   --accent:          #1A1B3A;
+  --accent2:         #e32bd8;
   --gradient1:       #7C6FF7;
   --gradient2:       #A78BFA;
   --success:         #34D399;
@@ -190,8 +191,8 @@ body {
 
 .feature-card:hover {
   transform: translateY(-6px);
-  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
-  box-shadow: 0 20px 60px color-mix(in srgb, var(--primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent2) 50%, transparent);
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--accent2) 12%, transparent);
 }
 
 /* ── Nav link underline ── */
@@ -201,7 +202,7 @@ body {
   position: absolute;
   bottom: -2px; left: 0;
   width: 0; height: 1px;
-  background: linear-gradient(90deg, var(--gradient1), var(--gradient2));
+  background: linear-gradient(90deg, var(--accent2), var(--gradient2));
   transition: width 0.3s ease;
 }
 .nav-link:hover::after { width: 100%; }
@@ -217,7 +218,8 @@ body {
   transition: border-color 0.3s ease, background 0.3s ease;
 }
 .stat-card:hover {
-  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  border-color: color-mix(in srgb, var(--accent2) 50%, transparent);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--accent2) 10%, transparent);
 }
 
 /* ── Divider ── */
@@ -225,7 +227,7 @@ body {
   height: 1px;
   background: linear-gradient(90deg,
     transparent,
-    color-mix(in srgb, var(--primary) 30%, transparent),
+    color-mix(in srgb, var(--accent2) 40%, transparent),
     color-mix(in srgb, var(--gradient2) 30%, transparent),
     transparent
   );
@@ -233,11 +235,12 @@ body {
 
 /* ── Store badge ── */
 .store-badge {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 .store-badge:hover {
   transform: scale(1.05);
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--primary) 25%, transparent);
+  border-color: color-mix(in srgb, var(--accent2) 50%, transparent) !important;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--accent2) 20%, transparent);
 }
 
 /* ── Animations ── */

@@ -24,6 +24,7 @@ export default function ThemeApplier() {
     root.style.setProperty('--border',        theme.border);
     root.style.setProperty('--card',          theme.card);
     root.style.setProperty('--accent',        theme.accent);
+    root.style.setProperty('--accent2',       theme.accent2);
     root.style.setProperty('--gradient1',     theme.gradient1);
     root.style.setProperty('--gradient2',     theme.gradient2);
     root.style.setProperty('--success',       theme.success);

@@ -34,6 +34,9 @@ export default function Footer() {
                   href="#"
                   aria-label={s.label}
                   className="w-9 h-9 rounded-xl glass flex items-center justify-center text-white/40 hover:text-brand-400 hover:border-brand-500/30 transition-all duration-200 border border-white/5"
+                  style={{}}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent2)'; (e.currentTarget as HTMLElement).style.borderColor = 'color-mix(in srgb, var(--accent2) 40%, transparent)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = ''; (e.currentTarget as HTMLElement).style.borderColor = ''; }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     {s.icon}
@@ -63,7 +66,7 @@ export default function Footer() {
                     }}
                     className="text-sm transition-colors duration-200"
                     style={{ color: 'var(--subtext)' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent2)')}
                     onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--subtext)')}>
                     {l.label}
                   </a>
@@ -84,7 +87,7 @@ export default function Footer() {
                 <li key={l.label}>
                   <a href={l.href} className="text-sm transition-colors duration-200"
                     style={{ color: 'var(--subtext)' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent2)')}
                     onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--subtext)')}>
                     {l.label}
                   </a>
@@ -93,7 +96,7 @@ export default function Footer() {
               <li>
                 <a href="mailto:support@insightory.app" className="text-sm transition-colors duration-200"
                   style={{ color: 'var(--subtext)' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent2)')}
                   onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--subtext)')}>
                   support@insightory.app
                 </a>
@@ -111,7 +114,7 @@ export default function Footer() {
           <button onClick={scrollToTop}
             className="flex items-center gap-2 text-xs transition-colors duration-200 group"
             style={{ color: 'var(--subtext)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--primary)')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent2)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--subtext)')}
             aria-label="Scroll to top">
             Back to top

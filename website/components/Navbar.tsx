@@ -147,7 +147,7 @@ export default function Navbar() {
                 onClick={() => handleNavClick(l.href)}
                 className="nav-link text-sm font-medium transition-colors duration-200"
                 style={{ color: 'var(--subtext)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent2)')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--subtext)')}
               >
                 {l.label}
