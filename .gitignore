@@ -58,3 +58,9 @@ backend/.expo/
 
 # models
 backend/models/saved/
+.jks
+eas.json
+
+# Next.js build output
+website/.next/
+website/node_modules/
