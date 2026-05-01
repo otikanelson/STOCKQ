@@ -26,6 +26,7 @@ import { HelpTooltip } from "../../components/HelpTooltip";
 import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { hasSecurityPIN } from "../../utils/securityPINCheck";
+import { ModalToast, useModalToast } from "@/components/ModalToast";
 
 const { height, width } = Dimensions.get("window");
 
