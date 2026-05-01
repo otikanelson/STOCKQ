@@ -944,8 +944,8 @@ exports.getVelocityPredictions = async (req, res) => {
     ]);
 
     // Build a map of date -> actual sales
-    const actualMap: Record<string, number> = {};
-    recentDailySales.forEach((d: any) => { actualMap[d._id] = d.totalSales; });
+    const actualMap = {};
+    recentDailySales.forEach((d) => { actualMap[d._id] = d.totalSales; });
 
     // Total predicted daily revenue = sum of (velocity × avgPrice) across all products
     const totalDailyRevenue = productBreakdown.reduce((sum, p) => sum + p.dailyRevenue, 0);

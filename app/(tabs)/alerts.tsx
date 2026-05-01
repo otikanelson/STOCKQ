@@ -2,24 +2,25 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Modal,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View
+    Modal,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 import { HelpTooltip } from "../../components/HelpTooltip";
 import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 import { Alert, AlertAction, useAlerts } from "../../hooks/useAlerts";
+import { useModalToast } from "@/components/ModalToast";
 
 export default function Alerts() {
   const { theme } = useTheme();
+  const modalToast = useModalToast();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { alerts, summary, loading, refresh, acknowledgeAlert } = useAlerts();
@@ -85,11 +86,7 @@ export default function Alerts() {
         const data = await response.json();
         
         if (response.ok && data.success) {
-          Toast.show({
-            type: "success",
-            text1: "Batch Removed",
-            text2: `Batch ${selectedAlert.batchNumber} of ${selectedAlert.productName} has been deleted`,
-          });
+          modalToast.show({ type: "success", title: "Batch Removed", message: `Batch ${selectedAlert.batchNumber} of ${selectedAlert.productName} has been deleted` });
           await acknowledgeAlert(selectedAlert.alertId, "Removed");
           refresh();
         } else {
@@ -125,11 +122,7 @@ export default function Alerts() {
         console.log('Discount response:', { status: response.status, data });
         
         if (response.ok && data.success) {
-          Toast.show({
-            type: "success",
-            text1: "Discount Applied",
-            text2: `${discountPercent}% discount applied to ${selectedAlert.productName}`,
-          });
+          modalToast.show({ type: "success", title: "Discount Applied", message: `${discountPercent}% discount applied to ${selectedAlert.productName}` });
           await acknowledgeAlert(selectedAlert.alertId, "Discounted");
           refresh();
         } else {
@@ -142,32 +135,19 @@ export default function Alerts() {
       setAdminPin("");
     } catch (error: any) {
       console.error('Action error:', error);
-      Toast.show({
-        type: "error",
-        text1: "Action Failed",
-        text2: error.message || "Please try again",
-      });
+      modalToast.show({ type: "error", title: "Action Failed", message: error.message || "Please try again" });
     }
   };
 
   const confirmAction = async () => {
     if (!selectedAlert) return;
-
-    const result = await acknowledgeAlert(
-      selectedAlert.alertId,
-      "Acknowledged",
-    );
-
+    const result = await acknowledgeAlert(selectedAlert.alertId, "Acknowledged");
     if (result.success) {
-      Toast.show({
-        type: "success",
-        text1: "Action Recorded",
-        text2: `Applied to ${selectedAlert.productName}`,
-      });
+      modalToast.show({ type: "success", title: "Action Recorded", message: `Applied to ${selectedAlert.productName}` });
       setActionModalVisible(false);
       setSelectedAlert(null);
     } else {
-      Toast.show({ type: "error", text1: "Action Failed" });
+      modalToast.show({ type: "error", title: "Action Failed" });
     }
   };
 
@@ -450,6 +430,7 @@ export default function Alerts() {
               </Pressable>
             </View>
           </View>
+          <ModalToast toast={modalToast} />
         </View>
       </Modal>
 

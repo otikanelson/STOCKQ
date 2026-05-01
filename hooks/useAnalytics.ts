@@ -18,9 +18,23 @@ interface DashboardAnalytics {
   productAnalytics: any[];
 }
 
+export interface VelocityPredictionDay {
+  date: string;
+  value: number;
+  isActual: boolean;
+}
+
+export interface VelocityPredictions {
+  days: VelocityPredictionDay[];
+  totalDailyRevenue: number;
+  confidence: 'high' | 'medium' | 'low';
+  productBreakdown: { productName: string; velocity: number; avgPrice: number; dailyRevenue: number }[];
+}
+
 export const useAnalytics = () => {
   const [dashboardData, setDashboardData] = useState<DashboardAnalytics | null>(null);
   const [salesTrends, setSalesTrends] = useState<any>(null);
+  const [velocityPredictions, setVelocityPredictions] = useState<VelocityPredictions | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,6 +69,19 @@ export const useAnalytics = () => {
     }
   }, [API_URL]);
 
+  /** Fetch Velocity-based Predictions */
+  const fetchVelocityPredictions = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_URL}/velocity-predictions`);
+      if (response.data.success) {
+        setVelocityPredictions(response.data.data);
+      }
+    } catch (err: any) {
+      console.error("Velocity Predictions Error:", err);
+      setVelocityPredictions(null);
+    }
+  }, [API_URL]);
+
   /** Get Product-Specific Analytics */
   const getProductAnalytics = async (productId: string) => {
     try {
@@ -86,15 +113,18 @@ export const useAnalytics = () => {
   useEffect(() => {
     fetchDashboard();
     fetchSalesTrends(30);
-  }, [fetchDashboard, fetchSalesTrends]);
+    fetchVelocityPredictions();
+  }, [fetchDashboard, fetchSalesTrends, fetchVelocityPredictions]);
 
   return {
     dashboardData,
     salesTrends,
+    velocityPredictions,
     loading,
     error,
     refresh: fetchDashboard,
     fetchSalesTrends,
+    fetchVelocityPredictions,
     getProductAnalytics,
     recordSale
   };

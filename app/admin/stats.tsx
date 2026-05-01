@@ -7,13 +7,13 @@ import { useRouter } from "expo-router";
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View
+    ActivityIndicator,
+    Platform,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -28,7 +28,7 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 export default function AdminStats() {
   const { theme } = useTheme();
   const router = useRouter();
-  const { dashboardData, loading, refresh } = useAnalytics();
+  const { dashboardData, loading, refresh, velocityPredictions, fetchVelocityPredictions } = useAnalytics();
   const { quickInsights } = useAIPredictions({ enableWebSocket: true, autoFetch: true });
   const insets = useSafeAreaInsets();
   
@@ -52,7 +52,8 @@ export default function AdminStats() {
   useFocusEffect(
     useCallback(() => {
       refresh();
-    }, [refresh])
+      fetchVelocityPredictions();
+    }, [refresh, fetchVelocityPredictions])
   );
 
   // Fetch category data
@@ -517,104 +518,132 @@ export default function AdminStats() {
           { backgroundColor: theme.surface, borderColor: theme.border },
         ]}
       >
-        <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
-          7-DAY SALES PREDICTION
-        </ThemedText>
-        <View style={styles.predictionContainer}>
-          {(() => {
-            // Build last 3 days of actual data from chartData
-            const chartData = salesTrends?.chartData || [];
-            const last3 = chartData.slice(-3);
-            
-            // Calculate average daily sales from available data
-            const avgDaily = chartData.length > 0
-              ? chartData.reduce((sum: number, d: any) => sum + d.sales, 0) / chartData.length
-              : 0;
-            
-            // Compute a simple linear trend slope from last 7 days
-            const recent = chartData.slice(-7);
-            let slope = 0;
-            if (recent.length >= 2) {
-              const n = recent.length;
-              const sumX = recent.reduce((_: any, __: any, i: number) => _ + i, 0);
-              const sumY = recent.reduce((s: number, d: any) => s + d.sales, 0);
-              const sumXY = recent.reduce((s: number, d: any, i: number) => s + i * d.sales, 0);
-              const sumX2 = recent.reduce((s: number, _: any, i: number) => s + i * i, 0);
-              slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-            }
-
-            // Build 7 bars: up to 3 actual days + 4 predicted days
-            const bars: { value: number; label: string; isActual: boolean }[] = [];
-
-            // Actual past days (oldest first)
-            last3.forEach((d: any, i: number) => {
-              const daysAgo = last3.length - 1 - i;
-              bars.push({
-                value: d.sales,
-                label: daysAgo === 0 ? 'Today' : `-${daysAgo}d`,
-                isActual: true,
-              });
-            });
-
-            // Predicted future days
-            const lastActual = last3.length > 0 ? last3[last3.length - 1].sales : avgDaily;
-            for (let i = 1; i <= 7 - last3.length; i++) {
-              const predicted = Math.max(0, lastActual + slope * i);
-              bars.push({ value: predicted, label: `+${i}d`, isActual: false });
-            }
-
-            const maxVal = Math.max(...bars.map(b => b.value), 1);
-
-            // Format value: show ₦X if < 1000, else ₦Xk
-            const fmt = (v: number) =>
-              v >= 1000 ? `₦${(v / 1000).toFixed(1)}k` : `₦${v.toFixed(0)}`;
-
-            return bars.map((bar, index) => {
-              const height = (bar.value / maxVal) * 80;
-              const isToday = bar.label === 'Today';
-              return (
-                <View key={index} style={styles.predictionBar}>
-                  <ThemedText style={[styles.predictionValue, { color: theme.text }]}>
-                    {fmt(bar.value)}
-                  </ThemedText>
-                  <View
-                    style={[
-                      styles.predictionBarFill,
-                      {
-                        height: Math.max(height, 6),
-                        backgroundColor: !bar.isActual
-                          ? theme.primary + "55"
-                          : isToday
-                          ? "#34C759"
-                          : theme.primary,
-                        borderStyle: !bar.isActual ? 'dashed' : 'solid',
-                        borderWidth: !bar.isActual ? 1 : 0,
-                        borderColor: theme.primary,
-                      },
-                    ]}
-                  />
-                  <ThemedText style={[styles.predictionLabel, { color: theme.subtext }]}>
-                    {bar.label}
-                  </ThemedText>
-                </View>
-              );
-            });
-          })()}
+        <View style={styles.chartTitleRow}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.primary }]}>
+            7-DAY SALES PREDICTION
+          </ThemedText>
+          {velocityPredictions && (
+            <View style={[
+              styles.confidencePill,
+              {
+                backgroundColor:
+                  velocityPredictions.confidence === 'high' ? '#34C75920' :
+                  velocityPredictions.confidence === 'medium' ? '#FF950020' : '#EF444420',
+              }
+            ]}>
+              <ThemedText style={[
+                styles.confidencePillText,
+                {
+                  color:
+                    velocityPredictions.confidence === 'high' ? '#34C759' :
+                    velocityPredictions.confidence === 'medium' ? '#FF9500' : '#EF4444',
+                }
+              ]}>
+                {velocityPredictions.confidence} confidence
+              </ThemedText>
+            </View>
+          )}
         </View>
-        <View style={styles.predictionLegend}>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: theme.primary }]} />
-            <ThemedText style={[styles.legendText, { color: theme.subtext }]}>
-              Actual Sales
+
+        {!velocityPredictions ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color={theme.primary} />
+          </View>
+        ) : velocityPredictions.days.every(d => d.value === 0) ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="analytics-outline" size={36} color={theme.subtext} />
+            <ThemedText style={[styles.emptyText, { color: theme.subtext }]}>
+              Record sales to enable predictions
             </ThemedText>
           </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: theme.primary + "60", borderWidth: 1, borderColor: theme.primary, borderStyle: 'dashed' }]} />
-            <ThemedText style={[styles.legendText, { color: theme.subtext }]}>
-              AI Prediction
-            </ThemedText>
-          </View>
-        </View>
+        ) : (
+          <>
+            <View style={styles.predictionContainer}>
+              {(() => {
+                const days = velocityPredictions.days;
+                const maxVal = Math.max(...days.map(d => d.value), 1);
+                const fmt = (v: number) =>
+                  v >= 1000 ? `₦${(v / 1000).toFixed(1)}k` : `₦${v.toFixed(0)}`;
+
+                return days.map((day, index) => {
+                  const height = (day.value / maxVal) * 80;
+                  // Label: -3d, -2d, -1d, Today, +1d, +2d, +3d
+                  const offset = index - 3;
+                  const label =
+                    offset === 0 ? 'Today' :
+                    offset < 0 ? `${offset}d` : `+${offset}d`;
+
+                  return (
+                    <View key={index} style={styles.predictionBar}>
+                      <ThemedText style={[styles.predictionValue, { color: theme.text }]}>
+                        {fmt(day.value)}
+                      </ThemedText>
+                      <View
+                        style={[
+                          styles.predictionBarFill,
+                          {
+                            height: Math.max(height, 6),
+                            backgroundColor: !day.isActual
+                              ? theme.primary + "55"
+                              : offset === 0
+                              ? "#34C759"
+                              : theme.primary,
+                            borderStyle: !day.isActual ? 'dashed' : 'solid',
+                            borderWidth: !day.isActual ? 1 : 0,
+                            borderColor: theme.primary,
+                          },
+                        ]}
+                      />
+                      <ThemedText style={[styles.predictionLabel, { color: theme.subtext }]}>
+                        {label}
+                      </ThemedText>
+                    </View>
+                  );
+                });
+              })()}
+            </View>
+
+            {/* Top velocity contributors */}
+            {velocityPredictions.productBreakdown.length > 0 && (
+              <View style={styles.velocityBreakdown}>
+                <ThemedText style={[styles.velocityBreakdownTitle, { color: theme.subtext }]}>
+                  Top contributors (units/day × avg price)
+                </ThemedText>
+                {velocityPredictions.productBreakdown.slice(0, 3).map((p, i) => (
+                  <View key={i} style={styles.velocityBreakdownRow}>
+                    <ThemedText style={[styles.velocityBreakdownName, { color: theme.text }]} numberOfLines={1}>
+                      {p.productName}
+                    </ThemedText>
+                    <ThemedText style={[styles.velocityBreakdownVal, { color: theme.subtext }]}>
+                      {p.velocity.toFixed(1)}/day × ₦{p.avgPrice.toFixed(0)}
+                    </ThemedText>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <View style={styles.predictionLegend}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: theme.primary }]} />
+                <ThemedText style={[styles.legendText, { color: theme.subtext }]}>
+                  Actual
+                </ThemedText>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: "#34C759" }]} />
+                <ThemedText style={[styles.legendText, { color: theme.subtext }]}>
+                  Today
+                </ThemedText>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: theme.primary + "55", borderWidth: 1, borderColor: theme.primary }]} />
+                <ThemedText style={[styles.legendText, { color: theme.subtext }]}>
+                  Predicted
+                </ThemedText>
+              </View>
+            </View>
+          </>
+        )}
       </View>
 
       {/* AI Recommendations */}
@@ -641,8 +670,10 @@ export default function AdminStats() {
         </ThemedText>
         <ThemedText style={[styles.insightsText, { color: theme.text }]}>
           • Today's sales: {(() => {
-            const todaySales = salesTrends?.chartData?.slice(-1)[0]?.sales ?? 0;
-            const projected = todaySales * 1.5;
+            const todaySales = velocityPredictions?.days?.find(d => d.isActual && d.date === new Date().toISOString().split('T')[0])?.value
+              ?? salesTrends?.chartData?.slice(-1)[0]?.sales
+              ?? 0;
+            const projected = velocityPredictions?.totalDailyRevenue ?? todaySales;
             const fmt = (v: number) => v >= 1000 ? `₦${(v / 1000).toFixed(1)}k` : `₦${v.toFixed(2)}`;
             return `${fmt(todaySales)} (projected: ${fmt(projected)})`;
           })()}
@@ -1724,6 +1755,51 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 20,
     marginTop: 8,
+  },
+
+  // Chart title row with confidence pill
+  chartTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  confidencePill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+  },
+  confidencePillText: {
+    fontSize: 9,
+    fontWeight: "600",
+    textTransform: "capitalize",
+  },
+
+  // Velocity breakdown under prediction chart
+  velocityBreakdown: {
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(128,128,128,0.2)",
+    gap: 6,
+  },
+  velocityBreakdownTitle: {
+    fontSize: 9,
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  velocityBreakdownRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  velocityBreakdownName: {
+    fontSize: 12,
+    flex: 1,
+  },
+  velocityBreakdownVal: {
+    fontSize: 11,
+    marginLeft: 8,
   },
   
   // Products Expiring Soon Styles
