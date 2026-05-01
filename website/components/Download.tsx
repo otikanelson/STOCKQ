@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +15,7 @@ export default function Download() {
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
   const badgesRef = useRef<HTMLDivElement>(null);
+  const { isDark } = useTheme();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -177,7 +179,7 @@ export default function Download() {
                 className="dl-phone phone-frame absolute"
                 style={{ width: 200, height: 420, bottom: 0, left: '50%', transform: 'translateX(-120%) rotate(-8deg)', opacity: 0.6, zIndex: 1 }}
               >
-                <Image src="/images/Insightory_3.jpeg" alt="Analytics screen" fill className="object-cover" />
+                <Image src={isDark ? '/images/analytics_dark.jpeg' : '/images/analytics.jpeg'} alt="Analytics screen" fill className="object-cover" />
               </div>
 
               {/* Front phone */}
@@ -185,7 +187,7 @@ export default function Download() {
                 className="dl-phone phone-frame relative"
                 style={{ width: 240, height: 500, zIndex: 2 }}
               >
-                <Image src="/images/Insightory_2.jpeg" alt="Inventory screen" fill className="object-cover" />
+                <Image src={isDark ? '/images/inventory_dark.jpeg' : '/images/inventory.jpeg'} alt="Inventory screen" fill className="object-cover" />
                 <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%)', borderRadius: '44px' }} />
               </div>
 
@@ -194,7 +196,7 @@ export default function Download() {
                 className="dl-phone phone-frame absolute"
                 style={{ width: 200, height: 420, bottom: 0, left: '50%', transform: 'translateX(20%) rotate(8deg)', opacity: 0.6, zIndex: 1 }}
               >
-                <Image src="/images/Insightory_4.jpeg" alt="Scan screen" fill className="object-cover" />
+                <Image src={isDark ? '/images/scan_dark.jpeg' : '/images/scan.jpeg'} alt="Scan screen" fill className="object-cover" />
               </div>
             </div>
           </div>

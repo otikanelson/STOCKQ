@@ -3,18 +3,19 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 const screens = [
-  { src: '/images/Insightory_1.jpeg', label: 'Dashboard', desc: 'Your inventory at a glance — live stock levels, alerts, and key metrics.' },
-  { src: '/images/Insightory_2.jpeg', label: 'Inventory', desc: 'Browse, filter, and manage every product in your catalog with ease.' },
-  { src: '/images/Insightory_3.jpeg', label: 'Analytics', desc: 'AI-driven insights and demand forecasting to stay ahead of the curve.' },
-  { src: '/images/Insightory_4.jpeg', label: 'Scanning', desc: 'Instant barcode scanning to log sales and update stock in real time.' },
-  { src: '/images/Insightory_5.jpeg', label: 'Alerts', desc: 'Smart notifications so you never miss a low-stock or expiry event.' },
-  { src: '/images/Insightory_6.jpeg', label: 'Settings', desc: 'Full control over your store, staff, and notification preferences.' },
+  { light: '/images/dashboard.jpeg',  dark: '/images/dashboard_dark.jpeg',  label: 'Dashboard', desc: 'Your inventory at a glance — live stock levels, alerts, and key metrics.' },
+  { light: '/images/inventory.jpeg',  dark: '/images/inventory_dark.jpeg',  label: 'Inventory', desc: 'Browse, filter, and manage every product in your catalog with ease.' },
+  { light: '/images/analytics.jpeg',  dark: '/images/analytics_dark.jpeg',  label: 'Analytics', desc: 'AI-driven insights and demand forecasting to stay ahead of the curve.' },
+  { light: '/images/scan.jpeg',       dark: '/images/scan_dark.jpeg',       label: 'Scanning',  desc: 'Instant barcode scanning to log sales and update stock in real time.' },
+  { light: '/images/alerts.jpeg',     dark: '/images/alerts_dark.jpeg',     label: 'Alerts',    desc: 'Smart notifications so you never miss a low-stock or expiry event.' },
+  { light: '/images/settings.jpeg',   dark: '/images/settings_dark.jpeg',   label: 'Settings',  desc: 'Full control over your store, staff, and notification preferences.' },
 ];
 
 export default function Screenshots() {
@@ -23,6 +24,7 @@ export default function Screenshots() {
   const [active, setActive] = useState(0);
   const phoneRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
+  const { isDark } = useTheme();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -105,7 +107,7 @@ export default function Screenshots() {
             />
             <div ref={phoneRef} className="phone-frame relative" style={{ width: 280, height: 580 }}>
               <Image
-                src={screens[active].src}
+                src={isDark ? screens[active].dark : screens[active].light}
                 alt={screens[active].label}
                 fill
                 className="object-cover"
@@ -146,7 +148,7 @@ export default function Screenshots() {
                   style={{ aspectRatio: '9/16' }}
                   aria-label={s.label}
                 >
-                  <Image src={s.src} alt={s.label} fill className="object-cover" />
+                  <Image src={isDark ? s.dark : s.light} alt={s.label} fill className="object-cover" />
                   <div className={`absolute inset-0 transition-opacity duration-300 ${i === active ? 'bg-brand-500/10' : 'bg-black/30'}`} />
                   <span className="absolute bottom-1.5 left-0 right-0 text-center text-white text-[10px] font-semibold">
                     {s.label}

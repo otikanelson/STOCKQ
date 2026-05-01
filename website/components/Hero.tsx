@@ -2,6 +2,7 @@
 import { gsap } from 'gsap';
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import GodRays from './GodRays';
 
 export default function Hero() {
@@ -11,6 +12,7 @@ export default function Hero() {
   const ctasRef     = useRef<HTMLDivElement>(null);
   const phoneRef    = useRef<HTMLDivElement>(null);
   const badgesRef   = useRef<HTMLDivElement>(null);
+  const { isDark }  = useTheme();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -114,7 +116,7 @@ export default function Hero() {
             filter: 'blur(30px)', transform: 'scale(1.3)',
           }} />
           <div className="phone-frame relative mx-auto" style={{ width: 260, height: 540 }}>
-            <Image src="/images/Insightory_1.jpeg" alt="Insightory App" fill className="object-cover" priority />
+            <Image src={isDark ? '/images/dashboard_dark.jpeg' : '/images/dashboard.jpeg'} alt="Insightory App" fill className="object-cover" priority />
             <div className="absolute inset-0 pointer-events-none" style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%)',
               borderRadius: '44px',
