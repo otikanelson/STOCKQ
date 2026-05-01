@@ -90,12 +90,22 @@ exports.addToRegistry = async (req, res) => {
 // NEW: Get all global products
 exports.getAllGlobalProducts = async (req, res) => {
   try {
-    const storeId = req.user.storeId; // Get storeId from authenticated user
+    const storeId = req.user?.storeId;
     
     console.log('📋 Getting all global products for store:', storeId);
     
-    // Filter by store if user is not author
-    const query = req.user.isAuthor ? {} : { storeId };
+    // Build query: authors see all, staff/admin filter by storeId
+    let query = {};
+    if (!req.user?.isAuthor) {
+      if (!storeId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Store ID is required'
+        });
+      }
+      query = { storeId };
+    }
+
     const globalProducts = await GlobalProduct.find(query).sort({ createdAt: -1 });
     
     console.log('✅ Found', globalProducts.length, 'global products');
