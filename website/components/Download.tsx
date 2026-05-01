@@ -132,15 +132,16 @@ export default function Download() {
                 {/* App Store */}
                 <a
                   href="#"
-                  className="dl-badge store-badge flex items-center gap-4 glass-strong px-6 py-4 rounded-2xl border border-white/10 hover:border-brand-500/40 transition-colors duration-300"
-                  aria-label="Download on the App Store"
+                  className="dl-badge store-badge flex items-center gap-4 glass-strong px-6 py-4 rounded-2xl border border-white/10 transition-colors duration-300"
+                  aria-disabled="true"
+                  style={{ opacity: 0.35, cursor: 'default', pointerEvents: 'none' }}
                 >
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)', opacity: 0.35 }}>
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                   </svg>
                   <div>
-                    <div className="text-xs" style={{ color: 'var(--subtext)' }}>Download on the</div>
-                    <div className="font-bold text-lg leading-tight" style={{ color: 'var(--text)' }}>App Store</div>
+                    <div className="text-xs" style={{ color: 'var(--subtext)', opacity: 0.35 }}>Download on the</div>
+                    <div className="font-bold text-lg leading-tight" style={{ color: 'var(--text)', opacity: 0.35 }}>App Store</div>
                   </div>
                 </a>
 
@@ -150,7 +151,7 @@ export default function Download() {
                   className="dl-badge store-badge flex items-center gap-4 glass-strong px-6 py-4 rounded-2xl border border-white/10 hover:border-brand-500/40 transition-colors duration-300"
                   aria-label="Get it on Google Play"
                 >
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
                     <path d="M3.18 23.76c.3.17.64.22.99.14l12.12-6.99-2.54-2.54-10.57 9.39zM.5 1.26C.19 1.6 0 2.1 0 2.73v18.54c0 .63.19 1.13.5 1.47l.08.07 10.39-10.39v-.24L.58 1.19.5 1.26zM20.1 10.53l-2.9-1.67-2.85 2.85 2.85 2.85 2.92-1.68c.83-.48.83-1.27-.02-1.35zM4.17.24L16.29 7.23l-2.54 2.54L3.18.38C3.53.3 3.87.07 4.17.24z"/>
                   </svg>
                   <div>

@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useTheme } from '../../../../context/ThemeContext';
 import { showErrorToast, showSuccessToast } from '../../../../utils/errorHandler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface StaffMember {
   _id: string;

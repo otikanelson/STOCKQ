@@ -1,3 +1,4 @@
+import { PinResetModal } from "@/components/PinResetModal";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
@@ -32,6 +33,7 @@ export default function SecuritySettingsScreen() {
   // Security PIN Update State
   const [showSecurityPinModal, setShowSecurityPinModal] = useState(false);
   const [showRemoveSecurityPinModal, setShowRemoveSecurityPinModal] = useState(false);
+  const [showPinResetModal, setShowPinResetModal] = useState(false);
   const [oldSecurityPin, setOldSecurityPin] = useState("");
   const [newSecurityPin, setNewSecurityPin] = useState("");
   const [confirmSecurityPin, setConfirmSecurityPin] = useState("");
@@ -44,6 +46,48 @@ export default function SecuritySettingsScreen() {
   const [hasLoginPin, setHasLoginPin] = useState(false);
   const [hasSecurityPin, setHasSecurityPin] = useState(false);
 
+  // Debug function
+  const debugStorage = async () => {
+    try {
+      const keys = [
+        'admin_login_pin',
+        'admin_pin',
+        'admin_security_pin',
+        'auth_user_name',
+        'auth_user_role',
+        'pin_migration_completed'
+      ];
+      
+      const values = await AsyncStorage.multiGet(keys);
+      console.log('🔍 AsyncStorage Debug:', values);
+      
+      Toast.show({
+        type: 'info',
+        text1: 'Debug Info Logged',
+        text2: 'Check console for AsyncStorage values',
+      });
+    } catch (error) {
+      console.error('Debug error:', error);
+    }
+  };
+
+  // Fix Login PIN function
+  const fixLoginPin = async () => {
+    try {
+      // Prompt user to set a Login PIN since none exists
+      Toast.show({
+        type: 'warning',
+        text1: 'No Login PIN Found',
+        text2: 'Please set up your Login PIN first',
+      });
+      
+      // Open the Login PIN modal to set it up
+      setShowLoginPinModal(true);
+    } catch (error) {
+      console.error('Fix PIN error:', error);
+    }
+  };
+
   // Load settings on mount
   useEffect(() => {
     loadSettings();
@@ -51,7 +95,12 @@ export default function SecuritySettingsScreen() {
 
   const loadSettings = async () => {
     try {
-      const loginPin = await AsyncStorage.getItem('admin_login_pin');
+      // Check both new and old PIN keys for compatibility
+      let loginPin = await AsyncStorage.getItem('admin_login_pin');
+      if (!loginPin) {
+        loginPin = await AsyncStorage.getItem('admin_pin');
+      }
+      
       const securityPin = await AsyncStorage.getItem('admin_security_pin');
       const pinRequired = await AsyncStorage.getItem('admin_require_security_pin_delete');
       const logoutEnabled = await AsyncStorage.getItem('admin_auto_logout');
@@ -123,15 +172,54 @@ export default function SecuritySettingsScreen() {
 
   const handleLoginPinUpdate = async () => {
     try {
-      // Get stored Login PIN
-      const storedPin = await AsyncStorage.getItem('admin_login_pin');
-      
+      // Get stored Login PIN - check both new and old keys
+      let storedPin = await AsyncStorage.getItem('admin_login_pin');
       if (!storedPin) {
+        storedPin = await AsyncStorage.getItem('admin_pin');
+      }
+      
+      // If no PIN exists, this is first-time setup
+      if (!storedPin) {
+        console.log('🔧 First-time Login PIN setup');
+        
+        // Validate new PIN format
+        if (newLoginPin.length !== 4 || !/^\d{4}$/.test(newLoginPin)) {
+          Toast.show({
+            type: 'error',
+            text1: 'Invalid PIN',
+            text2: 'Login PIN must be exactly 4 digits'
+          });
+          return;
+        }
+
+        // Validate confirmation
+        if (newLoginPin !== confirmLoginPin) {
+          Toast.show({
+            type: 'error',
+            text1: 'PIN Mismatch',
+            text2: 'New PIN and confirmation do not match'
+          });
+          return;
+        }
+
+        // Set up Login PIN for first time
+        await AsyncStorage.setItem('admin_login_pin', newLoginPin);
+        
+        // Clean up old keys
+        await AsyncStorage.removeItem('admin_pin');
+        
+        setHasLoginPin(true);
+        
         Toast.show({
-          type: 'error',
-          text1: 'No Login PIN Set',
-          text2: 'Please set up your Login PIN first'
+          type: 'success',
+          text1: 'Login PIN Created',
+          text2: 'Your Login PIN has been set up successfully'
         });
+
+        setShowLoginPinModal(false);
+        setOldLoginPin("");
+        setNewLoginPin("");
+        setConfirmLoginPin("");
         return;
       }
       
@@ -165,8 +253,9 @@ export default function SecuritySettingsScreen() {
         return;
       }
 
-      // Update local storage
+      // Update local storage - use new key format and remove old key
       await AsyncStorage.setItem('admin_login_pin', newLoginPin);
+      await AsyncStorage.removeItem('admin_pin'); // Remove old key if it exists
       
       Toast.show({
         type: 'success',
@@ -399,6 +488,13 @@ export default function SecuritySettingsScreen() {
               SECURITY
             </ThemedText>
           </View>
+          {/* Debug Button - Remove after debugging */}
+          <Pressable 
+            onPress={debugStorage}
+            style={[styles.backButton, { backgroundColor: '#FF3B30', borderWidth: 2, borderColor: '#FFF' }]}
+          >
+            <Ionicons name="bug" size={24} color="#FFF" />
+          </Pressable>
         </View>
 
         {/* LOGIN PIN MANAGEMENT SECTION */}
@@ -473,6 +569,17 @@ export default function SecuritySettingsScreen() {
               label="Remove Security PIN"
               description="Disable PIN protection for sensitive operations"
               onPress={() => setShowRemoveSecurityPinModal(true)}
+            >
+              <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+            </SettingRow>
+          )}
+
+          {hasSecurityPin && (
+            <SettingRow
+              icon="help-circle-outline"
+              label="Forgot Security PIN?"
+              description="Reset Security PIN using your Login PIN"
+              onPress={() => setShowPinResetModal(true)}
             >
               <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
             </SettingRow>
@@ -573,22 +680,27 @@ export default function SecuritySettingsScreen() {
             </View>
 
             <ThemedText style={[styles.modalTitle, { color: theme.text }]}>
-              Update Login PIN
+              {hasLoginPin ? "Update Login PIN" : "Set Up Login PIN"}
             </ThemedText>
             <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
-              Enter your current Login PIN and choose a new 4-digit code.
+              {hasLoginPin 
+                ? "Enter your current Login PIN and choose a new 4-digit code."
+                : "Create your 4-digit Login PIN. This will be used to access your admin account."
+              }
             </ThemedText>
 
-            <TextInput
-              style={[styles.pinInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
-              placeholder="Current Login PIN"
-              placeholderTextColor={theme.subtext}
-              secureTextEntry
-              keyboardType="numeric"
-              maxLength={4}
-              value={oldLoginPin}
-              onChangeText={setOldLoginPin}
-            />
+            {hasLoginPin && (
+              <TextInput
+                style={[styles.pinInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
+                placeholder="Current Login PIN"
+                placeholderTextColor={theme.subtext}
+                secureTextEntry
+                keyboardType="numeric"
+                maxLength={4}
+                value={oldLoginPin}
+                onChangeText={setOldLoginPin}
+              />
+            )}
 
             <TextInput
               style={[styles.pinInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
@@ -759,6 +871,17 @@ export default function SecuritySettingsScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* PIN Reset Modal */}
+      <PinResetModal
+        visible={showPinResetModal}
+        onClose={() => setShowPinResetModal(false)}
+        onSuccess={() => {
+          setShowPinResetModal(false);
+          setHasSecurityPin(false);
+          loadSettings(); // Refresh settings
+        }}
+      />
     </View>
     </View>
   );

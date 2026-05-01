@@ -46,20 +46,23 @@ export default function AdminScanScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   console.log('📷 [ADMIN-SCAN] Camera permission state:', permission?.granted);
 
-  // Scanner Mode: "lookup", "sales", or "register"
-  const [mode, setMode] = useState<"lookup" | "sales" | "register">("sales");
+  // Initialize mode from params or default to sales
+  const initialMode = (params.initialTab as "lookup" | "sales" | "register") || "sales";
+  const [mode, setMode] = useState<"lookup" | "sales" | "register">(initialMode);
 
   // Scanner State
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
   const [torch, setTorch] = useState(false);
   const [cameraKey, setCameraKey] = useState(0);
+  const [lastScanTime, setLastScanTime] = useState(0);
 
   // Cart State (for sales mode)
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCartModal, setShowCartModal] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [cameraError, setCameraError] = useState(false);
+  const mountedRef = useRef(false);
 
   // Security PIN Warning State
   const [securityPINWarningVisible, setSecurityPINWarningVisible] = useState(false);
@@ -113,16 +116,16 @@ export default function AdminScanScreen() {
     React.useCallback(() => {
       console.log('👁️ [ADMIN-SCAN] Screen focused - resetting state...');
       try {
+        mountedRef.current = true;
         setIsMounted(true);
         setCameraError(false);
         setScanned(false);
         setLoading(false);
         setTorch(false);
-        setCameraKey((prev) => {
-          const newKey = prev + 1;
-          console.log('🔑 [ADMIN-SCAN] Camera key updated:', prev, '->', newKey);
-          return newKey;
-        });
+        setLastScanTime(0); // Reset debounce timer
+        
+        // Only increment camera key if there was an error or if explicitly needed
+        // Don't increment on every focus to prevent unnecessary re-mounting
         
         // Clear cart if clearCart param is set
         if (params.clearCart === 'true') {
@@ -135,6 +138,7 @@ export default function AdminScanScreen() {
 
       return () => {
         console.log('🧹 [ADMIN-SCAN] Screen unfocused - cleanup...');
+        mountedRef.current = false;
         setIsMounted(false);
         setTorch(false);
       };
@@ -146,6 +150,7 @@ export default function AdminScanScreen() {
     console.log('🔄 [ADMIN-SCAN] Mode changed to:', mode);
     setScanned(false);
     setLoading(false);
+    setLastScanTime(0); // Reset debounce timer
   }, [mode]);
 
   // Trigger cart bounce animation
@@ -191,15 +196,22 @@ export default function AdminScanScreen() {
 
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     console.log('📸 [ADMIN-SCAN] Barcode scanned:', data, 'Mode:', mode);
+    
+    // Debounce rapid scans (prevent scanning same code within 2 seconds)
+    const now = Date.now();
+    if (now - lastScanTime < 2000) {
+      console.log('⏭️ [ADMIN-SCAN] Scan ignored - too rapid');
+      return;
+    }
+    
     if (scanned || loading) {
       console.log('⏭️ [ADMIN-SCAN] Scan ignored - already processing');
       return;
     }
+    
+    setLastScanTime(now);
     setScanned(true);
     setLoading(true);
-
-    // Add delay to allow camera to focus properly
-    await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
 
     try {
       let response;
@@ -514,8 +526,8 @@ export default function AdminScanScreen() {
   console.log('🎨 [ADMIN-SCAN] Rendering scanner - cameraKey:', cameraKey, 'mode:', mode, 'cart items:', cart.length, 'isMounted:', isMounted);
 
   // CRITICAL: Don't render camera until component is fully mounted and permission is granted
-  if (!isMounted || !permission?.granted) {
-    console.log('⏸️ [ADMIN-SCAN] Waiting for mount/permission - isMounted:', isMounted, 'granted:', permission?.granted);
+  if (!mountedRef.current || !isMounted || !permission?.granted) {
+    console.log('⏸️ [ADMIN-SCAN] Waiting for mount/permission - mounted:', mountedRef.current, 'isMounted:', isMounted, 'granted:', permission?.granted);
     return (
       <ErrorBoundary>
         <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center' }]}>
@@ -543,7 +555,11 @@ export default function AdminScanScreen() {
             onPress={() => {
               console.log('🔄 [ADMIN-SCAN] Retrying camera initialization...');
               setCameraError(false);
-              setCameraKey(prev => prev + 1);
+              setCameraKey(prev => {
+                const newKey = prev + 1;
+                console.log('🔑 [ADMIN-SCAN] Camera key updated for retry:', prev, '->', newKey);
+                return newKey;
+              });
             }}
           >
             <ThemedText style={styles.permissionBtnText}>Retry</ThemedText>

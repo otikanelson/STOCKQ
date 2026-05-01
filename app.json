@@ -5,7 +5,7 @@
     "version": "11.5.4",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
-    "backgroundColor": "#0D1B4B",
+    "backgroundColor": "#080B18",
     "scheme": "inventory",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0D1B4B",
+        "backgroundColor": "#080B18",
         "foregroundImage": "./assets/images/icon.png"
       },
       "package": "com.son_the_nel.Inventory",
@@ -38,12 +38,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#0D1B4B",
+          "backgroundColor": "#080B18",
           "dark": {
-            "backgroundColor": "#0D1B4B"
+            "backgroundColor": "#080B18"
+          },
+          "light": {
+            "backgroundColor": "#f0f0f0ff"
           }
         }
       ],

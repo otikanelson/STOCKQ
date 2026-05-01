@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import NavLogo from '../components/NavLogo';
 import ThemeApplier from '../components/ThemeApplier';
 
 const scrollToTop = () => typeof window !== 'undefined' && window.scrollTo({ top: 0, behavior: 'smooth' });

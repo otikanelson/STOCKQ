@@ -8,8 +8,8 @@
 // - Detail Fetching: Provide a method to retrieve a single product's full history for the View page.
 // - State Management: Export loading, error, and manual refresh functions for UI control.
 
-import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import axios from "../utils/axiosConfig";
 
 /** Types & Interfaces **/
 export interface Batch {

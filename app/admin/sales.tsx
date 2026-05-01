@@ -19,13 +19,13 @@ import {
   StyleSheet,
   View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { AddProductModal } from "../../components/AddProductModal";
 import { DisabledFeatureOverlay } from "../../components/DisabledFeatureOverlay";
 import { useTheme } from "../../context/ThemeContext";
 import { useFeatureAccess } from "../../hooks/useFeatureAccess";
 import { useProducts } from "../../hooks/useProducts";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -99,9 +99,9 @@ export default function AdminSales() {
           productId: sale.productId,
           productName: sale.productName,
           batchNumber: sale.batchNumber || 'N/A',
-          quantitySold: sale.quantitySold || 0,
-          price: sale.priceAtSale || 0,
-          totalAmount: sale.totalAmount || 0,
+          quantitySold: Number(sale.quantitySold) || 0,
+          price: Number(sale.priceAtSale) || 0,
+          totalAmount: Number(sale.totalAmount) || 0,
           saleDate: sale.saleDate,
           paymentMethod: sale.paymentMethod || 'cash'
         }));
@@ -266,8 +266,8 @@ export default function AdminSales() {
   };
 
   const formatCurrency = (amount: number | undefined) => {
-    if (amount === undefined || amount === null) return 'â‚¦0';
-    return `â‚¦${amount.toLocaleString()}`;
+    if (amount === undefined || amount === null || isNaN(amount)) return '₦0';
+    return `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
   };
 
   const formatDate = (dateString: string) => {
@@ -705,15 +705,15 @@ export default function AdminSales() {
                       <div class="stats">
                         <div class="stat-card">
                           <div class="stat-label">Today</div>
-                          <div class="stat-value">${formatCurrency(revenueStats.today)}</div>
+                          <div class="stat-value">{formatCurrency(revenueStats.today)}</div>
                         </div>
                         <div class="stat-card">
                           <div class="stat-label">This Week</div>
-                          <div class="stat-value">${formatCurrency(revenueStats.week)}</div>
+                          <div class="stat-value">{formatCurrency(revenueStats.week)}</div>
                         </div>
                         <div class="stat-card">
                           <div class="stat-label">This Month</div>
-                          <div class="stat-value">${formatCurrency(revenueStats.month)}</div>
+                          <div class="stat-value">{formatCurrency(revenueStats.month)}</div>
                         </div>
                       </div>
                       
@@ -735,7 +735,7 @@ export default function AdminSales() {
                               <td>${sale.productName}</td>
                               <td>${sale.batchNumber || 'N/A'}</td>
                               <td>${sale.quantitySold} units</td>
-                              <td>${formatCurrency(sale.totalAmount)}</td>
+                              <td>{formatCurrency(sale.totalAmount)}</td>
                             </tr>
                           `).join('')}
                         </tbody>

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '../components/CustomToast';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -165,8 +166,6 @@ function RootLayoutNav() {
     <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
-        <Stack.Screen name="alerts" options={{ href: null }} />
-        <Stack.Screen name="settings" options={{ href: null }} />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="product/[id]" />
         <Stack.Screen name="auth/login" />
@@ -175,7 +174,6 @@ function RootLayoutNav() {
         <Stack.Screen name="author" options={{ headerShown: false }} />
       </Stack>
       <TourOverlay />
-      <ThemedToast />
     </>
   );
 }
@@ -183,7 +181,24 @@ function RootLayoutNav() {
 // Separate component to access theme context
 function ThemedToast() {
   const { isDark } = useTheme();
-  return <Toast config={toastConfig(isDark)} />;
+  return (
+    <View style={{ 
+      position: 'absolute', 
+      top: 0, 
+      left: 0, 
+      right: 0, 
+      zIndex: 999999, 
+      elevation: 999999,
+      pointerEvents: 'box-none' 
+    }}>
+      <Toast 
+        config={toastConfig(isDark)} 
+        position="top"
+        topOffset={60}
+        visibilityTime={4000}
+      />
+    </View>
+  );
 }
 
 export default function RootLayout() {
@@ -204,6 +219,7 @@ export default function RootLayout() {
             {showSplash && (
               <SplashScreenAnimation onFinish={() => setShowSplash(false)} />
             )}
+            <ThemedToast />
           </TourProvider>
         </AuthProvider>
       </ThemeProvider>

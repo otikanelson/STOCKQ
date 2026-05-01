@@ -4,12 +4,12 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
 import { PinInput } from '../../components/PinInput';
 import { ThemedText } from '../../components/ThemedText';
@@ -17,7 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function LoginScreen() {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { login, isAuthenticated, role: userRole } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -84,7 +84,11 @@ export default function LoginScreen() {
           <View style={styles.content}>
             {!selectedRole ? (
               <>
-                <Image source={require('../../assets/images/Logo.png')} style={[styles.logoMark, { width: 120, height: 120}]} contentFit="contain" />
+                <Image 
+                  source={isDark ? require('../../assets/images/Logo.png') : require('../../assets/images/Logo_Light.png')} 
+                  style={[styles.logoMark, { width: 120, height: 120}]} 
+                  contentFit="contain" 
+                />
                 <ThemedText style={[styles.title, { color: theme.text }]}>Welcome back</ThemedText>
                 <ThemedText style={[styles.subtitle, { color: theme.subtext }]}>
                   Choose your role to continue

@@ -1,14 +1,15 @@
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View
+    Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { ThemedText } from '../../components/ThemedText';
@@ -22,19 +23,28 @@ export default function ProfileScreen() {
 
   const [showPinModal, setShowPinModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [deletePin, setDeletePin] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   const [oldPin, setOldPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
 
   const handleDeleteAccount = async () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteAccount = async () => {
     try {
+      setIsDeleting(true);
+      
       if (!deletePin || deletePin.length !== 4) {
         Toast.show({
           type: 'error',
           text1: 'Invalid PIN',
           text2: 'Please enter your 4-digit PIN',
         });
+        setIsDeleting(false);
         return;
       }
 
@@ -47,6 +57,7 @@ export default function ProfileScreen() {
           text1: 'Authentication Failed',
           text2: 'Incorrect PIN',
         });
+        setIsDeleting(false);
         return;
       }
 
@@ -93,6 +104,8 @@ export default function ProfileScreen() {
         text1: 'Error',
         text2: 'Could not delete account',
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -119,8 +132,22 @@ export default function ProfileScreen() {
       }
 
       // Get stored PIN based on role
-      const pinKey = role === 'admin' ? 'admin_pin' : 'auth_staff_pin';
-      const storedPin = await AsyncStorage.getItem(pinKey);
+      let pinKey: string;
+      let storedPin: string | null;
+      
+      if (role === 'admin') {
+        // Check new admin_login_pin first, fallback to old admin_pin
+        storedPin = await AsyncStorage.getItem('admin_login_pin');
+        if (!storedPin) {
+          storedPin = await AsyncStorage.getItem('admin_pin');
+          pinKey = 'admin_pin';
+        } else {
+          pinKey = 'admin_login_pin';
+        }
+      } else {
+        pinKey = 'auth_staff_pin';
+        storedPin = await AsyncStorage.getItem(pinKey);
+      }
 
       // Validate old PIN
       if (oldPin !== storedPin) {
@@ -155,7 +182,12 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = async () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = async () => {
     await logout();
+    setShowLogoutModal(false);
     router.replace('/auth/login' as any);
   };
 
@@ -308,7 +340,7 @@ export default function ProfileScreen() {
         {role === 'staff' && (
           <Pressable 
             style={[styles.deleteBtn, { borderColor: '#FF3B30', backgroundColor: '#FF3B30' + '10' }]} 
-            onPress={() => setShowDeleteModal(true)}
+            onPress={handleDeleteAccount}
           >
             <Ionicons name="trash-outline" size={22} color="#FF3B30" />
             <ThemedText style={[styles.deleteText, { color: '#FF3B30' }]}>Delete Account Permanently</ThemedText>
@@ -396,56 +428,37 @@ export default function ProfileScreen() {
         </View>
       </Modal>
 
-      {/* Delete Account Modal */}
-      <Modal visible={showDeleteModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
-            <View style={[styles.modalIconBox, { backgroundColor: '#FF3B30' + '15' }]}>
-              <Ionicons name="warning" size={32} color="#FF3B30" />
-            </View>
+      {/* Logout Confirmation Modal */}
+      <ConfirmationModal
+        visible={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Logout from Store"
+        message="Are you sure you want to logout? You'll need to enter your PIN again to access your account."
+        confirmText="Logout"
+        type="warning"
+      />
 
-            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Delete Account?</ThemedText>
-            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
-              This action cannot be undone. Your account and all associated data will be permanently deleted.
-            </ThemedText>
-
-            <TextInput
-              style={[
-                styles.pinInput,
-                { color: theme.text, borderColor: '#FF3B30', backgroundColor: theme.background },
-              ]}
-              placeholder="Enter your PIN to confirm"
-              placeholderTextColor={theme.subtext}
-              secureTextEntry
-              keyboardType="numeric"
-              maxLength={4}
-              value={deletePin}
-              onChangeText={setDeletePin}
-            />
-
-            <View style={styles.modalActions}>
-              <Pressable
-                style={[
-                  styles.modalBtn,
-                  { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border },
-                ]}
-                onPress={() => {
-                  setShowDeleteModal(false);
-                  setDeletePin('');
-                }}
-              >
-                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
-              </Pressable>
-              <Pressable 
-                style={[styles.modalBtn, { backgroundColor: '#FF3B30' }]} 
-                onPress={handleDeleteAccount}
-              >
-                <ThemedText style={{ color: '#FFF', }}>Delete Forever</ThemedText>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* Delete Account Confirmation Modal */}
+      {role === 'staff' && (
+        <ConfirmationModal
+          visible={showDeleteModal}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setDeletePin('');
+          }}
+          onConfirm={confirmDeleteAccount}
+          title="Delete Account"
+          message="This will permanently delete your staff account and all associated data. This action cannot be undone."
+          confirmText="Delete Forever"
+          type="danger"
+          requirePinConfirmation={true}
+          onPinChange={setDeletePin}
+          pinValue={deletePin}
+          pinPlaceholder="Staff PIN"
+          isLoading={isDeleting}
+        />
+      )}
     </View>
     </View>
   );

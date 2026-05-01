@@ -1,7 +1,7 @@
 ﻿import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
-import { Colors } from '../constants/Colors';
 import { ThemedText } from '../components/ThemedText';
+import { Colors } from '../constants/Colors';
 
 export const toastConfig = (isDark: boolean) => {
   const theme = isDark ? Colors.dark : Colors.light;
@@ -95,7 +95,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 999999, // Maximum elevation for Android
+    zIndex: 999999, // Maximum z-index for iOS
+    position: 'relative',
   },
   iconContainer: {
     width: 40,

@@ -271,7 +271,7 @@ export default function ProductDetails() {
                   </ThemedText>
                 </View>
                 <ThemedText style={[styles.priceValue, { color: theme.text }]}>
-                  ${priceAnalytics.genericPrice.toFixed(2)}
+                  ₦{priceAnalytics.genericPrice.toFixed(2)}
                 </ThemedText>
               </View>
             )}
@@ -286,7 +286,7 @@ export default function ProductDetails() {
                     </ThemedText>
                   </View>
                   <ThemedText style={[styles.priceValue, { color: theme.text }]}>
-                    ${priceAnalytics.avgBatchPrice?.toFixed(2)}
+                    ₦{priceAnalytics.avgBatchPrice?.toFixed(2)}
                   </ThemedText>
                 </View>
                 <View style={styles.priceRow}>
@@ -297,7 +297,7 @@ export default function ProductDetails() {
                     </ThemedText>
                   </View>
                   <ThemedText style={[styles.priceValue, { color: theme.text }]}>
-                    ${priceAnalytics.minBatchPrice?.toFixed(2)} - $
+                    ₦{priceAnalytics.minBatchPrice?.toFixed(2)} - ₦
                     {priceAnalytics.maxBatchPrice?.toFixed(2)}
                   </ThemedText>
                 </View>
@@ -400,7 +400,7 @@ export default function ProductDetails() {
                     
                     {batch.price && (
                       <ThemedText style={[styles.batchPrice, { color: theme.text }]}>
-                        ${batch.price.toFixed(2)}
+                        ₦{batch.price.toFixed(2)}
                       </ThemedText>
                     )}
                   </View>

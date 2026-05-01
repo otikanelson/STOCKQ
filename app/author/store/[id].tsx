@@ -12,8 +12,8 @@ import {
     View
 } from "react-native";
 import Toast from 'react-native-toast-message';
-import { useTheme } from '../../../context/ThemeContext';
 import { ThemedText } from '../../../components/ThemedText';
+import { useTheme } from '../../../context/ThemeContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -231,7 +231,7 @@ export default function StoreDetailScreen() {
             <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               <Ionicons name="cash-outline" size={28} color="#34C759" />
               <ThemedText style={[styles.statValue, { color: theme.text }]}>
-                ${details.statistics.totalRevenue.toFixed(2)}
+                ₦{details.statistics.totalRevenue.toFixed(2)}
               </ThemedText>
               <ThemedText style={[styles.statLabel, { color: theme.subtext }]}>Revenue</ThemedText>
             </View>

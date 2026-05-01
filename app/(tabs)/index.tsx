@@ -3,11 +3,11 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Href, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from "../../components/ThemedText";
@@ -400,7 +400,7 @@ export default function DashboardScreen() {
                 <View style={styles.aiMetricsRow}>
                   <AIMetricCard
                     label="Total Sales"
-                    value={`$${(dashboardData?.summary?.totalSales || 0).toLocaleString()}`}
+                    value={`₦${(dashboardData?.summary?.totalSales || 0).toLocaleString()}`}
                     color={theme.primary}
                     icon="cash"
                     theme={theme}

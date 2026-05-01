@@ -23,7 +23,7 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 type SetupStep = 'welcome' | 'store-name' | 'admin-name' | 'login-pin' | 'security-pin' | 'complete';
 
 export default function SetupScreen() {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
 
     const router = useRouter();
   const [step, setStep] = useState<SetupStep>('welcome');
@@ -292,7 +292,11 @@ export default function SetupScreen() {
 
         {step === 'welcome' && (
           <>
-            <Image source={require('../../assets/images/favicon.png')} style={[styles.logoMark, { width: 80, height: 80 }]} contentFit="contain" />
+            <Image 
+              source={isDark ? require('../../assets/images/Logo.png') : require('../../assets/images/Logo_Light.png')} 
+              style={[styles.logoMark, { width: 80, height: 80 }]} 
+              contentFit="contain" 
+            />
             <ThemedText style={[styles.title, { color: theme.text }]}>
               Welcome
             </ThemedText>

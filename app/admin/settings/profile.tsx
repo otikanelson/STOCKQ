@@ -1,3 +1,5 @@
+import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { PinResetModal } from '@/components/PinResetModal';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "@react-navigation/native";
@@ -44,7 +46,11 @@ export default function AdminProfileScreen() {
 
   const [showPinModal, setShowPinModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showPinResetModal, setShowPinResetModal] = useState(false);
   const [deleteSecurityPin, setDeleteSecurityPin] = useState('');
+  const [storeNameConfirmation, setStoreNameConfirmation] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   const [oldPin, setOldPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -151,8 +157,20 @@ export default function AdminProfileScreen() {
         return;
       }
 
-      // Get stored Login PIN
-      const storedPin = await AsyncStorage.getItem('admin_login_pin');
+      // Get stored Login PIN - check both new and old keys
+      let storedPin = await AsyncStorage.getItem('admin_login_pin');
+      if (!storedPin) {
+        storedPin = await AsyncStorage.getItem('admin_pin');
+      }
+      
+      if (!storedPin) {
+        Toast.show({
+          type: 'error',
+          text1: 'No Login PIN Set',
+          text2: 'Please set up your Login PIN first',
+        });
+        return;
+      }
 
       // Validate old PIN
       if (oldPin !== storedPin) {
@@ -164,8 +182,11 @@ export default function AdminProfileScreen() {
         return;
       }
 
-      // Update Login PIN
+      // Update Login PIN - use the new key format
       await AsyncStorage.setItem('admin_login_pin', newPin);
+      
+      // Remove old PIN key if it exists
+      await AsyncStorage.removeItem('admin_pin');
 
       Toast.show({
         type: 'success',
@@ -187,23 +208,45 @@ export default function AdminProfileScreen() {
   };
 
   const handleLogout = async () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = async () => {
     await logout();
+    setShowLogoutModal(false);
     router.replace('/auth/setup' as any);
   };
 
   const handleDeleteAccount = async () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteAccount = async () => {
     try {
+      setIsDeleting(true);
+      
       if (!deleteSecurityPin || deleteSecurityPin.length !== 4) {
         Toast.show({
           type: 'error',
           text1: 'Invalid PIN',
           text2: 'Please enter your 4-digit Security PIN',
         });
+        setIsDeleting(false);
         return;
       }
 
       // Get stored Security PIN
       const storedSecurityPin = await AsyncStorage.getItem('admin_security_pin');
+      
+      if (!storedSecurityPin) {
+        Toast.show({
+          type: 'error',
+          text1: 'No Security PIN',
+          text2: 'Please set up your Security PIN first',
+        });
+        setIsDeleting(false);
+        return;
+      }
       
       if (deleteSecurityPin !== storedSecurityPin) {
         Toast.show({
@@ -211,6 +254,7 @@ export default function AdminProfileScreen() {
           text1: 'Authentication Failed',
           text2: 'Incorrect Security PIN',
         });
+        setIsDeleting(false);
         return;
       }
 
@@ -257,6 +301,8 @@ export default function AdminProfileScreen() {
         text1: 'Error',
         text2: 'Could not delete account',
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -461,7 +507,7 @@ export default function AdminProfileScreen() {
         {/* Delete Account Button */}
         <Pressable 
           style={[styles.deleteAccountBtn, { borderColor: '#FF3B30', backgroundColor: '#FF3B30' + '10' }]} 
-          onPress={() => setShowDeleteModal(true)}
+          onPress={handleDeleteAccount}
         >
           <Ionicons name="trash-outline" size={22} color="#FF3B30" />
           <ThemedText style={[styles.deleteAccountText, { color: '#FF3B30' }]}>Delete Account & Store Permanently</ThemedText>
@@ -593,63 +639,54 @@ export default function AdminProfileScreen() {
         </View>
       </Modal>
 
-      {/* Delete Account Modal */}
-      <Modal visible={showDeleteModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
-            <View style={[styles.modalIconBox, { backgroundColor: '#FF3B30' + '15' }]}>
-              <Ionicons name="warning" size={32} color="#FF3B30" />
-            </View>
+      {/* Logout Confirmation Modal */}
+      <ConfirmationModal
+        visible={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Logout from Admin"
+        message="Are you sure you want to logout? You'll need to enter your PIN again to access the admin panel."
+        confirmText="Logout"
+        type="warning"
+      />
 
-            <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Delete Account & Store?</ThemedText>
-            <ThemedText style={[styles.modalDesc, { color: theme.subtext }]}>
-              This will permanently delete your admin account, store, all staff members, and all inventory data. This action cannot be undone.
-            </ThemedText>
+      {/* Delete Account Confirmation Modal */}
+      <ConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setDeleteSecurityPin('');
+          setStoreNameConfirmation('');
+        }}
+        onConfirm={confirmDeleteAccount}
+        title="Delete Account & Store"
+        message="This will permanently delete your admin account, store, all staff members, and all inventory data. This action cannot be undone."
+        confirmText="Delete Everything"
+        type="danger"
+        requireStoreNameConfirmation={true}
+        storeName={user?.storeName || 'Store'}
+        onStoreNameChange={setStoreNameConfirmation}
+        storeNameValue={storeNameConfirmation}
+        requirePinConfirmation={true}
+        onPinChange={setDeleteSecurityPin}
+        pinValue={deleteSecurityPin}
+        pinPlaceholder="Security PIN"
+        isLoading={isDeleting}
+      />
 
-            <View style={[styles.warningBox, { backgroundColor: '#FF3B30' + '10', borderColor: '#FF3B30' }]}>
-              <Ionicons name="alert-circle" size={18} color="#FF3B30" />
-              <ThemedText style={[styles.warningText, { color: theme.text }]}>
-                All staff accounts and inventory will be deleted
-              </ThemedText>
-            </View>
-
-            <TextInput
-              style={[
-                styles.pinInput,
-                { color: theme.text, borderColor: '#FF3B30', backgroundColor: theme.background },
-              ]}
-              placeholder="Enter Security PIN to confirm"
-              placeholderTextColor={theme.subtext}
-              secureTextEntry
-              keyboardType="numeric"
-              maxLength={4}
-              value={deleteSecurityPin}
-              onChangeText={setDeleteSecurityPin}
-            />
-
-            <View style={styles.modalActions}>
-              <Pressable
-                style={[
-                  styles.modalBtn,
-                  { backgroundColor: theme.background, borderWidth: 1, borderColor: theme.border },
-                ]}
-                onPress={() => {
-                  setShowDeleteModal(false);
-                  setDeleteSecurityPin('');
-                }}
-              >
-                <ThemedText style={{ color: theme.text, }}>Cancel</ThemedText>
-              </Pressable>
-              <Pressable 
-                style={[styles.modalBtn, { backgroundColor: '#FF3B30' }]} 
-                onPress={handleDeleteAccount}
-              >
-                <ThemedText style={{ color: '#FFF', }}>Delete Everything</ThemedText>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* PIN Reset Modal */}
+      <PinResetModal
+        visible={showPinResetModal}
+        onClose={() => setShowPinResetModal(false)}
+        onSuccess={() => {
+          setShowPinResetModal(false);
+          Toast.show({
+            type: 'info',
+            text1: 'Security PIN Removed',
+            text2: 'You can now access admin features without Security PIN',
+          });
+        }}
+      />
 
       {/* Staff Monitoring Modal - Inline Implementation */}
       <Modal visible={showStaffMonitoringModal} transparent animationType="slide">

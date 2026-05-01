@@ -77,7 +77,7 @@ export default function Stats() {
         {stats.map((s, i) => (
           <div key={i} className="stat-item stat-card p-8 text-center">
             <div className="text-3xl mb-3">{s.icon}</div>
-            <div className="text-4xl md:text-5xl font-black gradient-text mb-2">
+            <div className="text-2xl md:text-3xl font-black gradient-text mb-2">
               <Counter target={s.value} suffix={s.suffix} decimals={s.decimals} />
             </div>
             <div className="text-sm font-medium" style={{ color: 'var(--subtext)' }}>{s.label}</div>

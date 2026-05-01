@@ -1,24 +1,24 @@
 import { ProductCard } from "@/components/ProductCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  FlatList,
-  Image,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View
+    FlatList,
+    Image,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { useProducts } from "../../hooks/useProducts";
+import axios from "../../utils/axiosConfig";
 
 export default function AdminInventory() {
   const router = useRouter();
@@ -33,6 +33,7 @@ export default function AdminInventory() {
   const [activeTab, setActiveTab] = useState<"registry" | "inventory">("inventory");
   const [globalProducts, setGlobalProducts] = useState<any[]>([]);
   const [loadingGlobal, setLoadingGlobal] = useState(false);
+  const [globalProductCount, setGlobalProductCount] = useState(0);
   const [analytics, setAnalytics] = useState<Record<string, { velocity: number; riskScore: number }>>({});
 
   // Refresh inventory when screen comes into focus
@@ -105,7 +106,9 @@ export default function AdminInventory() {
       const response = await axios.get(
         `${process.env.EXPO_PUBLIC_API_URL}/products/registry/all`
       );
-      setGlobalProducts(response.data.data || []);
+      const globalData = response.data.data || [];
+      setGlobalProducts(globalData);
+      setGlobalProductCount(globalData.length);
     } catch (error) {
       console.error("Failed to fetch global products:", error);
       Toast.show({
@@ -117,6 +120,23 @@ export default function AdminInventory() {
       setLoadingGlobal(false);
     }
   };
+
+  // Fetch global product count on component mount
+  const fetchGlobalProductCount = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/products/registry/all`
+      );
+      setGlobalProductCount((response.data.data || []).length);
+    } catch (error) {
+      console.error("Failed to fetch global product count:", error);
+    }
+  };
+
+  // Fetch count on mount
+  useEffect(() => {
+    fetchGlobalProductCount();
+  }, []);
 
   React.useEffect(() => {
     if (activeTab === "registry") {
@@ -272,7 +292,7 @@ export default function AdminInventory() {
             style={[styles.pill, activeTab === "registry" && styles.pillActive]}
           >
             <ThemedText style={[styles.pillText, activeTab === "registry" && styles.pillTextActive]}>
-              Registry ({globalProducts.length})
+              Registry ({globalProductCount})
             </ThemedText>
           </Pressable>
           {activeTab === "inventory" &&
@@ -342,7 +362,7 @@ export default function AdminInventory() {
                         ? `${item.totalQuantity || 0} units`
                         : inLocalInventory
                         ? `${products.find(p => p.barcode === item.barcode)?.totalQuantity || 0} units`
-                        : "—"}
+                        : "Not in inventory"}
                     </ThemedText>
                   </View>
                 </Pressable>
@@ -389,7 +409,13 @@ export default function AdminInventory() {
                 {/* Quantity Section */}
                 <View style={styles.horizontalQtyBox}>
                   <ThemedText style={[styles.horizontalQty, { color: theme.text }]}>
-                    {item.totalQuantity || 0}
+                    {activeTab === "inventory" 
+                      ? (item.totalQuantity || 0)
+                      : (() => {
+                          const localProduct = products.find(p => p.barcode === item.barcode);
+                          return localProduct ? (localProduct.totalQuantity || 0) : 0;
+                        })()
+                    }
                   </ThemedText>
                   <ThemedText style={[styles.horizontalQtyLabel, { color: theme.subtext }]}>
                     QTY

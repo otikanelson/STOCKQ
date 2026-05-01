@@ -58,7 +58,7 @@ export default function Hero() {
         <div className="mb-8 inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-sm font-medium border"
           style={{ color: 'var(--primary)', borderColor: 'color-mix(in srgb, var(--primary) 20%, transparent)' }}>
           <span className="w-2 h-2 rounded-full animate-pulse-slow" style={{ background: 'var(--primary)' }} />
-          Now available on iOS & Android
+          Now available on <span style={{ opacity: 0.35 }}>iOS &</span> Android
         </div>
 
         {/* Headline */}
@@ -85,7 +85,10 @@ export default function Hero() {
         <div ref={ctasRef} className="flex flex-col sm:flex-row items-center gap-4 mb-16">
           <a href="#download"
             onClick={(e) => { e.preventDefault(); document.querySelector('#download')?.scrollIntoView({ behavior: 'smooth' }); }}
-            className="btn-glow flex items-center gap-3 px-8 py-4 rounded-2xl text-base font-bold">
+            className="btn-glow flex items-center gap-3 px-8 py-4 rounded-2xl text-base font-bold"
+            style={{ opacity: 0.35, cursor: 'default', pointerEvents: 'none' }}
+            aria-disabled="true"
+            tabIndex={-1}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
             </svg>
@@ -120,8 +123,8 @@ export default function Hero() {
         </div>
 
         {/* Trust badges */}
-        <div ref={badgesRef} className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm"
-          style={{ color: 'var(--subtext)' }}>
+        <div ref={badgesRef} className="flex flex-wrap items-center justify-center gap-6 text-sm"
+          style={{ color: 'var(--subtext)'}}>
           {[
             { icon: '⭐', text: '4.9 App Store Rating' },
             { icon: '🔒', text: 'Enterprise Security' },
@@ -136,9 +139,9 @@ export default function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-xs animate-bounce"
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-xs animate-bounce z-50"
         style={{ color: 'var(--subtext)' }}>
-        <span>Scroll</span>
+        <span className="px-3 py-1 rounded-full glass border" style={{ borderColor: 'var(--border)' }}>Scroll</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 5v14M5 12l7 7 7-7"/>
         </svg>

@@ -23,6 +23,7 @@ const {
   dismissNotification,
   markAllNotificationsAsRead,
   recalculatePrediction,
+  getTensorFlowPredictions,
   getAIStatus
 } = require('../controllers/analyticsController');
 
@@ -123,6 +124,11 @@ router.patch('/notifications/read-all', markAllNotificationsAsRead);
 // @desc    Manually trigger prediction recalculation
 // @access  Admin
 router.post('/recalculate/:productId', recalculatePrediction);
+
+// @route   GET /api/analytics/tensorflow-predictions
+// @desc    Get TensorFlow-based sales predictions
+// @access  Admin
+router.get('/tensorflow-predictions', getTensorFlowPredictions);
 
 // @route   GET /api/analytics/ai-status
 // @desc    Get AI status for onboarding and indicators

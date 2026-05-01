@@ -33,10 +33,10 @@ export default function Footer() {
                   key={s.label}
                   href="#"
                   aria-label={s.label}
-                  className="w-9 h-9 rounded-xl glass flex items-center justify-center text-white/40 hover:text-brand-400 hover:border-brand-500/30 transition-all duration-200 border border-white/5"
-                  style={{}}
+                  className="w-9 h-9 rounded-xl glass flex items-center justify-center transition-all duration-200 border"
+                  style={{ color: 'var(--subtext)', borderColor: 'var(--border)' }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent2)'; (e.currentTarget as HTMLElement).style.borderColor = 'color-mix(in srgb, var(--accent2) 40%, transparent)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = ''; (e.currentTarget as HTMLElement).style.borderColor = ''; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--subtext)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     {s.icon}

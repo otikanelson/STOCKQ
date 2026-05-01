@@ -9,15 +9,17 @@ import Animated, {
     withDelay,
     withTiming
 } from 'react-native-reanimated';
+import { useTheme } from '../context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
-const BG = '#0D1B4B';
 
 interface Props {
   onFinish: () => void;
 }
 
 export function SplashScreenAnimation({ onFinish }: Props) {
+  const { isDark, theme } = useTheme();
+  
   // Start off-screen to the right
   const translateX = useSharedValue(width);
   const scale = useSharedValue(1);
@@ -67,10 +69,10 @@ export function SplashScreenAnimation({ onFinish }: Props) {
   }));
 
   return (
-    <Animated.View style={[styles.container, bgStyle]}>
+    <Animated.View style={[styles.container, bgStyle, { backgroundColor: theme.background }]}>
       <Animated.View style={iconStyle}>
         <Image
-          source={require('../assets/images/splash-icon.png')}
+          source={isDark ? require('../assets/images/icon.png') : require('../assets/images/icon_light.png')}
           style={styles.icon}
           contentFit="contain"
         />
@@ -82,7 +84,6 @@ export function SplashScreenAnimation({ onFinish }: Props) {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: BG,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
