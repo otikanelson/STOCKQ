@@ -128,13 +128,41 @@ export default function Hero() {
         <div ref={badgesRef} className="flex flex-wrap items-center justify-center gap-6 text-sm"
           style={{ color: 'var(--subtext)'}}>
           {[
-            { icon: '⭐', text: '4.9 App Store Rating' },
-            { icon: '🔒', text: 'Enterprise Security' },
-            { icon: '⚡', text: 'Real-time Sync' },
-            { icon: '🌍', text: 'Multi-store Support' },
+            {
+              icon: (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              ),
+              text: '4.9 App Store Rating',
+            },
+            {
+              icon: (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              ),
+              text: 'Enterprise Security',
+            },
+            {
+              icon: (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="13 2 13 9 20 9"/><path d="M21 3L13 11"/><path d="M3 12a9 9 0 1 0 18 0"/>
+                </svg>
+              ),
+              text: 'Real-time Sync',
+            },
+            {
+              icon: (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+              ),
+              text: 'Multi-store Support',
+            },
           ].map((b) => (
             <div key={b.text} className="flex items-center gap-2">
-              <span>{b.icon}</span><span>{b.text}</span>
+              <span style={{ color: 'var(--primary)' }}>{b.icon}</span><span>{b.text}</span>
             </div>
           ))}
         </div>

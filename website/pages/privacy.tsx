@@ -34,10 +34,6 @@ export default function Privacy() {
 
         <div className="max-w-3xl mx-auto px-6 pt-32 pb-24">
           <div className="mb-12">
-            <div className="inline-flex items-center gap-2 glass px-3 py-1.5 rounded-full text-xs font-semibold mb-6 border"
-              style={{ color: 'var(--primary)', borderColor: 'color-mix(in srgb, var(--primary) 20%, transparent)' }}>
-              Legal
-            </div>
             <h1 className="text-4xl md:text-5xl font-black mb-4" style={{ color: 'var(--text)' }}>Privacy Policy</h1>
             <p className="text-sm" style={{ color: 'var(--subtext)' }}>Last updated: April 30, 2026</p>
           </div>

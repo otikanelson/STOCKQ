@@ -116,10 +116,6 @@ export default function Download() {
           <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 p-10 md:p-16">
             {/* Left */}
             <div ref={leftRef} className="flex-1 max-w-lg">
-              <div className="inline-flex items-center gap-2 glass px-3 py-1.5 rounded-full text-xs text-brand-400 font-semibold mb-6 border border-brand-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                Free to download
-              </div>
 
               <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight" style={{ color: 'var(--text)' }}>
                 Take control of your inventory <span className="gradient-text">today</span>

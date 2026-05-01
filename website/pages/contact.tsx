@@ -46,10 +46,6 @@ export default function Contact() {
         <div className="max-w-6xl mx-auto px-6 pt-32 pb-24">
           {/* Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 glass px-3 py-1.5 rounded-full text-xs font-semibold mb-6 border"
-              style={{ color: 'var(--primary)', borderColor: 'color-mix(in srgb, var(--primary) 20%, transparent)' }}>
-              We'd love to hear from you
-            </div>
             <h1 className="text-4xl md:text-6xl font-black mb-4" style={{ color: 'var(--text)' }}>
               Get in <span className="gradient-text">touch</span>
             </h1>
