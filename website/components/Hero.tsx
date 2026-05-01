@@ -56,13 +56,6 @@ export default function Hero() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
 
-        {/* Pill badge */}
-        <div className="mb-8 inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-sm font-medium border"
-          style={{ color: 'var(--primary)', borderColor: 'color-mix(in srgb, var(--primary) 20%, transparent)' }}>
-          <span className="w-2 h-2 rounded-full animate-pulse-slow" style={{ background: 'var(--primary)' }} />
-          Now available on <span style={{ opacity: 0.35 }}>iOS &</span> Android
-        </div>
-
         {/* Headline */}
         <h1 ref={headlineRef} className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight mb-6"
           style={{ perspective: '800px' }}>
@@ -125,7 +118,7 @@ export default function Hero() {
         </div>
 
         {/* Trust badges */}
-        <div ref={badgesRef} className="flex flex-wrap items-center justify-center gap-6 text-sm"
+        <div ref={badgesRef} className="flex flex-wrap items-center mt-20 justify-center gap-6 text-sm"
           style={{ color: 'var(--subtext)'}}>
           {[
             {
