@@ -16,7 +16,7 @@ import { ThemedText } from '../../components/ThemedText';
 import { useTheme } from "../../context/ThemeContext";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 import { Alert, AlertAction, useAlerts } from "../../hooks/useAlerts";
-import { useModalToast } from "@/components/ModalToast";
+import { ModalToast, useModalToast } from "@/components/ModalToast";
 
 export default function Alerts() {
   const { theme } = useTheme();
