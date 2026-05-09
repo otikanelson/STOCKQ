@@ -126,48 +126,9 @@ export const SetupGuideOverlay: React.FC = () => {
           <ThemedText style={[styles.body, { color: theme.subtext }]}>
             {step.body}
           </ThemedText>
-
-          {/* Auto-hide progress bar */}
-          <AutoHideBar
-            durationMs={step.autoHideMs ?? AUTO_HIDE_DEFAULT}
-            color={accent}
-            key={step.key}
-          />
         </View>
       </View>
     </Animated.View>
-  );
-};
-
-// ─── Thin progress bar that drains over the auto-hide duration ────────────────
-
-const AutoHideBar: React.FC<{ durationMs: number; color: string }> = ({ durationMs, color }) => {
-  const widthAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    widthAnim.setValue(1);
-    Animated.timing(widthAnim, {
-      toValue: 0,
-      duration: durationMs,
-      useNativeDriver: false,
-    }).start();
-  }, [durationMs]);
-
-  return (
-    <View style={styles.barTrack}>
-      <Animated.View
-        style={[
-          styles.barFill,
-          {
-            backgroundColor: color,
-            width: widthAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['0%', '100%'],
-            }),
-          },
-        ]}
-      />
-    </View>
   );
 };
 
@@ -222,16 +183,5 @@ const styles = StyleSheet.create({
   body: {
     fontSize: 12,
     lineHeight: 17,
-  },
-  barTrack: {
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: 'rgba(128,128,128,0.15)',
-    marginTop: 8,
-    overflow: 'hidden',
-  },
-  barFill: {
-    height: 3,
-    borderRadius: 2,
   },
 });

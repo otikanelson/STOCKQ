@@ -2,7 +2,7 @@ import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
-import { Href, useRouter } from "expo-router";
+import { Href, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -35,7 +35,7 @@ interface SaleRecord {
   totalAmount: number;
   saleDate: string;
   soldBy?: {
-    userId: string;
+    userId: string | { _id: string; name: string };
     role: 'admin' | 'staff';
   };
 }
@@ -56,6 +56,7 @@ const CARD_COLORS_DARK = {
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { theme, isDark } = useTheme();
   const { user, role, isAuthenticated, loading: authLoading } = useAuth();
   const insets = useSafeAreaInsets();
@@ -74,8 +75,8 @@ export default function DashboardScreen() {
   const hasAIData = dashboardData?.summary || quickInsights;
   const [aiInsightsExpanded, setAiInsightsExpanded] = useState(false);
 
-  // Sales section state
-  const [salesExpanded, setSalesExpanded] = useState(false);
+  // Sales section state - expand if coming from completed sale
+  const [salesExpanded, setSalesExpanded] = useState(params.expandSales === 'true');
   const [salesStats, setSalesStats] = useState<SalesStats>({ today: 0, week: 0, totalSales: 0 });
   const [recentSales, setRecentSales] = useState<SaleRecord[]>([]);
   const [loadingSales, setLoadingSales] = useState(false);
@@ -517,6 +518,15 @@ export default function DashboardScreen() {
                                       </ThemedText>
                                     </View>
                                   )}
+                                  {sale.soldBy?.role === 'staff' && (
+                                    <View style={[styles.staffBadge, { backgroundColor: "#10B981" + "18" }]}>
+                                      <ThemedText style={[styles.staffBadgeText, { color: "#10B981" }]}>
+                                        {typeof sale.soldBy.userId === 'object' && sale.soldBy.userId?.name 
+                                          ? sale.soldBy.userId.name.split(' ')[0].toUpperCase()
+                                          : 'STAFF'}
+                                      </ThemedText>
+                                    </View>
+                                  )}
                                 </View>
                                 <ThemedText style={[styles.salesItemDate, { color: theme.subtext }]}>
                                   {formatSaleDate(sale.saleDate)} · {sale.quantitySold} units
@@ -871,6 +881,8 @@ const styles = StyleSheet.create({
   salesItemName: { fontSize: 14, flexShrink: 1 },
   adminBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   adminBadgeText: { fontSize: 9, fontWeight: "800" as const, letterSpacing: 0.5 },
+  staffBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
+  staffBadgeText: { fontSize: 9, fontWeight: "800" as const, letterSpacing: 0.5 },
   salesItemDate: { fontSize: 12 },
   salesItemAmount: { fontSize: 15 },
   salesEmpty: { alignItems: "center", paddingVertical: 24, gap: 8 },

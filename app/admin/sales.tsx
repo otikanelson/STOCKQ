@@ -8,15 +8,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  Modal,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View
+    ActivityIndicator,
+    Dimensions,
+    FlatList,
+    Modal,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -38,6 +38,10 @@ interface SaleRecord {
   totalAmount: number;
   saleDate: string;
   paymentMethod: string;
+  soldBy?: {
+    userId: string | { _id: string; name: string };
+    role: 'admin' | 'staff';
+  };
 }
 
 interface RevenueStats {
@@ -235,9 +239,27 @@ export default function AdminSales() {
           <Ionicons name="receipt-outline" size={18} color={theme.primary} />
         </View>
         <View style={{ flex: 1 }}>
-          <ThemedText style={[styles.saleName, { color: theme.text }]} numberOfLines={1}>
-            {item.productName}
-          </ThemedText>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
+            <ThemedText style={[styles.saleName, { color: theme.text, flexShrink: 1 }]} numberOfLines={1}>
+              {item.productName}
+            </ThemedText>
+            {item.soldBy?.role === 'admin' && (
+              <View style={[styles.roleBadge, { backgroundColor: theme.primary + "18" }]}>
+                <ThemedText style={[styles.roleBadgeText, { color: theme.primary }]}>
+                  ADMIN
+                </ThemedText>
+              </View>
+            )}
+            {item.soldBy?.role === 'staff' && (
+              <View style={[styles.roleBadge, { backgroundColor: "#10B981" + "18" }]}>
+                <ThemedText style={[styles.roleBadgeText, { color: "#10B981" }]}>
+                  {typeof item.soldBy.userId === 'object' && item.soldBy.userId?.name 
+                    ? item.soldBy.userId.name.split(' ')[0].toUpperCase()
+                    : 'STAFF'}
+                </ThemedText>
+              </View>
+            )}
+          </View>
           <ThemedText style={[styles.saleDate, { color: theme.subtext }]}>
             {formatDate(item.saleDate)} · {item.quantitySold} units
           </ThemedText>
@@ -477,9 +499,27 @@ export default function AdminSales() {
                   <Ionicons name="receipt-outline" size={18} color={theme.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <ThemedText style={[styles.saleName, { color: theme.text }]} numberOfLines={1}>
-                    {item.productName}
-                  </ThemedText>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                    <ThemedText style={[styles.saleName, { color: theme.text, flexShrink: 1 }]} numberOfLines={1}>
+                      {item.productName}
+                    </ThemedText>
+                    {item.soldBy?.role === 'admin' && (
+                      <View style={[styles.roleBadge, { backgroundColor: theme.primary + "18" }]}>
+                        <ThemedText style={[styles.roleBadgeText, { color: theme.primary }]}>
+                          ADMIN
+                        </ThemedText>
+                      </View>
+                    )}
+                    {item.soldBy?.role === 'staff' && (
+                      <View style={[styles.roleBadge, { backgroundColor: "#10B981" + "18" }]}>
+                        <ThemedText style={[styles.roleBadgeText, { color: "#10B981" }]}>
+                          {typeof item.soldBy.userId === 'object' && item.soldBy.userId?.name 
+                            ? item.soldBy.userId.name.split(' ')[0].toUpperCase()
+                            : 'STAFF'}
+                        </ThemedText>
+                      </View>
+                    )}
+                  </View>
                   <ThemedText style={[styles.saleDate, { color: theme.subtext }]}>
                     {formatDate(item.saleDate)} · {item.quantitySold} units
                   </ThemedText>
@@ -1199,6 +1239,16 @@ const styles = StyleSheet.create({
   saleAmount: {
     fontSize: 15,
     fontWeight: "700",
+  },
+  roleBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  roleBadgeText: {
+    fontSize: 9,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
 
   // Info Panel

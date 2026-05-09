@@ -6,14 +6,14 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  BackHandler,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View
+    BackHandler,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
@@ -28,24 +28,37 @@ type SetupStep = 'welcome' | 'store-name' | 'admin-name' | 'login-pin' | 'securi
 
 export default function SetupScreen() {
   const { theme, isDark } = useTheme();
-  const { showStep, isActive, startGuide } = useSetupGuide();
+  const { showStep, isActive, startGuide, role } = useSetupGuide();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
   // Start on welcome screen
   const [step, setStep] = useState<SetupStep>('welcome');
 
-  // Auto-start guide when component mounts on welcome screen
+  // Auto-start guide when component mounts or when returning to welcome screen
   useEffect(() => {
     if (step === 'welcome') {
       // Small delay to ensure layout is ready
       const timer = setTimeout(() => {
+        console.log('[GUIDE] Setup page - starting admin guide, current role:', role);
         startGuide('admin'); // Start in admin mode by default
         showStep('welcome');
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [step]); // Added step as dependency to restart when returning to welcome
+
+  // Ensure guide is in admin mode when on this page
+  useEffect(() => {
+    if (step === 'welcome' && role !== 'admin') {
+      console.log('[GUIDE] Setup page - role mismatch, restarting as admin. Current role:', role);
+      const timer = setTimeout(() => {
+        startGuide('admin');
+        showStep('welcome');
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [role, step]);
 
   // Handle Android back button
   useEffect(() => {
@@ -66,7 +79,16 @@ export default function SetupScreen() {
 
   const goToStep = (s: SetupStep) => {
     setStep(s);
-    if (isActive && s !== 'welcome') showStep(s);
+    // Always show the guide for the new step (except welcome which auto-shows)
+    if (s !== 'welcome') {
+      console.log(`[GUIDE] goToStep: ${s}, isActive: ${isActive}`);
+      // If guide is not active, restart it
+      if (!isActive) {
+        console.log('[GUIDE] Restarting guide because it was inactive');
+        startGuide('admin');
+      }
+      showStep(s);
+    }
   };
 
   // When user clicks "Create Store" from welcome, go to store-name

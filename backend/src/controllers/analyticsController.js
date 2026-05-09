@@ -83,10 +83,11 @@ exports.getAllSales = async (req, res) => {
       ...req.tenantFilter
     };
     
-    // Get all sales with product details
+    // Get all sales with product details and user information
     const sales = await Sale.find(query)
       .sort({ saleDate: -1 })
       .limit(parseInt(limit))
+      .populate('soldBy.userId', 'name') // Populate user name
       .lean();
     
     res.status(200).json({

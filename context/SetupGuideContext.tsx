@@ -2,6 +2,7 @@ import { usePathname } from 'expo-router';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 export type SetupRole = 'admin' | 'staff' | null;
+export type SetupPage = '/auth/setup' | '/auth/staff-register' | null;
 
 export interface GuideStep {
   key: string;        // unique key, e.g. 'store-name', 'admin-name'
@@ -10,6 +11,7 @@ export interface GuideStep {
   icon: string;
   iconColor: string;
   autoHideMs?: number;
+  page: SetupPage;    // Which page this step belongs to
 }
 
 // Admin account creation steps — one per internal screen step
@@ -20,7 +22,8 @@ const ADMIN_STEPS: GuideStep[] = [
     body: "Create a new store as an admin, or join an existing store as a staff member.",
     icon: 'hand-right',
     iconColor: '#5B4FE8',
-    autoHideMs: 10000, // Give user time to read and choose
+    autoHideMs: 15000, // Longer duration
+    page: '/auth/setup',
   },
   {
     key: 'store-name',
@@ -28,6 +31,8 @@ const ADMIN_STEPS: GuideStep[] = [
     body: "Give your store a name — this is how it'll appear across the app and to your staff.",
     icon: 'storefront',
     iconColor: '#5B4FE8',
+    autoHideMs: 12000,
+    page: '/auth/setup',
   },
   {
     key: 'admin-name',
@@ -35,6 +40,8 @@ const ADMIN_STEPS: GuideStep[] = [
     body: "Enter your name. This shows up in the app so your team knows who the admin is.",
     icon: 'person',
     iconColor: '#5B4FE8',
+    autoHideMs: 12000,
+    page: '/auth/setup',
   },
   {
     key: 'login-pin',
@@ -42,6 +49,8 @@ const ADMIN_STEPS: GuideStep[] = [
     body: "Pick a 4-digit PIN — you'll enter this every time you open the app.",
     icon: 'log-in',
     iconColor: '#5B4FE8',
+    autoHideMs: 12000,
+    page: '/auth/setup',
   },
   {
     key: 'security-pin',
@@ -49,6 +58,8 @@ const ADMIN_STEPS: GuideStep[] = [
     body: 'This second PIN protects sensitive actions like deleting products. Keep it different from your Login PIN.',
     icon: 'shield-checkmark',
     iconColor: '#FF9500',
+    autoHideMs: 15000,
+    page: '/auth/setup',
   },
   {
     key: 'complete',
@@ -56,7 +67,8 @@ const ADMIN_STEPS: GuideStep[] = [
     body: "Your admin account is ready. Tap 'Go to Login' to sign in and start managing your inventory.",
     icon: 'checkmark-circle',
     iconColor: '#34C759',
-    autoHideMs: 5000,
+    autoHideMs: 10000,
+    page: '/auth/setup',
   },
 ];
 
@@ -68,7 +80,8 @@ const STAFF_STEPS: GuideStep[] = [
     body: "You'll need the store name and admin's PIN to join as a staff member.",
     icon: 'hand-right',
     iconColor: '#10B981',
-    autoHideMs: 10000,
+    autoHideMs: 15000,
+    page: '/auth/staff-register',
   },
   {
     key: 'store-verify',
@@ -76,6 +89,8 @@ const STAFF_STEPS: GuideStep[] = [
     body: "Enter the store name and your admin's Login PIN to verify you're joining the right place.",
     icon: 'storefront',
     iconColor: '#10B981',
+    autoHideMs: 12000,
+    page: '/auth/staff-register',
   },
   {
     key: 'name',
@@ -83,6 +98,8 @@ const STAFF_STEPS: GuideStep[] = [
     body: "Tell us who you are — the admin will see this in the staff list.",
     icon: 'person-add',
     iconColor: '#10B981',
+    autoHideMs: 12000,
+    page: '/auth/staff-register',
   },
   {
     key: 'permissions',
@@ -90,6 +107,8 @@ const STAFF_STEPS: GuideStep[] = [
     body: "These are the actions you can perform. Your admin may adjust these later.",
     icon: 'shield-half',
     iconColor: '#10B981',
+    autoHideMs: 15000,
+    page: '/auth/staff-register',
   },
   {
     key: 'pin',
@@ -97,6 +116,8 @@ const STAFF_STEPS: GuideStep[] = [
     body: "Set a 4-digit PIN you'll use to log in. Keep it safe — it can't be recovered if lost.",
     icon: 'key',
     iconColor: '#10B981',
+    autoHideMs: 12000,
+    page: '/auth/staff-register',
   },
   {
     key: 'complete',
@@ -104,7 +125,8 @@ const STAFF_STEPS: GuideStep[] = [
     body: "You're registered. Tap 'Done' to go to login and start working.",
     icon: 'checkmark-circle',
     iconColor: '#34C759',
-    autoHideMs: 5000,
+    autoHideMs: 10000,
+    page: '/auth/staff-register',
   },
 ];
 
@@ -141,6 +163,8 @@ export const SetupGuideProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const step = steps.find(s => s.key === activeKey);
     if (!step) return null;
     if (dismissedKeys.current.has(activeKey)) return null;
+    // Only show step if we're on the correct page
+    if (step.page && pathname !== step.page) return null;
     return step;
   })();
 
@@ -159,7 +183,9 @@ export const SetupGuideProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const showStep = (key: string) => {
-    dismissedKeys.current.delete(key); // always re-show when explicitly requested
+    // When explicitly showing a step, only remove that key from dismissed
+    // This allows the step to show even if it was previously dismissed
+    dismissedKeys.current.delete(key);
     setActiveKey(key);
   };
 
@@ -175,6 +201,18 @@ export const SetupGuideProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (!isActive) return;
     if (!pathname.startsWith('/auth/')) stopGuide();
   }, [pathname, isActive]);
+
+  // Reset dismissed keys when switching between pages
+  useEffect(() => {
+    if (!isActive) return;
+    
+    // If we're on a different page than the current step's page, clear dismissed keys
+    // This allows guides to restart when user navigates between setup and staff-register
+    const currentStepPage = steps.find(s => s.key === activeKey)?.page;
+    if (currentStepPage && pathname !== currentStepPage) {
+      dismissedKeys.current = new Set();
+    }
+  }, [pathname, isActive, activeKey]);
 
   return (
     <SetupGuideContext.Provider

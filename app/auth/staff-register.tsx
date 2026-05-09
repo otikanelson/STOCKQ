@@ -5,15 +5,15 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  BackHandler,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  TextInput,
-  View
+    BackHandler,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    TextInput,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
@@ -33,7 +33,7 @@ interface Permissions {
 
 export default function StaffRegisterScreen() {
   const { theme } = useTheme();
-  const { showStep, isActive, startGuide } = useSetupGuide();
+  const { showStep, isActive, startGuide, role } = useSetupGuide();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   
@@ -43,11 +43,24 @@ export default function StaffRegisterScreen() {
   useEffect(() => {
     // Small delay to ensure layout is ready
     const timer = setTimeout(() => {
+      console.log('[GUIDE] Staff-register page - starting staff guide, current role:', role);
       startGuide('staff');
       showStep('store-verify');
     }, 300);
     return () => clearTimeout(timer);
   }, []);
+
+  // Ensure guide is in staff mode when on this page
+  useEffect(() => {
+    if (step === 'store-verify' && role !== 'staff') {
+      console.log('[GUIDE] Staff-register page - role mismatch, restarting as staff. Current role:', role);
+      const timer = setTimeout(() => {
+        startGuide('staff');
+        showStep('store-verify');
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [role, step]);
 
   // Handle Android back button
   useEffect(() => {

@@ -1,9 +1,11 @@
+import { AddProductModal } from "@/components/AddProductModal";
 import AdminSecurityPINWarning from "@/components/AdminSecurityPINWarning";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HelpTooltip } from "@/components/HelpTooltip";
 import { ModalToast, useModalToast } from "@/components/ModalToast";
 import { useAuth } from "@/context/AuthContext";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import { useProducts } from "@/hooks/useProducts";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -14,16 +16,16 @@ import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    Animated,
-    Dimensions,
-    FlatList,
-    Image,
-    Modal,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    View
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { ThemedText } from '../../components/ThemedText';
@@ -49,6 +51,7 @@ export default function ScanScreen() {
   const { theme } = useTheme();
   const { role, user } = useAuth();
   const modalToast = useModalToast();
+  const { products } = useProducts();
 
   // Check feature access for scanning and other permissions
   const scanAccess = useFeatureAccess('scanProducts');
@@ -83,6 +86,7 @@ export default function ScanScreen() {
   // Cart State (for sales mode)
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCartModal, setShowCartModal] = useState(false);
+  const [showProductPicker, setShowProductPicker] = useState(false);
 
   const [securityPINWarningVisible, setSecurityPINWarningVisible] = useState(false);
   const [checkingSecurityPIN, setCheckingSecurityPIN] = useState(true);
@@ -692,15 +696,138 @@ export default function ScanScreen() {
     modalToast.show({ type: "info", title: "Item Removed", message: "Product removed from cart" });
   };
 
+  const handleProductSelect = (product: any) => {
+    // Check if already in cart
+    const existingIndex = cart.findIndex((item) => item._id === product._id);
+
+    if (existingIndex !== -1) {
+      // Already in cart - increment quantity
+      const updatedCart = [...cart];
+      const currentQty = updatedCart[existingIndex].quantity;
+
+      if (currentQty < product.totalQuantity) {
+        updatedCart[existingIndex].quantity += 1;
+        setCart(updatedCart);
+        
+        BatchPlayer.play();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        animateCartIcon();
+        
+        Toast.show({
+          type: "success",
+          text1: "Quantity Updated",
+          text2: `${product.name} x${updatedCart[existingIndex].quantity}`,
+        });
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        Toast.show({
+          type: "info",
+          text1: "Maximum Quantity",
+          text2: `Only ${product.totalQuantity} units available`,
+        });
+      }
+    } else {
+      // Add new item to cart
+      const newItem: CartItem = {
+        _id: product._id,
+        name: product.name,
+        barcode: product.barcode || '',
+        imageUrl: product.imageUrl,
+        totalQuantity: product.totalQuantity,
+        quantity: 1,
+      };
+
+      setCart([...cart, newItem]);
+      
+      BatchPlayer.play();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      animateCartIcon();
+      
+      Toast.show({
+        type: "success",
+        text1: "Added to Cart",
+        text2: product.name,
+      });
+    }
+  };
+
   const getTotalItems = () => cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleCartDone = () => {
+  const handleCartDone = async () => {
     if (cart.length === 0) {
       modalToast.show({ type: "info", title: "Empty Cart", message: "Please scan items to add to cart" });
       return;
     }
+    
+    // Process sale directly for staff users
     setShowCartModal(false);
-    router.push({ pathname: "/admin/sales", params: { cartData: JSON.stringify(cart), tab: "checkout" } });
+    setLoading(true);
+    
+    try {
+      // Prepare sale data with pricing
+      const saleData = cart.map((item) => {
+        // Get product details to extract price
+        const product = products.find(p => p._id === item._id);
+        let price = 0;
+        
+        if (product) {
+          // Try to get generic price first
+          if (product.genericPrice && product.genericPrice > 0) {
+            price = product.genericPrice;
+          } else if (product.batches && product.batches.length > 0) {
+            // Calculate average price from batches
+            const batchesWithPrice = product.batches.filter(b => (b as any).price && (b as any).price > 0);
+            if (batchesWithPrice.length > 0) {
+              price = batchesWithPrice.reduce((sum, b) => sum + ((b as any).price || 0), 0) / batchesWithPrice.length;
+            }
+          }
+        }
+        
+        return { 
+          productId: item._id, 
+          quantity: item.quantity, 
+          price, 
+          paymentMethod: 'cash' 
+        };
+      });
+      
+      // Process the sale
+      await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/products/process-sale`, { items: saleData });
+      
+      // Clear cart and show success
+      setCart([]);
+      BatchPlayer.play();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      
+      Toast.show({ 
+        type: "success", 
+        text1: "Sale Complete", 
+        text2: "View transaction on dashboard" 
+      });
+      
+      // Reset scanner state
+      setScanned(false);
+      setLoading(false);
+      
+      // Navigate to dashboard with sales section expanded
+      router.push({
+        pathname: '/(tabs)',
+        params: { expandSales: 'true' }
+      });
+      
+    } catch (err) {
+      console.error("Sale Error:", err);
+      setLoading(false);
+      
+      Toast.show({ 
+        type: "error", 
+        text1: "Transaction Failed", 
+        text2: "Could not process sale. Please try again." 
+      });
+      
+      // Reopen cart modal so user can retry
+      setShowCartModal(true);
+    }
   };
 
   const handleSecurityPINWarningClose = () => {
@@ -988,26 +1115,48 @@ export default function ScanScreen() {
           </ThemedText>
           <View style={styles.bottomActions}>
             {tab === "sales" && (
-              <Animated.View
-                style={{
-                  transform: [
-                    { scale: cartBounceAnim },
-                    { translateX: cartShakeAnim },
-                  ],
-                }}
-              >
+              <>
                 <Pressable
-                  style={[styles.cartButton, { backgroundColor: theme.primary }]}
-                  onPress={() => setShowCartModal(true)}
+                  style={[styles.manualSalesBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                  onPress={() => {
+                    if (products.length > 0) {
+                      setShowProductPicker(true);
+                    } else {
+                      Toast.show({ 
+                        type: 'error', 
+                        text1: 'No Products', 
+                        text2: 'Add products to inventory first' 
+                      });
+                    }
+                  }}
                 >
-                  <Ionicons name="cart" size={24} color="#FFF" />
-                  {cart.length > 0 && (
-                    <View style={styles.cartBadge}>
-                      <ThemedText style={styles.cartBadgeText}>{getTotalItems()}</ThemedText>
-                    </View>
-                  )}
+                  <Ionicons name="add-circle-outline" size={20} color={theme.primary} />
+                  <ThemedText style={[styles.manualSalesBtnText, { color: theme.primary }]}>
+                    Manual
+                  </ThemedText>
                 </Pressable>
-              </Animated.View>
+                
+                <Animated.View
+                  style={{
+                    transform: [
+                      { scale: cartBounceAnim },
+                      { translateX: cartShakeAnim },
+                    ],
+                  }}
+                >
+                  <Pressable
+                    style={[styles.cartButton, { backgroundColor: theme.primary }]}
+                    onPress={() => setShowCartModal(true)}
+                  >
+                    <Ionicons name="cart" size={24} color="#FFF" />
+                    {cart.length > 0 && (
+                      <View style={styles.cartBadge}>
+                        <ThemedText style={styles.cartBadgeText}>{getTotalItems()}</ThemedText>
+                      </View>
+                    )}
+                  </Pressable>
+                </Animated.View>
+              </>
             )}
             {tab === "registry" && (
               <Pressable
@@ -1266,11 +1415,18 @@ export default function ScanScreen() {
               <Pressable
                 style={[styles.cartDoneButton, { backgroundColor: theme.primary }]}
                 onPress={handleCartDone}
+                disabled={loading}
               >
-                <Ionicons name="checkmark-circle" size={22} color="#FFF" />
-                <ThemedText style={styles.cartDoneButtonText}>
-                  Checkout · {getTotalItems()} {getTotalItems() === 1 ? "unit" : "units"}
-                </ThemedText>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#FFF" />
+                ) : (
+                  <>
+                    <Ionicons name="checkmark-circle" size={22} color="#FFF" />
+                    <ThemedText style={styles.cartDoneButtonText}>
+                      Complete Sale · {getTotalItems()} {getTotalItems() === 1 ? "unit" : "units"}
+                    </ThemedText>
+                  </>
+                )}
               </Pressable>
             )}
           </View>
@@ -1329,6 +1485,15 @@ export default function ScanScreen() {
           <ModalToast toast={modalToast} />
         </View>
       </Modal>
+
+      {/* PRODUCT PICKER MODAL */}
+      <AddProductModal
+        visible={showProductPicker}
+        products={products}
+        onClose={() => setShowProductPicker(false)}
+        onSelectProduct={handleProductSelect}
+        emptyMessage="No products available in inventory"
+      />
 
     </View>
     </ErrorBoundary>
@@ -1630,6 +1795,25 @@ const styles = StyleSheet.create({
     },
 
   // Cart Button Styles
+  manualSalesBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 25,
+    borderWidth: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 10,
+  },
+  manualSalesBtnText: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
   cartButton: {
     width: 70,
     height: 70,

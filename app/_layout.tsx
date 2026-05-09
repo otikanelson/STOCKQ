@@ -101,7 +101,7 @@ function RootLayoutNav() {
       console.log('  - isFirstTime:', !isRecurringUser);
       
       setIsFirstTime(!isRecurringUser);
-      setOnboardingComplete(!!onboardingDoneAfterMigration);
+      setOnboardingComplete(!!(setupComplete || onboardingDoneAfterMigration));
     } catch (error) {
       console.error('Error checking first time setup:', error);
       setIsFirstTime(true);
